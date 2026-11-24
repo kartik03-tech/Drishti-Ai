@@ -1,0 +1,773 @@
+{% extends "base.html" %}
+
+{% block title %}Community Hazard Network & Safety Reporting — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .rep-container {
+        width: min(1200px, calc(100% - 36px));
+        margin: 28px auto 60px;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* Hero Banner */
+    .rep-hero {
+        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
+        border: 1px solid #22304A;
+        border-radius: 24px;
+        padding: 34px 38px;
+        color: #F4F7FB;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .rep-hero::after {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(45, 212, 167, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .rep-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #2DD4A7;
+        background: rgba(45, 212, 167, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(45, 212, 167, 0.3);
+    }
+
+    .rep-hero h1 {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        margin: 0 0 8px;
+        color: #F4F7FB !important;
+    }
+
+    .rep-hero p {
+        font-size: 14.5px;
+        color: #9AA8BD;
+        max-width: 680px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Stats Grid */
+    .rep-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .rep-stat-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .rep-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+    }
+
+    .rep-stat-val {
+        font-size: 24px;
+        font-weight: 800;
+        color: #F4F7FB;
+        line-height: 1.1;
+    }
+
+    .rep-stat-lbl {
+        font-size: 12px;
+        color: #9AA8BD;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    /* Main Split Section */
+    .rep-layout {
+        display: grid;
+        grid-template-columns: minmax(360px, 440px) 1fr;
+        gap: 28px;
+        align-items: start;
+    }
+
+    @media (max-width: 960px) {
+        .rep-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Form Card */
+    .rep-form-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 26px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .rep-form-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rep-form-desc {
+        font-size: 13px;
+        color: #9AA8BD;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .rep-form-group {
+        margin-bottom: 18px;
+    }
+
+    .rep-form-label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #F4F7FB;
+        margin-bottom: 7px;
+    }
+
+    /* Category Pill Selector */
+    .issue-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .issue-option {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #9AA8BD;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+
+    .issue-option:hover {
+        background: #19253d;
+        color: #F4F7FB;
+        border-color: #2DD4A7;
+    }
+
+    .issue-option.selected {
+        background: #19253d;
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+        box-shadow: 0 3px 10px rgba(45, 212, 167, 0.2);
+    }
+
+    /* Location Field with Auto-detect */
+    .loc-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .loc-input-icon {
+        position: absolute;
+        left: 12px;
+        color: #9AA8BD;
+        font-size: 14px;
+    }
+
+    .rep-input {
+        width: 100%;
+        height: 44px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 12px;
+        padding: 0 42px 0 36px;
+        font-size: 13.5px;
+        color: #F4F7FB;
+        outline: none;
+        transition: border-color 0.15s ease;
+    }
+
+    .rep-input:focus {
+        border-color: #2DD4A7;
+    }
+
+    .btn-gps-detect {
+        position: absolute;
+        right: 6px;
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.15s ease;
+    }
+    .btn-gps-detect:hover { background: #26b992; }
+
+    /* Severity Radio Buttons */
+    .severity-options {
+        display: flex;
+        gap: 8px;
+    }
+
+    .sev-pill {
+        flex: 1;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #22304A;
+        background: #0B1220;
+        color: #9AA8BD;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .sev-pill:hover { background: #19253d; color: #F4F7FB; }
+
+    .sev-pill.selected.low { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border-color: #2DD4A7; }
+    .sev-pill.selected.medium { background: rgba(245, 181, 68, 0.15); color: #F5B544; border-color: #F5B544; }
+    .sev-pill.selected.critical { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border-color: #FF5A5F; }
+
+    .rep-textarea {
+        width: 100%;
+        min-height: 90px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        color: #F4F7FB;
+        outline: none;
+        font-family: inherit;
+        resize: vertical;
+    }
+
+    .rep-textarea:focus {
+        border-color: #2DD4A7;
+    }
+
+    .btn-submit-report {
+        width: 100%;
+        height: 46px;
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+    }
+    .btn-submit-report:hover {
+        background: #26b992;
+        transform: translateY(-1px);
+    }
+
+    /* Right Column: Feed */
+    .rep-feed-panel {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 26px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .rep-feed-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .rep-feed-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #F4F7FB;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .feed-filter-pills {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    .feed-pill {
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #22304A;
+        background: #0B1220;
+        color: #9AA8BD;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+    }
+
+    .feed-pill:hover {
+        background: #19253d;
+        color: #F4F7FB;
+        border-color: #2DD4A7;
+    }
+
+    .feed-pill.active {
+        background: #2DD4A7;
+        color: #0B1220;
+        border-color: #2DD4A7;
+    }
+
+    /* Cards in Feed */
+    .feed-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 720px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    .report-card {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        transition: all 0.15s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .report-card:hover {
+        border-color: #2DD4A7;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .report-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .report-issue-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 800;
+        color: #F4F7FB;
+    }
+
+    .report-severity-badge {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        letter-spacing: 0.4px;
+    }
+
+    .badge-Critical { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+    .badge-Medium { background: rgba(245, 181, 68, 0.15); color: #F5B544; border: 1px solid rgba(245, 181, 68, 0.3); }
+    .badge-Low { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3); }
+
+    .report-place {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #F4F7FB;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .report-desc {
+        font-size: 13px;
+        color: #9AA8BD;
+        line-height: 1.5;
+        background: #131C2E;
+        border-radius: 8px;
+        padding: 10px 12px;
+        border-left: 3px solid #22304A;
+    }
+
+    .report-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #9AA8BD;
+    }
+
+    .btn-upvote {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #F4F7FB;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+    }
+
+    .btn-upvote:hover {
+        background: #19253d;
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+    }
+
+    .btn-upvote.voted {
+        background: rgba(45, 212, 167, 0.15);
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rep-container">
+
+    <!-- Hero Header -->
+    <section class="rep-hero">
+        <span class="rep-eyebrow">
+            <i class="fa-solid fa-people-robotic"></i> Community Safety Network
+        </span>
+        <h1>Community Hazard Reporting & Safety Network</h1>
+        <p>Report dark streetlights, road hazards, waterlogging, and unsafe corridors to protect fellow Mumbai commuters in real time.</p>
+    </section>
+
+    <!-- Stats Grid -->
+    <div class="rep-stats-grid">
+        <div class="rep-stat-card">
+            <div class="rep-stat-icon" style="background: #eff6ff; color: #2563eb;">
+                <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <div>
+                <div class="rep-stat-val">{{ stats.total or 0 }}</div>
+                <div class="rep-stat-lbl">Total Reports</div>
+            </div>
+        </div>
+
+        <div class="rep-stat-card">
+            <div class="rep-stat-icon" style="background: #fef2f2; color: #dc2626;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <div class="rep-stat-val">{{ stats.active or 0 }}</div>
+                <div class="rep-stat-lbl">Active Hazards</div>
+            </div>
+        </div>
+
+        <div class="rep-stat-card">
+            <div class="rep-stat-icon" style="background: #fefce8; color: #ca8a04;">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div>
+                <div class="rep-stat-val">{{ stats.streetlights or 0 }}</div>
+                <div class="rep-stat-lbl">Dark Streetlights</div>
+            </div>
+        </div>
+
+        <div class="rep-stat-card">
+            <div class="rep-stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <div class="rep-stat-val">{{ stats.resolved or 0 }}</div>
+                <div class="rep-stat-lbl">Resolved Issues</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="rep-layout">
+
+        <!-- Left: Submit Report -->
+        <div class="rep-form-card">
+            <div class="rep-form-title">
+                <i class="fa-solid fa-circle-plus" style="color: #6366f1;"></i>
+                <span>Report an Issue</span>
+            </div>
+            <p class="rep-form-desc">Share safety hazards to update live Mumbai route advisories.</p>
+
+            <form action="{{ url_for('report') }}" method="POST" id="repForm">
+                <!-- Hidden coordinates -->
+                <input type="hidden" name="latitude" id="inputLat">
+                <input type="hidden" name="longitude" id="inputLon">
+                <input type="hidden" name="issue_type" id="inputIssueType" value="Broken Streetlight" required>
+                <input type="hidden" name="severity" id="inputSeverity" value="Medium" required>
+
+                <!-- Issue Type Selector -->
+                <div class="rep-form-group">
+                    <label class="rep-form-label">Hazard Category *</label>
+                    <div class="issue-selector">
+                        <div class="issue-option selected" data-type="Broken Streetlight">
+                            <i class="fa-solid fa-lightbulb"></i> Dark Streetlight
+                        </div>
+                        <div class="issue-option" data-type="Hazardous Pothole">
+                            <i class="fa-solid fa-road"></i> Pothole / Road
+                        </div>
+                        <div class="issue-option" data-type="Waterlogging / Flood">
+                            <i class="fa-solid fa-water"></i> Waterlogging
+                        </div>
+                        <div class="issue-option" data-type="Harassment / Deserted">
+                            <i class="fa-solid fa-person-shelter"></i> Safety / Deserted
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Field -->
+                <div class="rep-form-group">
+                    <label class="rep-form-label">Location / Neighborhood *</label>
+                    <div class="loc-input-wrap">
+                        <i class="fa-solid fa-location-dot loc-input-icon"></i>
+                        <input type="text" name="place_name" id="inputPlaceName" class="rep-input" placeholder="e.g. Bandra West, BKC, Dadar TT..." required>
+                        <button type="button" class="btn-gps-detect" id="btnDetectReportLoc" title="Autofill current location via GPS">
+                            <i class="fa-solid fa-crosshairs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Severity Selector -->
+                <div class="rep-form-group">
+                    <label class="rep-form-label">Urgency Level</label>
+                    <div class="severity-options">
+                        <div class="sev-pill low" data-sev="Low">Minor (Low)</div>
+                        <div class="sev-pill medium selected" data-sev="Medium">Moderate</div>
+                        <div class="sev-pill critical" data-sev="Critical">Critical (High)</div>
+                    </div>
+                </div>
+
+                <!-- Description Field -->
+                <div class="rep-form-group">
+                    <label class="rep-form-label">Incident Description *</label>
+                    <textarea name="description" id="inputDescription" class="rep-textarea" placeholder="Describe the hazard (e.g., lights out between pillar 108 and 112, deep water pooling after heavy rain)..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit-report">
+                    <i class="fa-solid fa-paper-plane"></i> Publish Hazard Report
+                </button>
+            </form>
+        </div>
+
+        <!-- Right: Live Community Feed -->
+        <div class="rep-feed-panel">
+            <div class="rep-feed-header">
+                <div class="rep-feed-title">
+                    <i class="fa-solid fa-tower-broadcast" style="color: #ef4444;"></i>
+                    <span>Live Mumbai Incident Feed</span>
+                </div>
+
+                <div class="feed-filter-pills">
+                    <button type="button" class="feed-pill active" data-filter="all">All</button>
+                    <button type="button" class="feed-pill" data-filter="Streetlight">Streetlights</button>
+                    <button type="button" class="feed-pill" data-filter="Pothole">Potholes</button>
+                    <button type="button" class="feed-pill" data-filter="Waterlogging">Waterlogging</button>
+                    <button type="button" class="feed-pill" data-filter="Harassment">Safety</button>
+                </div>
+            </div>
+
+            <div class="feed-list" id="feedList">
+                {% for r in reports %}
+                <div class="report-card" data-category="{{ r.issue_type }}">
+                    <div class="report-card-top">
+                        <div class="report-issue-tag">
+                            {% if 'Streetlight' in r.issue_type %}
+                            <i class="fa-solid fa-lightbulb" style="color: #f59e0b;"></i>
+                            {% elif 'Pothole' in r.issue_type %}
+                            <i class="fa-solid fa-road" style="color: #ea580c;"></i>
+                            {% elif 'Water' in r.issue_type %}
+                            <i class="fa-solid fa-water" style="color: #0284c7;"></i>
+                            {% else %}
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;"></i>
+                            {% endif %}
+                            <span>{{ r.issue_type }}</span>
+                        </div>
+                        <span class="report-severity-badge badge-{{ r.severity or 'Medium' }}">{{ r.severity or 'Medium' }}</span>
+                    </div>
+
+                    <div class="report-place">
+                        <i class="fa-solid fa-location-dot" style="color: #64748b; font-size: 12px;"></i>
+                        <span>{{ r.place_name or 'Mumbai' }}</span>
+                    </div>
+
+                    <div class="report-desc">
+                        {{ r.description }}
+                    </div>
+
+                    <div class="report-footer">
+                        <span><i class="fa-solid fa-clock"></i> {{ r.created_at }}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 700; background: {% if r.status == 'Resolved' %}#dcfce7; color:#166534;{% else %}#fee2e2; color:#991b1b;{% endif %}">
+                                {{ r.status or 'Active' }}
+                            </span>
+                            <button type="button" class="btn-upvote" data-id="{{ r.id }}">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                <span class="upvote-count">{{ r.upvotes or 1 }}</span> Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Issue Category Selection
+    document.querySelectorAll(".issue-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+            document.querySelectorAll(".issue-option").forEach(o => o.classList.remove("selected"));
+            opt.classList.add("selected");
+            document.getElementById("inputIssueType").value = opt.dataset.type;
+        });
+    });
+
+    // Severity Selection
+    document.querySelectorAll(".sev-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+            document.querySelectorAll(".sev-pill").forEach(p => p.classList.remove("selected"));
+            pill.classList.add("selected");
+            document.getElementById("inputSeverity").value = pill.dataset.sev;
+        });
+    });
+
+    // GPS Auto-detect location with Reverse Geocoding Name Resolution
+    const btnGps = document.getElementById("btnDetectReportLoc");
+    const inputPlace = document.getElementById("inputPlaceName");
+    const inputLat = document.getElementById("inputLat");
+    const inputLon = document.getElementById("inputLon");
+
+    btnGps.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation not supported by your browser.");
+            return;
+        }
+
+        inputPlace.value = "Detecting location...";
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                inputLat.value = lat;
+                inputLon.value = lon;
+
+                fetch(`/api/reverse-geocode?lat=${lat}&lon=${lon}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.locality) {
+                            inputPlace.value = data.locality;
+                        } else {
+                            inputPlace.value = "Mumbai Locality";
+                        }
+                    })
+                    .catch(() => {
+                        inputPlace.value = "Mumbai Locality";
+                    });
+            },
+            (err) => {
+                inputPlace.value = "";
+                alert("GPS permission denied. Please enter location name manually.");
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
+    });
+
+    // Upvote / Confirm Incident Report
+    document.querySelectorAll(".btn-upvote").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const reportId = btn.dataset.id;
+            if (btn.classList.contains("voted")) return;
+
+            fetch(`/api/reports/${reportId}/upvote`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.querySelector(".upvote-count").textContent = data.upvotes;
+                        btn.classList.add("voted");
+                    }
+                });
+        });
+    });
+
+    // Feed Filter Tabs
+    document.querySelectorAll(".feed-pill").forEach(tab => {
+        tab.addEventListener("click", () => {
+            document.querySelectorAll(".feed-pill").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            const filter = tab.dataset.filter;
+            document.querySelectorAll(".report-card").forEach(card => {
+                if (filter === "all" || card.dataset.category.includes(filter)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

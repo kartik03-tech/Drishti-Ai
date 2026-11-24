@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Core App CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        :root {
+            /* User Design System Tokens */
+            --sg-bg: #0B1220;              /* Page ground (deep navy) */
+            --sg-surface: #131C2E;         /* Cards, search bar, panels */
+            --sg-card: #131C2E;
+            --sg-surface-hover: #19253d;
+            --sg-border: #22304A;          /* Outlines, dividers */
+            --sg-border-light: rgba(34, 48, 74, 0.7);
+
+            --sg-primary: #2DD4A7;         /* Brand, 'Assess Risk' button, safe state */
+            --sg-primary-hover: #26b992;
+            --sg-primary-soft: rgba(45, 212, 167, 0.12);
+            --sg-safe: #2DD4A7;
+
+            --sg-warning: #F5B544;         /* Moderate-risk labels */
+            --sg-warning-soft: rgba(245, 181, 68, 0.14);
+
+            --sg-danger: #FF5A5F;          /* SOS button and high-risk labels only */
+            --sg-danger-hover: #e0484d;
+            --sg-danger-soft: rgba(255, 90, 95, 0.14);
+            --sg-sos: #FF5A5F;
+
+            --sg-text: #F4F7FB;            /* Headings */
+            --sg-text-heading: #F4F7FB;
+            --sg-text-muted: #9AA8BD;      /* Body text */
+            --sg-text-sub: #7a89a0;
+
+            --sg-radius: 14px;
+            --sg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+            --sg-shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+            --sg-shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+            background-color: var(--sg-bg);
+            color: var(--sg-text-muted);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--sg-text-heading);
+            font-weight: 700;
+        }
+
+        /* Top Header Navigation */
+        .sg-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(19, 28, 46, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--sg-border);
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sg-header-container {
+            width: min(1360px, calc(100% - 32px));
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .sg-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            flex-shrink: 0;
+            white-space: nowrap;
+            min-width: max-content;
+        }
+
+        .sg-brand-logo {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: linear-gradient(135deg, #2DD4A7, #059669);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0B1220;
+            font-size: 18px;
+            box-shadow: 0 4px 14px rgba(45, 212, 167, 0.3);
+            flex-shrink: 0;
+        }
+
+        .sg-brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-shrink: 0;
+            min-width: max-content;
+        }
+
+        .sg-brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            color: #F4F7FB;
+            white-space: nowrap;
+            word-break: keep-all;
+            line-height: 1.25;
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+
+        .sg-brand-title span {
+            color: #2DD4A7;
+            font-weight: 800;
+        }
+
+        .sg-brand-sub {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #9AA8BD;
+            white-space: nowrap;
+            word-break: keep-all;
+            line-height: 1.15;
+            margin-top: 2px;
+            padding: 0;
+            display: block;
+        }
+
+        /* Desktop Nav Items */
+        .sg-nav {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            background: #0B1220;
+            padding: 4px 6px;
+            border-radius: 999px;
+            border: 1px solid var(--sg-border);
+            flex-shrink: 1;
+        }
+
+        .sg-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #9AA8BD;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sg-nav-link i {
+            font-size: 12.5px;
+        }
+
+        .sg-nav-link:hover {
+            color: #F4F7FB;
+            background: rgba(45, 212, 167, 0.08);
+        }
+
+        .sg-nav-link.active {
+            color: #2DD4A7;
+            background: #131C2E;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--sg-border);
+        }
+
+        /* Header Actions */
+        .sg-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sg-sos-btn {
+            background: linear-gradient(135deg, #FF5A5F, #e0484d);
+            color: white !important;
+            padding: 9px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 4px 14px rgba(255, 90, 95, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            animation: pulse-sos 2.5s infinite;
+        }
+
+        @keyframes pulse-sos {
+            0% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 90, 95, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0); }
+        }
+
+        .sg-sos-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 18px rgba(255, 90, 95, 0.55);
+        }
+
+        .sg-user-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            background: #131C2E;
+            border: 1px solid var(--sg-border);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #F4F7FB;
+        }
+
+        .sg-user-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #2DD4A7;
+            color: #0B1220;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .sg-logout-btn {
+            color: #9AA8BD;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: color 0.15s ease;
+        }
+
+        .sg-logout-btn:hover {
+            color: #FF5A5F;
+        }
+
+        /* Mobile Menu Toggle */
+        .sg-mobile-toggle {
+            display: none;
+            background: none;
+            border: 1px solid var(--sg-border);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 18px;
+            color: #F4F7FB;
+            cursor: pointer;
+        }
+
+        /* Flash Message Banner */
+        .sg-flash-container {
+            width: min(1360px, calc(100% - 32px));
+            margin: 16px auto 0;
+        }
+
+        .sg-alert {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+        }
+
+        .sg-alert-success { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border-color: rgba(45, 212, 167, 0.35); }
+        .sg-alert-danger { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border-color: rgba(255, 90, 95, 0.35); }
+        .sg-alert-info { background: rgba(245, 181, 68, 0.15); color: #F5B544; border-color: rgba(245, 181, 68, 0.35); }
+
+        /* Main Content Layout */
+        .sg-main {
+            flex: 1;
+            padding: 24px 0 60px;
+        }
+
+        /* Modern Bottom Navigation for Mobile */
+        .sg-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(19, 28, 46, 0.96);
+            backdrop-filter: blur(14px);
+            border-top: 1px solid var(--sg-border);
+            z-index: 1000;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .sg-bottom-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #9AA8BD;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            height: 100%;
+            transition: color 0.15s ease;
+        }
+
+        .sg-bottom-link i {
+            font-size: 18px;
+        }
+
+        .sg-bottom-link.active {
+            color: #2DD4A7;
+        }
+
+        .sg-bottom-sos {
+            background: #FF5A5F;
+            color: white !important;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -18px;
+            box-shadow: 0 4px 14px rgba(255, 90, 95, 0.45);
+        }
+
+        .sg-bottom-sos i {
+            font-size: 20px;
+        }
+
+        /* Footer */
+        .sg-footer {
+            background: #131C2E;
+            border-top: 1px solid var(--sg-border);
+            padding: 36px 0;
+            margin-top: auto;
+            color: #9AA8BD;
+            font-size: 13.5px;
+        }
+
+        .sg-footer-container {
+            width: min(1360px, calc(100% - 32px));
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .sg-footer-helplines {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .sg-helpline-tag {
+            background: #0B1220;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12.5px;
+            color: #F4F7FB;
+            border: 1px solid var(--sg-border);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .sg-helpline-tag:hover {
+            background: #131C2E;
+            color: #2DD4A7;
+            border-color: #2DD4A7;
+        }
+
+        /* Global Leaflet Dark Theme Overrides */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: #131C2E !important;
+            color: #F4F7FB !important;
+            border: 1px solid #22304A;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+        }
+        .leaflet-popup-content h3, .leaflet-popup-content strong {
+            color: #F4F7FB !important;
+        }
+        .leaflet-popup-content p, .leaflet-popup-content span, .leaflet-popup-content div {
+            color: #9AA8BD !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button {
+            color: #9AA8BD !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button:hover {
+            color: #FF5A5F !important;
+        }
+        .leaflet-bar a {
+            background-color: #131C2E !important;
+            color: #F4F7FB !important;
+            border-bottom: 1px solid #22304A !important;
+        }
+        .leaflet-bar a:hover {
+            background-color: #0B1220 !important;
+            color: #2DD4A7 !important;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1400px) {
+            .sg-header-container {
+                gap: 10px;
+                width: calc(100% - 24px);
+            }
+            .sg-nav-link {
+                padding: 6px 9px;
+                font-size: 12px;
+                gap: 5px;
+            }
+            .sg-brand-title {
+                font-size: 14.5px;
+            }
+            .sg-brand-sub {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 1180px) {
+            .sg-nav {
+                display: none !important;
+            }
+            .sg-bottom-nav {
+                display: flex !important;
+            }
+            .sg-main {
+                padding-bottom: 90px;
+            }
+            .sg-mobile-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .sg-header {
+                min-height: 64px;
+            }
+            .sg-header-container {
+                gap: 8px;
+                width: calc(100% - 16px);
+            }
+            .sg-brand {
+                gap: 8px;
+            }
+            .sg-brand-logo {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                font-size: 16px;
+                border-radius: 10px;
+            }
+            .sg-brand-title {
+                font-size: 13px;
+                letter-spacing: -0.2px;
+            }
+            .sg-brand-sub {
+                font-size: 8px;
+                letter-spacing: 0.3px;
+            }
+            .sg-sos-btn {
+                padding: 7px 12px;
+                font-size: 12px;
+                gap: 5px;
+            }
+            .sg-header-actions {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .sg-brand-sub {
+                display: none;
+            }
+            .sg-brand-title {
+                font-size: 12px;
+            }
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="sg-header">
+        <div class="sg-header-container">
+            <a href="{{ url_for('dashboard') }}" class="sg-brand">
+                <div class="sg-brand-logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="sg-brand-text">
+                    <div class="sg-brand-title">Dynamic Risk <span>Intelligence</span></div>
+                    <div class="sg-brand-sub">Safety &amp; Threat Identification</div>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="sg-nav">
+                <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home & Search</span>
+                </a>
+                <a href="{{ url_for('safety_map') }}" class="sg-nav-link {% if request.endpoint == 'safety_map' %}active{% endif %}">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>Interactive Map</span>
+                </a>
+                <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">
+                    <i class="fa-solid fa-truck-medical"></i>
+                    <span>Emergency Directory</span>
+                </a>
+                <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>AI Intelligence</span>
+                </a>
+                <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Safe Route</span>
+                </a>
+                <a href="{{ url_for('report') }}" class="sg-nav-link {% if request.endpoint == 'report' %}active{% endif %}">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Community Reports</span>
+                </a>
+            </nav>
+
+            <!-- Actions (SOS & User Profile) -->
+            <div class="sg-header-actions">
+                <a href="{{ url_for('sos') }}" class="sg-sos-btn">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>SOS 112</span>
+                </a>
+
+                {% if session.get('user_id') or session.get('guest') %}
+                <div class="sg-user-pill">
+                    <div class="sg-user-avatar">
+                        {{ (session.get('user_name', 'G'))[0]|upper }}
+                    </div>
+                    <span>{{ session.get('user_name', 'Guest') }}</span>
+                    <a href="{{ url_for('logout') }}" class="sg-logout-btn" title="Sign out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </a>
+                </div>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="sg-nav-link" style="border: 1px solid var(--sg-border); background: #131C2E; color: #F4F7FB;">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Sign In</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="sg-flash-container">
+            {% for category, message in messages %}
+            <div class="sg-alert sg-alert-{{ category if category in ['success', 'danger', 'info'] else 'info' }}">
+                <span><i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i> {{ message }}</span>
+                <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: inherit;">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Body Content -->
+    <main class="sg-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="sg-bottom-nav">
+        <a href="{{ url_for('dashboard') }}" class="sg-bottom-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('safety_map') }}" class="sg-bottom-link {% if request.endpoint == 'safety_map' %}active{% endif %}">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>Map</span>
+        </a>
+        <a href="{{ url_for('sos') }}" class="sg-bottom-sos" title="Emergency SOS">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </a>
+        <a href="{{ url_for('emergency') }}" class="sg-bottom-link {% if request.endpoint == 'emergency' %}active{% endif %}">
+            <i class="fa-solid fa-truck-medical"></i>
+            <span>Emergency</span>
+        </a>
+        <a href="{{ url_for('safe_route') }}" class="sg-bottom-link {% if request.endpoint == 'safe_route' %}active{% endif %}">
+            <i class="fa-solid fa-route"></i>
+            <span>Routes</span>
+        </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="sg-footer">
+        <div class="sg-footer-container">
+            <div>
+                <strong>Dynamic Risk Intelligence, Safety &amp; Threat Identification</strong> &mdash; Real-time Area Risk & Emergency Directory for Mumbai.
+            </div>
+            <div class="sg-footer-helplines">
+                <a href="tel:112" class="sg-helpline-tag"><i class="fa-solid fa-phone"></i> 112 National</a>
+                <a href="tel:100" class="sg-helpline-tag"><i class="fa-solid fa-shield"></i> 100 Police</a>
+                <a href="tel:108" class="sg-helpline-tag"><i class="fa-solid fa-truck-medical"></i> 108 Ambulance</a>
+                <a href="tel:101" class="sg-helpline-tag"><i class="fa-solid fa-fire"></i> 101 Fire</a>
+                <a href="tel:1091" class="sg-helpline-tag"><i class="fa-solid fa-person-dress"></i> 1091 Women</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

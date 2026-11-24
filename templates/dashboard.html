@@ -1,0 +1,804 @@
+{% extends "base.html" %}
+
+{% block title %}Dynamic Risk Intelligence, Safety & Threat Identification — Mumbai Area Risk Assessment{% endblock %}
+
+{% block head %}
+<style>
+    .dash-container {
+        width: min(1360px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    /* Hero Search Section */
+    .dash-hero {
+        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
+        border: 1px solid #22304A;
+        border-radius: 24px;
+        padding: 56px 40px;
+        color: #F4F7FB;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 36px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .dash-hero::after {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -80px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(45, 212, 167, 0.18) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .dash-hero::before {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        left: -80px;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(255, 90, 95, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(45, 212, 167, 0.12);
+        border: 1px solid rgba(45, 212, 167, 0.3);
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #2DD4A7;
+        margin-bottom: 20px;
+    }
+
+    .hero-badge i {
+        color: #2DD4A7;
+    }
+
+    .dash-hero h1 {
+        color: #F4F7FB !important;
+        font-size: clamp(32px, 5vw, 46px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.15;
+        max-width: 800px;
+        margin: 0 auto 16px;
+    }
+
+    .dash-hero h1 span {
+        color: #2DD4A7;
+        background: none;
+        -webkit-text-fill-color: initial;
+    }
+
+    .dash-hero p {
+        font-size: 16px;
+        color: #9AA8BD !important;
+        max-width: 600px;
+        margin: 0 auto 36px;
+        line-height: 1.6;
+    }
+
+    /* Hero Search Bar */
+    .hero-search-wrapper {
+        max-width: 680px;
+        margin: 0 auto 24px;
+        position: relative;
+    }
+
+    .hero-search-form {
+        display: flex;
+        align-items: center;
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 8px 10px 8px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        gap: 12px;
+    }
+
+    .hero-search-icon {
+        color: #9AA8BD;
+        font-size: 18px;
+    }
+
+    .hero-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: #F4F7FB;
+        background: transparent;
+    }
+
+    .hero-search-input::placeholder {
+        color: #9AA8BD;
+    }
+
+    .hero-btn-search {
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 14.5px;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        box-shadow: 0 4px 14px rgba(45, 212, 167, 0.35);
+    }
+
+    .hero-btn-search:hover {
+        background: #26b992;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(45, 212, 167, 0.5);
+    }
+
+    /* Popular Quick Tags */
+    .quick-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #9AA8BD;
+    }
+
+    .quick-tag-pill {
+        background: #131C2E;
+        color: #9AA8BD;
+        text-decoration: none;
+        padding: 5px 13px;
+        border-radius: 999px;
+        font-weight: 500;
+        font-size: 12.5px;
+        border: 1px solid #22304A;
+        transition: all 0.15s ease;
+    }
+
+    .quick-tag-pill:hover {
+        background: rgba(45, 212, 167, 0.15);
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       AREA RISK ASSESSMENT CARD
+       ========================================================= */
+    .risk-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 36px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .risk-card-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #22304A;
+        margin-bottom: 24px;
+    }
+
+    .risk-place-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+    }
+
+    .risk-place-meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .risk-badge-meta {
+        background: #0B1220;
+        color: #9AA8BD;
+        border: 1px solid #22304A;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* Score Gauge Display */
+    .risk-score-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        padding: 12px 20px;
+        border-radius: 16px;
+    }
+
+    .score-circle {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 800;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .score-circle.safe { background: #2DD4A7; color: #0B1220; }
+    .score-circle.moderate { background: #F5B544; color: #0B1220; }
+    .score-circle.caution { background: #FF5A5F; color: #ffffff; }
+
+    .score-details strong {
+        display: block;
+        font-size: 16px;
+        color: #F4F7FB;
+    }
+
+    .score-details span {
+        font-size: 12.5px;
+        color: #9AA8BD;
+    }
+
+    /* Factors Grid */
+    .risk-factors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .factor-item {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 14px;
+        padding: 16px 18px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+
+    .factor-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #131C2E;
+        border: 1px solid #22304A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: #2DD4A7;
+        flex-shrink: 0;
+    }
+
+    .factor-content strong {
+        display: block;
+        font-size: 13.5px;
+        color: #F4F7FB;
+        margin-bottom: 2px;
+    }
+
+    .factor-content span {
+        font-size: 13px;
+        color: #9AA8BD;
+        line-height: 1.4;
+    }
+
+    /* Advisory Box */
+    .risk-advisory {
+        background: rgba(245, 181, 68, 0.1);
+        border: 1px solid rgba(245, 181, 68, 0.35);
+        border-left: 4px solid #F5B544;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        color: #F5B544;
+        line-height: 1.5;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .risk-advisory i {
+        font-size: 18px;
+        margin-top: 2px;
+        color: #F5B544;
+    }
+
+    /* Risk Card Action Buttons */
+    .risk-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .risk-action-btn {
+        padding: 11px 20px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+    }
+
+    .risk-action-btn.primary {
+        background: #2DD4A7;
+        color: #0B1220;
+    }
+
+    .risk-action-btn.primary:hover {
+        background: #26b992;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(45, 212, 167, 0.35);
+    }
+
+    .risk-action-btn.secondary {
+        background: #0B1220;
+        color: #F4F7FB;
+        border: 1px solid #22304A;
+    }
+
+    .risk-action-btn.secondary:hover {
+        background: #19253d;
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+    }
+
+    /* Stats Overview Section */
+    .section-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #F4F7FB;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title i {
+        color: #2DD4A7 !important;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .stat-card.hospitals .stat-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
+    .stat-card.police .stat-icon { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; }
+    .stat-card.fire .stat-icon { background: rgba(245, 181, 68, 0.15); color: #F5B544; }
+    .stat-card.pharmacy .stat-icon { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; }
+    .stat-card.blood .stat-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: #F4F7FB;
+        line-height: 1.1;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #9AA8BD;
+        font-weight: 600;
+    }
+
+    /* Popular Safety Places Grid */
+    .places-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 18px;
+        margin-bottom: 40px;
+    }
+
+    .place-item-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 18px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .place-item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .pic-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .pic-zone {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #9AA8BD;
+        letter-spacing: 0.5px;
+    }
+
+    .pic-score {
+        font-size: 12px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    .pic-score.safe { background: #2DD4A7; color: #0B1220; }
+    .pic-score.moderate { background: #F5B544; color: #0B1220; }
+    .pic-score.caution { background: #FF5A5F; color: #ffffff; }
+
+    .pic-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+    }
+
+    .pic-lighting {
+        font-size: 12.5px;
+        color: #9AA8BD;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-container">
+
+    <!-- Hero Search -->
+    <section class="dash-hero">
+        <div class="hero-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Mumbai Safety Intelligence Platform</span>
+        </div>
+
+        <h1>Instant Area <span>Risk Assessment</span> & <span>Safe Mobility</span></h1>
+        <p>Search any locality, station, or landmark in Mumbai to instantly calculate safety scores, street lighting coverage, and nearest emergency response.</p>
+
+        <div class="hero-search-wrapper">
+            <form action="{{ url_for('dashboard') }}" method="GET" class="hero-search-form">
+                <i class="fa-solid fa-magnifying-glass hero-search-icon"></i>
+                <input type="text" name="location" class="hero-search-input" placeholder="Search area in Mumbai (e.g., Bandra West, Dadar, Marine Drive)..." value="{{ location or '' }}" required autofocus>
+                <button type="submit" class="hero-btn-search">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Assess Risk</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="quick-tags">
+            <span>Popular searches:</span>
+            <a href="{{ url_for('dashboard') }}?location=Bandra+West" class="quick-tag-pill">Bandra West</a>
+            <a href="{{ url_for('dashboard') }}?location=Marine+Drive" class="quick-tag-pill">Marine Drive</a>
+            <a href="{{ url_for('dashboard') }}?location=Dadar+Station" class="quick-tag-pill">Dadar</a>
+            <a href="{{ url_for('dashboard') }}?location=Kurla+West" class="quick-tag-pill">Kurla</a>
+            <a href="{{ url_for('dashboard') }}?location=Colaba" class="quick-tag-pill">Colaba</a>
+            <a href="{{ url_for('dashboard') }}?location=Juhu+Beach" class="quick-tag-pill">Juhu</a>
+            <a href="{{ url_for('dashboard') }}?location=Powai" class="quick-tag-pill">Powai</a>
+        </div>
+    </section>
+
+    <!-- AREA RISK ASSESSMENT RESULT CARD -->
+    {% if safety_result %}
+    <section class="risk-card">
+        <div class="risk-card-header">
+            <div>
+                <div class="risk-place-title">{{ safety_result.place }}</div>
+                <div class="risk-place-meta">
+                    {% if safety_result.zone %}
+                    <span class="risk-badge-meta"><i class="fa-solid fa-map-pin"></i> {{ safety_result.zone }}</span>
+                    {% endif %}
+                    {% if safety_result.category %}
+                    <span class="risk-badge-meta"><i class="fa-solid fa-tag"></i> {{ safety_result.category }}</span>
+                    {% endif %}
+                    <span class="risk-badge-meta" style="background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3);"><i class="fa-solid fa-check-double"></i> Verified Safety Record</span>
+                </div>
+            </div>
+
+            <div class="risk-score-box">
+                {% set score = safety_result.score or 5.0 %}
+                <div class="score-circle {% if score >= 7.5 %}safe{% elif score >= 5.0 %}moderate{% else %}caution{% endif %}">
+                    {{ score }}
+                </div>
+                <div class="score-details">
+                    <strong>
+                        {% if score >= 7.5 %}
+                            High Safety Area
+                        {% elif score >= 5.0 %}
+                            Moderate Caution Area
+                        {% else %}
+                            Elevated Risk Zone
+                        {% endif %}
+                    </strong>
+                    <span>Safety Score Index (1 - 10)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factors Breakdown -->
+        <div class="risk-factors-grid">
+            <div class="factor-item">
+                <div class="factor-icon"><i class="fa-regular fa-lightbulb"></i></div>
+                <div class="factor-content">
+                    <strong>Street Lighting</strong>
+                    <span>{{ safety_result.lighting or 'Standard Municipal Lighting' }}</span>
+                </div>
+            </div>
+
+            <div class="factor-item">
+                <div class="factor-icon"><i class="fa-regular fa-clock"></i></div>
+                <div class="factor-content">
+                    <strong>Best Time to Visit</strong>
+                    <span>{{ safety_result.best_time or 'Day & Busy Evening Hours' }}</span>
+                </div>
+            </div>
+
+            <div class="factor-item">
+                <div class="factor-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="factor-content">
+                    <strong>Police Vigilance</strong>
+                    <span>Patrolled Mumbai Zone</span>
+                </div>
+            </div>
+
+            <div class="factor-item">
+                <div class="factor-icon"><i class="fa-solid fa-notes-medical"></i></div>
+                <div class="factor-content">
+                    <strong>Emergency Readiness</strong>
+                    <span>Rapid EMS Access</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Advisory / Notes -->
+        {% if safety_result.notes %}
+        <div class="risk-advisory">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                <strong>Local Advisory & Precautions:</strong><br>
+                {{ safety_result.notes }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- AI Prediction Explainability (Phase 2 XAI) -->
+        {% if ai_explanation %}
+        <div style="background: #0B1220; border: 1px solid #22304A; border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-brain" style="color: #2DD4A7; font-size: 16px;"></i>
+                    <strong style="font-size: 14.5px; color: #F4F7FB;">AI Prediction Explanation (XAI Factor Breakdown)</strong>
+                </div>
+                <a href="{{ url_for('ai_insights') }}" style="font-size: 12px; font-weight: 700; color: #2DD4A7; text-decoration: none;">
+                    View Model Metrics &rarr;
+                </a>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                {% for f in ai_explanation.factors %}
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 10px; background: #131C2E; border: 1px solid #22304A; border-radius: 8px;">
+                    <div>
+                        <strong style="color: #F4F7FB;">{{ f.factor }}:</strong>
+                        <span style="color: #9AA8BD; margin-left: 6px;">{{ f.desc }}</span>
+                    </div>
+                    <span style="font-weight: 800; font-size: 13px; padding: 2px 8px; border-radius: 6px; {% if f.direction == 'positive' %}background: rgba(45, 212, 167, 0.15); color: #2DD4A7;{% elif f.direction == 'negative' %}background: rgba(255, 90, 95, 0.15); color: #FF5A5F;{% else %}background: #0B1220; color: #9AA8BD;{% endif %}">
+                        {{ f.effect }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions for this Location -->
+        <div class="risk-actions">
+            <a href="{{ url_for('safe_route') }}?destination={{ safety_result.place|urlencode }}" class="risk-action-btn primary">
+                <i class="fa-solid fa-route"></i> Plan Safe Route Here
+            </a>
+            <a href="{{ url_for('emergency') }}?q={{ safety_result.place|urlencode }}" class="risk-action-btn secondary">
+                <i class="fa-solid fa-truck-medical"></i> Nearby Emergency Services
+            </a>
+            <a href="{{ url_for('safety_map') }}?location={{ safety_result.place|urlencode }}" class="risk-action-btn secondary">
+                <i class="fa-solid fa-map-location-dot"></i> View on Interactive Map
+            </a>
+        </div>
+    </section>
+    {% elif location %}
+    <section class="risk-card" style="text-align: center; padding: 48px 24px;">
+        <i class="fa-solid fa-map-pin" style="font-size: 36px; color: #9AA8BD; margin-bottom: 12px;"></i>
+        <h3 style="font-size: 20px; font-weight: 700; color: #F4F7FB; margin-bottom: 6px;">No specific safety record for "{{ location }}"</h3>
+        <p style="color: #9AA8BD; font-size: 14px; max-width: 500px; margin: 0 auto 20px;">We couldn't find a direct match in our database. Try checking a major nearby junction, station, or landmark.</p>
+        <a href="{{ url_for('safety_map') }}?location={{ location|urlencode }}" class="risk-action-btn primary" style="display: inline-flex;">
+            <i class="fa-solid fa-magnifying-glass"></i> Search on Live Map
+        </a>
+    </section>
+    {% endif %}
+
+    <!-- City Emergency Services Overview -->
+    <div class="section-title">
+        <i class="fa-solid fa-city" style="color: #0f172a;"></i>
+        <span>City-Wide Emergency Infrastructure</span>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card hospitals">
+            <div class="stat-icon"><i class="fa-solid fa-hospital"></i></div>
+            <div>
+                <div class="stat-number">{{ stats.hospital or 919 }}</div>
+                <div class="stat-label">Hospitals</div>
+            </div>
+        </div>
+
+        <div class="stat-card police">
+            <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+                <div class="stat-number">{{ stats.police or 121 }}</div>
+                <div class="stat-label">Police Stations</div>
+            </div>
+        </div>
+
+        <div class="stat-card fire">
+            <div class="stat-icon"><i class="fa-solid fa-fire-extinguisher"></i></div>
+            <div>
+                <div class="stat-number">{{ stats.fire or 39 }}</div>
+                <div class="stat-label">Fire Stations</div>
+            </div>
+        </div>
+
+        <div class="stat-card pharmacy">
+            <div class="stat-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+            <div>
+                <div class="stat-number">{{ stats.pharmacy or 197 }}</div>
+                <div class="stat-label">Pharmacies</div>
+            </div>
+        </div>
+
+        <div class="stat-card blood">
+            <div class="stat-icon"><i class="fa-solid fa-droplet"></i></div>
+            <div>
+                <div class="stat-number">{{ stats.blood_bank or 60 }}</div>
+                <div class="stat-label">Blood Banks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Critical Accident Hotspots Radar (Phase 2) -->
+    {% if hotspots %}
+    <div style="background: #131C2E; border: 1px solid #22304A; border-radius: 20px; padding: 26px; margin-bottom: 40px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <div style="font-size: 19px; font-weight: 800; color: #F4F7FB; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #FF5A5F;"></i>
+                    <span>Mumbai Accident & Road Hazard Hotspots</span>
+                </div>
+                <div style="font-size: 13px; color: #9AA8BD; margin-top: 2px;">
+                    AI identified high-incident intersections and merge zones requiring driver vigilance.
+                </div>
+            </div>
+            <a href="{{ url_for('ai_insights') }}" class="risk-action-btn secondary" style="padding: 7px 14px; font-size: 12.5px;">
+                <i class="fa-solid fa-brain"></i> All 10 Hotspots & Model Metrics &rarr;
+            </a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+            {% for hs in hotspots %}
+            <div style="background: #0B1220; border: 1px solid #22304A; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; {% if hs.risk_level == 'Critical' %}background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3);{% else %}background: rgba(245, 181, 68, 0.15); color: #F5B544; border: 1px solid rgba(245, 181, 68, 0.3);{% endif %}">
+                        {{ hs.risk_level }} Risk
+                    </span>
+                    <span style="font-size: 11px; font-weight: 700; color: #9AA8BD;">~{{ hs.accidents_est }} inc/yr</span>
+                </div>
+                <div style="font-size: 14.5px; font-weight: 700; color: #F4F7FB;">{{ hs.name }}</div>
+                <div style="font-size: 12px; color: #9AA8BD; line-height: 1.4;">{{ hs.advisory }}</div>
+                <a href="{{ url_for('safety_map') }}?lat={{ hs.latitude }}&lon={{ hs.longitude }}&name={{ hs.name|urlencode }}" style="font-size: 12px; font-weight: 700; color: #2DD4A7; text-decoration: none; margin-top: 4px;">
+                    <i class="fa-solid fa-map-pin"></i> View on Map &rarr;
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% if recent_places %}
+    <div class="section-title">
+        <i class="fa-solid fa-compass" style="color: #0f172a;"></i>
+        <span>Sample Assessed Localities</span>
+    </div>
+
+    <div class="places-grid">
+        {% for p in recent_places %}
+        <a href="{{ url_for('dashboard') }}?location={{ p.place|urlencode }}" class="place-item-card">
+            <div>
+                <div class="pic-top">
+                    <span class="pic-zone">{{ p.zone or 'Mumbai' }}</span>
+                    {% set pscore = p.score or 5.0 %}
+                    <span class="pic-score {% if pscore >= 7.5 %}safe{% elif pscore >= 5.0 %}moderate{% else %}caution{% endif %}">
+                        {{ pscore }}/10
+                    </span>
+                </div>
+                <div class="pic-name">{{ p.place }}</div>
+            </div>
+            <div class="pic-lighting">
+                <i class="fa-regular fa-lightbulb"></i>
+                <span>{{ p.lighting or 'Municipal lighting' }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

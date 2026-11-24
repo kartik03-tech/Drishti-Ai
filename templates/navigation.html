@@ -1,0 +1,3263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Navigation | Dynamic Risk Intelligence, Safety & Threat Identification</title>
+
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+
+    <style>
+
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: "Inter", Arial, sans-serif;
+            background: #f5f4f1;
+            color: #242424;
+        }
+
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+            width: 100%;
+            min-height: 72px;
+
+            background: rgba(255, 255, 255, 0.98);
+
+            border-bottom: 1px solid #e5e1da;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 42px;
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+
+        .brand {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+        }
+
+
+        .brand span {
+            color: #d94b4b;
+        }
+
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 27px;
+        }
+
+
+        .nav-links a {
+            color: #5c5c5c;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+
+        .nav-links a:hover {
+            color: #d94b4b;
+        }
+
+
+        .nav-links a.active {
+            color: #d94b4b;
+        }
+
+
+        .sos-link {
+            background: #d94b4b;
+            color: white !important;
+
+            padding: 11px 17px;
+
+            border-radius: 10px;
+        }
+
+
+        .sos-link:hover {
+            background: #c73e3e !important;
+        }
+
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .page {
+            width: min(1450px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 36px 0 60px;
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .error-box {
+            background: #fff1f1;
+
+            border: 1px solid #efc5c5;
+
+            border-radius: 14px;
+
+            padding: 16px 18px;
+
+            color: #a23c3c;
+
+            font-size: 13px;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =====================================================
+           JOURNEY HEADER
+        ===================================================== */
+
+        .journey-card {
+            background: white;
+
+            border: 1px solid #e5dfd7;
+
+            border-radius: 18px;
+
+            padding: 24px;
+
+            margin-bottom: 22px;
+
+            box-shadow:
+                0 8px 25px rgba(42, 35, 28, 0.05);
+        }
+
+
+        .journey-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 20px;
+        }
+
+
+        .journey-title {
+            font-size: 27px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.6px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .journey-description {
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        .live-badge {
+            background: #fdf0f0;
+
+            color: #c74444;
+
+            border-radius: 10px;
+
+            padding: 10px 13px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+
+        .journey-locations {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+
+            margin-top: 20px;
+        }
+
+
+        .location-box {
+            background: #faf8f4;
+
+            border: 1px solid #ebe5dd;
+
+            border-radius: 13px;
+
+            padding: 15px 17px;
+        }
+
+
+        .location-label {
+            display: block;
+
+            color: #999;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.8px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .location-name {
+            font-size: 14px;
+
+            font-weight: 700;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           MAIN GRID
+        ===================================================== */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns: 1.55fr 0.75fr;
+
+            gap: 22px;
+
+            align-items: start;
+        }
+
+
+        .panel {
+            background: white;
+
+            border: 1px solid #e5dfd7;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 8px 25px rgba(42, 35, 28, 0.05);
+        }
+
+
+        .panel-header {
+            min-height: 64px;
+
+            padding: 17px 21px;
+
+            border-bottom: 1px solid #eee8e0;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .panel-header h2 {
+            font-size: 18px;
+
+            font-weight: 800;
+        }
+
+
+        .panel-header span {
+            color: #888;
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           MAP
+        ===================================================== */
+
+        .map-wrapper {
+            position: relative;
+        }
+
+
+        #navigationMap {
+            width: 100%;
+
+            height: 680px;
+        }
+
+
+        .map-controls {
+            position: absolute;
+
+            left: 18px;
+
+            bottom: 18px;
+
+            z-index: 500;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .map-control {
+            background: white;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 11px 13px;
+
+            box-shadow:
+                0 5px 17px rgba(0, 0, 0, 0.16);
+
+            color: #333;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+
+        .map-control:hover {
+            background: #242424;
+
+            color: white;
+        }
+
+
+        .map-control:disabled {
+            opacity: 0.6;
+
+            cursor: wait;
+        }
+
+
+        /* =====================================================
+           MAP LEGEND
+        ===================================================== */
+
+        .map-legend {
+            position: absolute;
+
+            top: 18px;
+
+            right: 18px;
+
+            z-index: 500;
+
+            background: rgba(255, 255, 255, 0.95);
+
+            border-radius: 11px;
+
+            padding: 11px 13px;
+
+            box-shadow:
+                0 5px 17px rgba(0, 0, 0, 0.13);
+
+            font-size: 10px;
+
+            color: #666;
+        }
+
+
+        .legend-row {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .legend-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+
+            border-radius: 50%;
+        }
+
+
+        .route-dot {
+            background: #d94b4b;
+        }
+
+
+        .popular-dot {
+            border: 2px solid #d94b4b;
+
+            background: white;
+        }
+
+
+        .service-dot {
+            background: #242424;
+        }
+
+
+        /* =====================================================
+           SIDE CONTENT
+        ===================================================== */
+
+        .side-content {
+            padding: 16px;
+        }
+
+
+        /* =====================================================
+           ROUTE STATS
+        ===================================================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .stat-card {
+            background: #faf8f4;
+
+            border: 1px solid #ebe5dd;
+
+            border-radius: 13px;
+
+            padding: 16px;
+        }
+
+
+        .stat-label {
+            display: block;
+
+            color: #999;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.7px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .stat-value {
+            font-size: 23px;
+
+            font-weight: 800;
+        }
+
+
+        .stat-value span {
+            font-size: 11px;
+
+            color: #777;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           DESTINATION SAFETY
+        ===================================================== */
+
+        .safety-card {
+            background: #fffaf4;
+
+            border: 1px solid #eadfcf;
+
+            border-radius: 14px;
+
+            padding: 17px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .safety-heading {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 12px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .safety-title {
+            font-size: 15px;
+
+            font-weight: 800;
+
+            margin-bottom: 4px;
+        }
+
+
+        .safety-place {
+            color: #888;
+
+            font-size: 11px;
+        }
+
+
+        .score {
+            color: #d94b4b;
+
+            font-size: 27px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+
+        .score small {
+            font-size: 11px;
+
+            color: #999;
+
+            font-weight: 600;
+        }
+
+
+        .safety-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 9px;
+        }
+
+
+        .safety-item {
+            background: white;
+
+            border: 1px solid #eee7de;
+
+            border-radius: 9px;
+
+            padding: 10px;
+        }
+
+
+        .safety-item span {
+            display: block;
+
+            color: #999;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+        }
+
+
+        .safety-item strong {
+            color: #444;
+
+            font-size: 11px;
+
+            line-height: 1.4;
+        }
+
+
+        .safety-note {
+            color: #666;
+
+            font-size: 11px;
+
+            line-height: 1.55;
+
+            margin-top: 11px;
+        }
+
+
+        /* =====================================================
+           TRAVEL CAUTION
+        ===================================================== */
+
+        .caution-card {
+            background: #fff7ec;
+
+            border: 1px solid #ead9bf;
+
+            border-radius: 14px;
+
+            padding: 17px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .caution-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .caution-header i {
+            color: #d94b4b;
+
+            font-size: 16px;
+        }
+
+
+        .caution-header h3 {
+            font-size: 15px;
+
+            font-weight: 800;
+        }
+
+
+        .caution-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        .caution-item {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 9px;
+
+            color: #666;
+
+            font-size: 11px;
+
+            line-height: 1.55;
+        }
+
+
+        .caution-item i {
+            color: #d94b4b;
+
+            width: 13px;
+
+            margin-top: 2px;
+        }
+
+
+        .dynamic-caution {
+            background: white;
+
+            border: 1px solid #eee1cf;
+
+            border-radius: 9px;
+
+            padding: 10px;
+
+            margin-top: 12px;
+
+            color: #555;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        .dynamic-caution strong {
+            color: #333;
+        }
+
+
+        /* =====================================================
+           EMERGENCY SERVICES
+        ===================================================== */
+
+        .section-title {
+            font-size: 15px;
+
+            font-weight: 800;
+
+            margin-bottom: 11px;
+        }
+
+
+        .section-title i {
+            margin-right: 6px;
+
+            color: #d94b4b;
+        }
+
+
+        .service-card {
+            border: 1px solid #ebe5dd;
+
+            border-radius: 12px;
+
+            padding: 13px;
+
+            margin-bottom: 10px;
+
+            transition: 0.2s ease;
+        }
+
+
+        .service-card:hover {
+            border-color: #d9d1c7;
+
+            box-shadow:
+                0 5px 15px rgba(30, 25, 20, 0.05);
+        }
+
+
+        .service-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 10px;
+        }
+
+
+        .service-name {
+            font-size: 12px;
+
+            font-weight: 800;
+
+            line-height: 1.4;
+        }
+
+
+        .service-label {
+            display: inline-block;
+
+            margin-top: 5px;
+
+            padding: 4px 7px;
+
+            border-radius: 6px;
+
+            background: #f7f4ef;
+
+            color: #6f675e;
+
+            font-size: 9px;
+
+            font-weight: 700;
+        }
+
+
+        .service-distance {
+            background: #fdf0f0;
+
+            color: #c74444;
+
+            border-radius: 7px;
+
+            padding: 5px 7px;
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+
+        .service-address {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 7px;
+
+            color: #777;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+
+            margin-top: 8px;
+        }
+
+
+        .service-address i {
+            color: #999;
+
+            width: 12px;
+
+            margin-top: 1px;
+        }
+
+
+        .service-actions {
+            display: flex;
+
+            gap: 7px;
+
+            margin-top: 10px;
+        }
+
+
+        .service-button {
+            border-radius: 8px;
+
+            padding: 7px 9px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+
+            cursor: pointer;
+        }
+
+
+        .view-button {
+            border: none;
+
+            background: #242424;
+
+            color: white;
+        }
+
+
+        .view-button:hover {
+            background: #111;
+        }
+
+
+        .call-button {
+            border: 1px solid #ddd6cd;
+
+            background: #f8f5f1;
+
+            color: #444;
+        }
+
+
+        .call-button:hover {
+            color: #d94b4b;
+
+            border-color: #d94b4b;
+        }
+
+
+        .empty-services {
+            text-align: center;
+
+            color: #888;
+
+            padding: 25px 15px;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        .empty-services i {
+            font-size: 28px;
+
+            color: #c6c0b8;
+
+            margin-bottom: 9px;
+
+            display: block;
+        }
+
+
+        /* =====================================================
+           BOTTOM ACTIONS
+        ===================================================== */
+
+        .bottom-actions {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 9px;
+
+            margin-top: 17px;
+        }
+
+
+        .bottom-button {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 7px;
+
+            border-radius: 10px;
+
+            padding: 12px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .back-button {
+            border: 1px solid #ddd7cf;
+
+            background: white;
+
+            color: #555;
+        }
+
+
+        .back-button:hover {
+            color: #d94b4b;
+
+            border-color: #d94b4b;
+        }
+
+
+        .sos-button {
+            background: #d94b4b;
+
+            color: white;
+        }
+
+
+        .sos-button:hover {
+            background: #c73e3e;
+        }
+
+
+        /* =====================================================
+           POPULAR PLACE MARKER
+        ===================================================== */
+
+        .popular-marker {
+            width: 30px;
+
+            height: 30px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            border: 2px solid #d94b4b;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+
+        .popular-marker i {
+            color: #d94b4b;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           POPUP
+        ===================================================== */
+
+        .popup-title {
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 4px;
+        }
+
+
+        .popup-type {
+            color: #d94b4b;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        .popup-text {
+            color: #666;
+
+            font-size: 10px;
+
+            margin-top: 5px;
+
+            line-height: 1.4;
+        }
+
+
+        /* =====================================================
+           EMPTY NAVIGATION
+        ===================================================== */
+
+        .empty-navigation {
+            background: white;
+
+            border: 1px solid #e5dfd7;
+
+            border-radius: 18px;
+
+            padding: 75px 30px;
+
+            text-align: center;
+
+            box-shadow:
+                0 8px 25px rgba(42, 35, 28, 0.05);
+        }
+
+
+        .empty-navigation i {
+            color: #c9c2ba;
+
+            font-size: 48px;
+
+            margin-bottom: 17px;
+        }
+
+
+        .empty-navigation h2 {
+            font-size: 24px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .empty-navigation p {
+            max-width: 520px;
+
+            margin: 0 auto 22px;
+
+            color: #777;
+
+            font-size: 13px;
+
+            line-height: 1.65;
+        }
+
+
+        .empty-navigation a {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            background: #242424;
+
+            color: white;
+
+            padding: 12px 18px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .empty-navigation a:hover {
+            background: #111;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #navigationMap {
+                height: 560px;
+            }
+
+        }
+
+
+        @media (max-width: 760px) {
+
+            .navbar {
+                min-height: 66px;
+
+                padding: 0 20px;
+            }
+
+
+            .brand {
+                font-size: 21px;
+            }
+
+
+            .nav-links a:not(.sos-link) {
+                display: none;
+            }
+
+
+            .page {
+                width: calc(100% - 24px);
+
+                padding-top: 25px;
+            }
+
+
+            .journey-top {
+                flex-direction: column;
+            }
+
+
+            .journey-locations {
+                grid-template-columns: 1fr;
+            }
+
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+
+            #navigationMap {
+                height: 430px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="brand"
+    >
+        Dynamic Risk <span>Intelligence</span>
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('dashboard') }}">
+            Home
+        </a>
+
+
+        <a href="{{ url_for('safety_map') }}">
+            Safety Map
+        </a>
+
+
+        <a href="{{ url_for('safe_route') }}">
+            Safe Route
+        </a>
+
+
+        <a
+            href="{{ url_for('navigation') }}"
+            class="active"
+        >
+            Navigation
+        </a>
+
+
+        <a
+            href="{{ url_for('sos') }}"
+            class="sos-link"
+        >
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            SOS
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     PAGE
+===================================================== -->
+
+<main class="page">
+
+
+    {% if error %}
+
+        <div class="error-box">
+
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            {{ error }}
+
+        </div>
+
+    {% endif %}
+
+
+
+    {% if route_result %}
+
+
+        <!-- =================================================
+             JOURNEY HEADER
+        ================================================== -->
+
+        <section class="journey-card">
+
+            <div class="journey-top">
+
+                <div>
+
+                    <div class="journey-title">
+                        Navigation
+                    </div>
+
+                    <div class="journey-description">
+                        Follow your calculated journey and stay aware
+                        of safety information and emergency services
+                        along the route.
+                    </div>
+
+                </div>
+
+
+                <div class="live-badge">
+
+                    <i class="fa-solid fa-location-arrow"></i>
+
+                    ACTIVE JOURNEY
+
+                </div>
+
+            </div>
+
+
+            <div class="journey-locations">
+
+                <div class="location-box">
+
+                    <span class="location-label">
+                        Starting From
+                    </span>
+
+                    <div class="location-name">
+                        {{ route_result.start_name|default("Current Location") }}
+                    </div>
+
+                </div>
+
+
+                <div class="location-box">
+
+                    <span class="location-label">
+                        Destination
+                    </span>
+
+                    <div class="location-name">
+                        {{ route_result.destination_name|default("Destination") }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MAIN GRID
+        ================================================== -->
+
+        <section class="main-grid">
+
+
+            <!-- =================================================
+                 MAP PANEL
+            ================================================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h2>
+
+                        <i class="fa-solid fa-map-location-dot"></i>
+
+                        Journey Map
+
+                    </h2>
+
+
+                    <span>
+                        OpenStreetMap
+                    </span>
+
+                </div>
+
+
+                <div class="map-wrapper">
+
+
+                    <div id="navigationMap"></div>
+
+
+                    <!-- MAP LEGEND -->
+
+                    <div class="map-legend">
+
+                        <div class="legend-row">
+
+                            <span
+                                class="legend-dot route-dot"
+                            ></span>
+
+                            Route
+
+                        </div>
+
+
+                        <div class="legend-row">
+
+                            <span
+                                class="legend-dot popular-dot"
+                            ></span>
+
+                            Popular Place
+
+                        </div>
+
+
+                        <div class="legend-row">
+
+                            <span
+                                class="legend-dot service-dot"
+                            ></span>
+
+                            Emergency Service
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MAP BUTTONS -->
+
+                    <div class="map-controls">
+
+                        <button
+                            type="button"
+                            id="recenterButton"
+                            class="map-control"
+                        >
+
+                            <i class="fa-solid fa-expand"></i>
+
+                            Re-center Route
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="locateButton"
+                            class="map-control"
+                        >
+
+                            <i class="fa-solid fa-location-crosshairs"></i>
+
+                            Locate Me
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RIGHT PANEL
+            ================================================== -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Journey Details
+                    </h2>
+
+                </div>
+
+
+                <div class="side-content">
+
+
+                    <!-- =================================================
+                         ROUTE STATISTICS
+                    ================================================== -->
+
+                    <div class="stats-grid">
+
+
+                        <div class="stat-card">
+
+                            <span class="stat-label">
+                                Distance
+                            </span>
+
+
+                            <div class="stat-value">
+
+                                {{ route_result.route.distance_km }}
+
+                                <span>
+                                    km
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="stat-card">
+
+                            <span class="stat-label">
+                                Estimated Time
+                            </span>
+
+
+                            <div class="stat-value">
+
+                                {{ route_result.route.duration_minutes }}
+
+                                <span>
+                                    min
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         DESTINATION SAFETY
+                    ================================================== -->
+
+                    {% if destination_safety %}
+
+                        <div class="safety-card">
+
+
+                            <div class="safety-heading">
+
+                                <div>
+
+                                    <div class="safety-title">
+                                        Destination Safety
+                                    </div>
+
+
+                                    <div class="safety-place">
+
+                                        {{ destination_safety.place }}
+
+                                    </div>
+
+                                </div>
+
+
+                                {% if destination_safety.score is not none %}
+
+                                    <div class="score">
+
+                                        {{ destination_safety.score }}
+
+                                        <small>
+                                            / 10
+                                        </small>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+
+                            <div class="safety-grid">
+
+
+                                <div class="safety-item">
+
+                                    <span>
+                                        Zone
+                                    </span>
+
+                                    <strong>
+                                        {{ destination_safety.zone or "Not available" }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="safety-item">
+
+                                    <span>
+                                        Category
+                                    </span>
+
+                                    <strong>
+                                        {{ destination_safety.category or "Not available" }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="safety-item">
+
+                                    <span>
+                                        Street Lighting
+                                    </span>
+
+                                    <strong>
+                                        {{ destination_safety.lighting or "Not available" }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="safety-item">
+
+                                    <span>
+                                        Best Time
+                                    </span>
+
+                                    <strong>
+                                        {{ destination_safety.best_time or "Not available" }}
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            {% if destination_safety.notes %}
+
+                                <div class="safety-note">
+
+                                    <strong>
+                                        Safety Note:
+                                    </strong>
+
+                                    {{ destination_safety.notes }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================================
+                         TRAVEL CAUTION
+                    ================================================== -->
+
+                    <div class="caution-card">
+
+
+                        <div class="caution-header">
+
+                            <i
+                                class="fa-solid fa-triangle-exclamation"
+                            ></i>
+
+
+                            <h3>
+                                Travel Caution
+                            </h3>
+
+                        </div>
+
+
+                        <div class="caution-list">
+
+
+                            <div class="caution-item">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                <span>
+                                    Stay attentive and follow the calculated
+                                    route while travelling.
+                                </span>
+
+                            </div>
+
+
+                            <div class="caution-item">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                <span>
+                                    Do not use your phone while driving.
+                                    Stop safely before checking the map.
+                                </span>
+
+                            </div>
+
+
+                            <div class="caution-item">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                <span>
+                                    Follow traffic signs, signals and local
+                                    road rules throughout the journey.
+                                </span>
+
+                            </div>
+
+
+                            <div class="caution-item">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                <span>
+                                    Prefer well-lit areas when travelling
+                                    during late evening or night.
+                                </span>
+
+                            </div>
+
+
+                            <div class="caution-item">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                <span>
+                                    Emergency services shown below are
+                                    located near the calculated route.
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        {% if destination_safety %}
+
+
+                            {% if destination_safety.lighting %}
+
+                                <div class="dynamic-caution">
+
+                                    <strong>
+                                        Lighting information:
+                                    </strong>
+
+                                    {{ destination_safety.lighting }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if destination_safety.best_time %}
+
+                                <div class="dynamic-caution">
+
+                                    <strong>
+                                        Suggested visit time:
+                                    </strong>
+
+                                    {{ destination_safety.best_time }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         EMERGENCY SERVICES
+                    ================================================== -->
+
+                    <div class="section-title">
+
+                        <i class="fa-solid fa-shield-heart"></i>
+
+                        Emergency Services Near Route
+
+                    </div>
+
+
+
+                    {% if nearby_services %}
+
+
+                        {% for service in nearby_services %}
+
+
+                            <div
+                                class="service-card"
+                                data-service-lat="{{ service.latitude }}"
+                                data-service-lon="{{ service.longitude }}"
+                                data-service-name="{{ service.name|e }}"
+                                data-service-label="{{ service.label|e }}"
+                            >
+
+
+                                <div class="service-top">
+
+
+                                    <div>
+
+                                        <div class="service-name">
+
+                                            {{ service.name }}
+
+                                        </div>
+
+
+                                        <span class="service-label">
+
+                                            {{ service.label }}
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <span class="service-distance">
+
+                                        {{ service.distance_km }} km
+
+                                    </span>
+
+
+                                </div>
+
+
+
+                                {% if service.address %}
+
+                                    <div class="service-address">
+
+                                        <i class="fa-solid fa-location-dot"></i>
+
+                                        <span>
+
+                                            {{ service.address }}
+
+                                        </span>
+
+                                    </div>
+
+                                {% endif %}
+
+
+
+                                <div class="service-actions">
+
+
+                                    <button
+                                        type="button"
+                                        class="service-button view-button view-service"
+                                        data-lat="{{ service.latitude }}"
+                                        data-lon="{{ service.longitude }}"
+                                        data-name="{{ service.name|e }}"
+                                        data-label="{{ service.label|e }}"
+                                    >
+
+                                        <i class="fa-solid fa-map-pin"></i>
+
+                                        View on Map
+
+                                    </button>
+
+
+
+                                    {% if service.phone %}
+
+                                        <a
+                                            href="tel:{{ service.phone }}"
+                                            class="service-button call-button"
+                                        >
+
+                                            <i class="fa-solid fa-phone"></i>
+
+                                            Call
+
+                                        </a>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+
+                        <div class="empty-services">
+
+                            <i class="fa-solid fa-hospital"></i>
+
+                            <strong>
+                                No emergency services found near this route.
+                            </strong>
+
+                            <div>
+                                No facility was returned within the
+                                current route search area.
+                            </div>
+
+                        </div>
+
+
+                    {% endif %}
+
+
+
+                    <!-- =================================================
+                         BOTTOM BUTTONS
+                    ================================================== -->
+
+                    <div class="bottom-actions">
+
+
+                        <a
+                            href="{{ url_for('safe_route') }}"
+                            class="bottom-button back-button"
+                        >
+
+                            <i class="fa-solid fa-arrow-left"></i>
+
+                            Plan Another Route
+
+                        </a>
+
+
+                        <a
+                            href="{{ url_for('sos') }}"
+                            class="bottom-button sos-button"
+                        >
+
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                            SOS
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             NO ACTIVE ROUTE
+        ================================================== -->
+
+        <section class="empty-navigation">
+
+            <i class="fa-solid fa-route"></i>
+
+
+            <h2>
+                No Active Navigation
+            </h2>
+
+
+            <p>
+                Plan a route in Safe Route first. Once a route is
+                calculated, this page will display the journey map,
+                route distance, estimated time, popular Mumbai places,
+                travel cautions and nearby emergency services.
+            </p>
+
+
+            <a href="{{ url_for('safe_route') }}">
+
+                <i class="fa-solid fa-route"></i>
+
+                Open Safe Route
+
+            </a>
+
+        </section>
+
+
+    {% endif %}
+
+
+</main>
+
+
+
+<!-- =========================================================
+     ROUTE DATA
+========================================================== -->
+
+{% if route_result %}
+
+    <script
+        type="application/json"
+        id="routeGeometryData"
+    >
+        {{ route_result.route.geometry|tojson }}
+    </script>
+
+
+    <div
+        id="navigationConfig"
+        hidden
+
+        data-start-lat="{{ route_result.start_lat }}"
+
+        data-start-lon="{{ route_result.start_lon }}"
+
+        data-destination-lat="{{ route_result.destination_lat }}"
+
+        data-destination-lon="{{ route_result.destination_lon }}"
+
+        data-start-name="{{ route_result.start_name|default('Current Location')|e }}"
+
+        data-destination-name="{{ route_result.destination_name|default('Destination')|e }}"
+    ></div>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     LEAFLET JS
+========================================================== -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
+
+
+
+{% if route_result %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           GET ELEMENTS
+        ===================================================== */
+
+        const config =
+            document.getElementById(
+                "navigationConfig"
+            );
+
+
+        const routeGeometryElement =
+            document.getElementById(
+                "routeGeometryData"
+            );
+
+
+        const mapElement =
+            document.getElementById(
+                "navigationMap"
+            );
+
+
+        if (
+            !config ||
+            !routeGeometryElement ||
+            !mapElement
+        ) {
+
+            return;
+
+        }
+
+
+
+        /* =====================================================
+           READ COORDINATES
+        ===================================================== */
+
+        const startLat =
+            parseFloat(
+                config.dataset.startLat
+            );
+
+
+        const startLon =
+            parseFloat(
+                config.dataset.startLon
+            );
+
+
+        const destinationLat =
+            parseFloat(
+                config.dataset.destinationLat
+            );
+
+
+        const destinationLon =
+            parseFloat(
+                config.dataset.destinationLon
+            );
+
+
+        const startName =
+            config.dataset.startName ||
+            "Current Location";
+
+
+        const destinationName =
+            config.dataset.destinationName ||
+            "Destination";
+
+
+
+        if (
+            Number.isNaN(startLat) ||
+            Number.isNaN(startLon) ||
+            Number.isNaN(destinationLat) ||
+            Number.isNaN(destinationLon)
+        ) {
+
+            console.error(
+                "Invalid navigation coordinates."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =====================================================
+           READ ROUTE GEOMETRY
+        ===================================================== */
+
+        let geometry;
+
+
+        try {
+
+            geometry =
+                JSON.parse(
+                    routeGeometryElement.textContent.trim()
+                );
+
+        } catch (error) {
+
+            console.error(
+                "Could not read route geometry.",
+                error
+            );
+
+            return;
+
+        }
+
+
+
+        if (
+            !geometry ||
+            !Array.isArray(
+                geometry.coordinates
+            )
+        ) {
+
+            console.error(
+                "Route geometry is missing."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =====================================================
+           CONVERT GEOJSON
+        ===================================================== */
+
+        const routeCoordinates = [];
+
+
+        geometry.coordinates.forEach(
+            function (point) {
+
+                if (
+                    Array.isArray(point) &&
+                    point.length >= 2
+                ) {
+
+                    const longitude =
+                        Number(point[0]);
+
+
+                    const latitude =
+                        Number(point[1]);
+
+
+                    if (
+                        !Number.isNaN(latitude) &&
+                        !Number.isNaN(longitude)
+                    ) {
+
+                        routeCoordinates.push([
+                            latitude,
+                            longitude
+                        ]);
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        if (
+            routeCoordinates.length === 0
+        ) {
+
+            console.error(
+                "No valid route coordinates."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =====================================================
+           CREATE MAP
+        ===================================================== */
+
+        const map =
+            L.map(
+                "navigationMap"
+            );
+
+
+        map.setView(
+            [
+                startLat,
+                startLon
+            ],
+            14
+        );
+
+
+
+        /* =====================================================
+           OPENSTREETMAP
+        ===================================================== */
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(map);
+
+
+
+        /* =====================================================
+           DRAW ROUTE
+        ===================================================== */
+
+        const routeLine =
+            L.polyline(
+                routeCoordinates,
+                {
+                    weight: 6,
+
+                    opacity: 0.9,
+
+                    lineCap: "round",
+
+                    lineJoin: "round"
+                }
+            ).addTo(map);
+
+
+
+        /* =====================================================
+           START MARKER
+        ===================================================== */
+
+        const startMarker =
+            L.marker(
+                [
+                    startLat,
+                    startLon
+                ]
+            ).addTo(map);
+
+
+        startMarker.bindPopup(
+
+            "<div class='popup-title'>" +
+
+            escapeHtml(
+                startName
+            ) +
+
+            "</div>" +
+
+            "<div class='popup-type'>" +
+
+            "Starting Location" +
+
+            "</div>"
+
+        );
+
+
+
+        /* =====================================================
+           DESTINATION MARKER
+        ===================================================== */
+
+        const destinationMarker =
+            L.marker(
+                [
+                    destinationLat,
+                    destinationLon
+                ]
+            ).addTo(map);
+
+
+        destinationMarker.bindPopup(
+
+            "<div class='popup-title'>" +
+
+            escapeHtml(
+                destinationName
+            ) +
+
+            "</div>" +
+
+            "<div class='popup-type'>" +
+
+            "Destination" +
+
+            "</div>"
+
+        );
+
+
+
+        /* =====================================================
+           ROUTE BOUNDS
+        ===================================================== */
+
+        const routeBounds =
+            L.latLngBounds(
+                routeCoordinates
+            );
+
+
+        map.fitBounds(
+            routeBounds,
+            {
+                padding: [
+                    45,
+                    45
+                ]
+            }
+        );
+
+
+
+        /* =====================================================
+           POPULAR MUMBAI PLACES
+        ===================================================== */
+
+        const popularPlaces = [
+
+            {
+                name: "Gateway of India",
+                lat: 18.9220,
+                lon: 72.8347
+            },
+
+            {
+                name: "Marine Drive",
+                lat: 18.9430,
+                lon: 72.8238
+            },
+
+            {
+                name: "Colaba Causeway",
+                lat: 18.9224,
+                lon: 72.8311
+            },
+
+            {
+                name:
+                    "Chhatrapati Shivaji Maharaj Terminus",
+                lat: 18.9402,
+                lon: 72.8356
+            },
+
+            {
+                name: "Juhu Beach",
+                lat: 19.0883,
+                lon: 72.8261
+            },
+
+            {
+                name: "Bandra Fort",
+                lat: 19.0425,
+                lon: 72.8194
+            },
+
+            {
+                name: "Powai Lake",
+                lat: 19.1351,
+                lon: 72.9025
+            },
+
+            {
+                name: "Siddhivinayak Temple",
+                lat: 19.0178,
+                lon: 72.8301
+            }
+
+        ];
+
+
+
+        /* =====================================================
+           POPULAR PLACE ICON
+        ===================================================== */
+
+        const popularIcon =
+            L.divIcon({
+
+                className: "",
+
+                html:
+                    "<div class='popular-marker'>" +
+
+                    "<i class='fa-solid fa-star'></i>" +
+
+                    "</div>",
+
+                iconSize: [
+                    30,
+                    30
+                ],
+
+                iconAnchor: [
+                    15,
+                    15
+                ]
+
+            });
+
+
+
+        /* =====================================================
+           CHECK PLACE DISTANCE FROM ROUTE
+        ===================================================== */
+
+        function isNearRoute(
+            placeLat,
+            placeLon
+        ) {
+
+            const searchLimitKm = 12;
+
+            for (
+                let i = 0;
+                i < routeCoordinates.length;
+                i += Math.max(
+                    1,
+                    Math.floor(
+                        routeCoordinates.length / 150
+                    )
+                )
+            ) {
+
+                const routePoint =
+                    routeCoordinates[i];
+
+
+                const distance =
+                    distanceKm(
+                        placeLat,
+                        placeLon,
+                        routePoint[0],
+                        routePoint[1]
+                    );
+
+
+                if (
+                    distance <= searchLimitKm
+                ) {
+
+                    return true;
+
+                }
+
+            }
+
+
+            return false;
+
+        }
+
+
+
+        /* =====================================================
+           ADD POPULAR PLACES
+        ===================================================== */
+
+        popularPlaces.forEach(
+            function (place) {
+
+                if (
+                    !isNearRoute(
+                        place.lat,
+                        place.lon
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const marker =
+                    L.marker(
+                        [
+                            place.lat,
+                            place.lon
+                        ],
+                        {
+                            icon: popularIcon
+                        }
+                    ).addTo(map);
+
+
+                marker.bindPopup(
+
+                    "<div class='popup-title'>" +
+
+                    escapeHtml(
+                        place.name
+                    ) +
+
+                    "</div>" +
+
+                    "<div class='popup-type'>" +
+
+                    "Popular Mumbai Place" +
+
+                    "</div>" +
+
+                    "<div class='popup-text'>" +
+
+                    "Located near your journey area."
+
+                    +
+
+                    "</div>"
+
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           EMERGENCY SERVICE MARKERS
+        ===================================================== */
+
+        const serviceCards =
+            document.querySelectorAll(
+                ".service-card[data-service-lat]"
+            );
+
+
+        serviceCards.forEach(
+            function (card) {
+
+                const lat =
+                    parseFloat(
+                        card.dataset.serviceLat
+                    );
+
+
+                const lon =
+                    parseFloat(
+                        card.dataset.serviceLon
+                    );
+
+
+                const name =
+                    card.dataset.serviceName ||
+                    "Emergency Service";
+
+
+                const label =
+                    card.dataset.serviceLabel ||
+                    "Emergency Service";
+
+
+                if (
+                    Number.isNaN(lat) ||
+                    Number.isNaN(lon)
+                ) {
+
+                    return;
+
+                }
+
+
+                const marker =
+                    L.circleMarker(
+                        [
+                            lat,
+                            lon
+                        ],
+                        {
+                            radius: 7,
+
+                            weight: 2,
+
+                            fillOpacity: 0.9
+                        }
+                    ).addTo(map);
+
+
+                marker.bindPopup(
+
+                    "<div class='popup-title'>" +
+
+                    escapeHtml(
+                        name
+                    ) +
+
+                    "</div>" +
+
+                    "<div class='popup-type'>" +
+
+                    escapeHtml(
+                        label
+                    ) +
+
+                    "</div>"
+
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           VIEW SERVICE BUTTONS
+        ===================================================== */
+
+        const viewButtons =
+            document.querySelectorAll(
+                ".view-service"
+            );
+
+
+        viewButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const lat =
+                            parseFloat(
+                                button.dataset.lat
+                            );
+
+
+                        const lon =
+                            parseFloat(
+                                button.dataset.lon
+                            );
+
+
+                        const name =
+                            button.dataset.name ||
+                            "Emergency Service";
+
+
+                        const label =
+                            button.dataset.label ||
+                            "Emergency Service";
+
+
+                        if (
+                            Number.isNaN(lat) ||
+                            Number.isNaN(lon)
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        map.setView(
+                            [
+                                lat,
+                                lon
+                            ],
+                            16
+                        );
+
+
+                        L.popup()
+                            .setLatLng([
+                                lat,
+                                lon
+                            ])
+                            .setContent(
+
+                                "<div class='popup-title'>" +
+
+                                escapeHtml(
+                                    name
+                                ) +
+
+                                "</div>" +
+
+                                "<div class='popup-type'>" +
+
+                                escapeHtml(
+                                    label
+                                ) +
+
+                                "</div>"
+
+                            )
+                            .openOn(map);
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           RE-CENTER
+        ===================================================== */
+
+        const recenterButton =
+            document.getElementById(
+                "recenterButton"
+            );
+
+
+        if (recenterButton) {
+
+            recenterButton.addEventListener(
+                "click",
+                function () {
+
+                    map.fitBounds(
+                        routeBounds,
+                        {
+                            padding: [
+                                45,
+                                45
+                            ]
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           LOCATE ME
+           ONLY AFTER BUTTON CLICK
+        ===================================================== */
+
+        const locateButton =
+            document.getElementById(
+                "locateButton"
+            );
+
+
+        let locating =
+            false;
+
+
+        let currentLocationMarker =
+            null;
+
+
+        let currentAccuracyCircle =
+            null;
+
+
+        if (locateButton) {
+
+            locateButton.addEventListener(
+                "click",
+                function () {
+
+                    if (locating) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !navigator.geolocation
+                    ) {
+
+                        alert(
+                            "Your browser does not support location detection."
+                        );
+
+                        return;
+
+                    }
+
+
+                    locating =
+                        true;
+
+
+                    locateButton.disabled =
+                        true;
+
+
+                    locateButton.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i> Locating...';
+
+
+
+                    navigator.geolocation.getCurrentPosition(
+
+                        function (position) {
+
+                            const currentLat =
+                                position.coords.latitude;
+
+
+                            const currentLon =
+                                position.coords.longitude;
+
+
+                            const accuracy =
+                                position.coords.accuracy;
+
+
+
+                            if (
+                                currentLocationMarker
+                            ) {
+
+                                map.removeLayer(
+                                    currentLocationMarker
+                                );
+
+                            }
+
+
+                            if (
+                                currentAccuracyCircle
+                            ) {
+
+                                map.removeLayer(
+                                    currentAccuracyCircle
+                                );
+
+                            }
+
+
+
+                            currentLocationMarker =
+                                L.marker(
+                                    [
+                                        currentLat,
+                                        currentLon
+                                    ]
+                                ).addTo(map);
+
+
+                            currentLocationMarker.bindPopup(
+
+                                "<div class='popup-title'>" +
+
+                                "Your Current Location" +
+
+                                "</div>" +
+
+                                "<div class='popup-type'>" +
+
+                                "Browser location" +
+
+                                "</div>"
+
+                            );
+
+
+
+                            currentAccuracyCircle =
+                                L.circle(
+                                    [
+                                        currentLat,
+                                        currentLon
+                                    ],
+                                    {
+                                        radius:
+                                            accuracy,
+
+                                        weight: 1,
+
+                                        fillOpacity: 0.05
+                                    }
+                                ).addTo(map);
+
+
+                            map.setView(
+                                [
+                                    currentLat,
+                                    currentLon
+                                ],
+                                16
+                            );
+
+
+                            locating =
+                                false;
+
+
+                            locateButton.disabled =
+                                false;
+
+
+                            locateButton.innerHTML =
+                                '<i class="fa-solid fa-location-dot"></i> Locate Me';
+
+                        },
+
+
+                        function (error) {
+
+                            locating =
+                                false;
+
+
+                            locateButton.disabled =
+                                false;
+
+
+                            locateButton.innerHTML =
+                                '<i class="fa-solid fa-location-dot"></i> Locate Me';
+
+
+
+                            if (
+                                error.code === 1
+                            ) {
+
+                                alert(
+                                    "Location permission was denied. Please allow location access in your browser."
+                                );
+
+                            }
+
+                            else if (
+                                error.code === 2
+                            ) {
+
+                                alert(
+                                    "Your location could not be determined."
+                                );
+
+                            }
+
+                            else if (
+                                error.code === 3
+                            ) {
+
+                                alert(
+                                    "Location request timed out. Please try again."
+                                );
+
+                            }
+
+                            else {
+
+                                alert(
+                                    "Unable to detect your location."
+                                );
+
+                            }
+
+                        },
+
+
+                        {
+                            enableHighAccuracy: true,
+
+                            timeout: 15000,
+
+                            maximumAge: 0
+                        }
+
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           MAP RESIZE
+        ===================================================== */
+
+        setTimeout(
+            function () {
+
+                map.invalidateSize();
+
+            },
+            250
+        );
+
+
+
+        /* =====================================================
+           DISTANCE FUNCTION
+        ===================================================== */
+
+        function distanceKm(
+            lat1,
+            lon1,
+            lat2,
+            lon2
+        ) {
+
+            const earthRadius =
+                6371;
+
+
+            const latitudeDifference =
+                toRadians(
+                    lat2 - lat1
+                );
+
+
+            const longitudeDifference =
+                toRadians(
+                    lon2 - lon1
+                );
+
+
+            const a =
+                Math.sin(
+                    latitudeDifference / 2
+                ) *
+                Math.sin(
+                    latitudeDifference / 2
+                ) +
+
+                Math.cos(
+                    toRadians(lat1)
+                ) *
+
+                Math.cos(
+                    toRadians(lat2)
+                ) *
+
+                Math.sin(
+                    longitudeDifference / 2
+                ) *
+                Math.sin(
+                    longitudeDifference / 2
+                );
+
+
+            const c =
+                2 *
+                Math.atan2(
+                    Math.sqrt(a),
+                    Math.sqrt(1 - a)
+                );
+
+
+            return (
+                earthRadius *
+                c
+            );
+
+        }
+
+
+
+        function toRadians(
+            value
+        ) {
+
+            return (
+                value *
+                Math.PI /
+                180
+            );
+
+        }
+
+
+
+        /* =====================================================
+           ESCAPE HTML
+        ===================================================== */
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endif %}
+
+
+</body>
+
+</html>

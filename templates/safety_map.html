@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Mumbai Safety Map — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .map-page-wrapper {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 72px);
+        min-height: 560px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Floating Top Control Panel */
+    .map-floating-panel {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(940px, calc(100% - 32px));
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .map-search-bar {
+        background: rgba(19, 28, 46, 0.95);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .map-search-icon {
+        color: #9AA8BD;
+        font-size: 15px;
+        margin-left: 6px;
+    }
+
+    .map-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 14.5px;
+        font-weight: 500;
+        color: #F4F7FB;
+    }
+
+    .map-search-input::placeholder {
+        color: #9AA8BD;
+    }
+
+    .map-locate-btn {
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .map-locate-btn:hover {
+        background: #26b992;
+    }
+
+    /* Layer Filter Pills */
+    .map-filters {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .map-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .map-pill {
+        background: rgba(19, 28, 46, 0.94);
+        backdrop-filter: blur(10px);
+        border: 1px solid #22304A;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #9AA8BD;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+
+    .map-pill:hover {
+        background: #19253d;
+        color: #F4F7FB;
+        border-color: #2DD4A7;
+        transform: translateY(-1px);
+    }
+
+    .map-pill.police { color: #2DD4A7; border-color: rgba(45, 212, 167, 0.4); }
+    .map-pill.hospital { color: #FF5A5F; border-color: rgba(255, 90, 95, 0.4); }
+    .map-pill.fire { color: #F5B544; border-color: rgba(245, 181, 68, 0.4); }
+    .map-pill.pharmacy { color: #2DD4A7; border-color: rgba(45, 212, 167, 0.4); }
+    .map-pill.hotspots { color: #FF5A5F; border-color: rgba(255, 90, 95, 0.4); background: rgba(255, 90, 95, 0.1); }
+
+    .map-pill.active {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .map-pill.active.police { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
+    .map-pill.active.hospital { background: #FF5A5F !important; border-color: #FF5A5F !important; color: white !important; font-weight: 700; }
+    .map-pill.active.fire { background: #F5B544 !important; border-color: #F5B544 !important; color: #0B1220 !important; font-weight: 700; }
+    .map-pill.active.pharmacy { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
+    .map-pill.active.hotspots { background: #FF5A5F !important; border-color: #FF5A5F !important; color: white !important; font-weight: 700; }
+    .map-pill.active.safety { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
+
+    .map-hint-badge {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #9AA8BD;
+        background: rgba(19, 28, 46, 0.9);
+        backdrop-filter: blur(8px);
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid #22304A;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        align-self: flex-start;
+    }
+
+    /* Main Leaflet Map */
+    #leafletMap {
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background: #0B1220;
+    }
+
+    /* Custom Leaflet Pin styling */
+    .sg-pin {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        border: 2px solid white;
+        font-size: 11px;
+        transition: transform 0.15s ease;
+    }
+
+    .sg-pin:hover {
+        transform: scale(1.25);
+        z-index: 9999 !important;
+    }
+
+    .pill-count {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 11px;
+        margin-left: 4px;
+        font-weight: 700;
+    }
+
+    .map-pill:not(.active) .pill-count {
+        background: #e2e8f0;
+        color: #64748b;
+    }
+
+    .sg-pin-police { background: #2563eb; }
+    .sg-pin-hospital { background: #dc2626; }
+    .sg-pin-fire { background: #ea580c; }
+    .sg-pin-pharmacy { background: #16a34a; }
+    .sg-pin-blood { background: #db2777; }
+    .sg-pin-safety { background: #059669; }
+
+    /* Custom User Location Pulsing Dot */
+    .sg-user-dot {
+        width: 16px;
+        height: 16px;
+        background: #0284c7;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.35);
+        animation: pulse-user 2s infinite;
+    }
+
+    @keyframes pulse-user {
+        0% { box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.5); }
+        70% { box-shadow: 0 0 0 16px rgba(2, 132, 199, 0); }
+        100% { box-shadow: 0 0 0 4px rgba(2, 132, 199, 0); }
+    }
+
+    /* Leaflet Popup Cards */
+    .leaflet-popup-content-wrapper {
+        border-radius: 16px;
+        padding: 0;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+        border: 1px solid #e2e8f0;
+    }
+
+    .leaflet-popup-content {
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .map-popup-card {
+        padding: 16px 18px;
+        min-width: 240px;
+        max-width: 300px;
+    }
+
+    .map-popup-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .map-popup-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .map-popup-address {
+        font-size: 12.5px;
+        color: #64748b;
+        margin-bottom: 12px;
+        display: flex;
+        gap: 6px;
+    }
+
+    .map-popup-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .map-popup-btn {
+        flex: 1;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .map-popup-btn.route {
+        background: #0f172a;
+        color: white;
+    }
+
+    .map-popup-btn.call {
+        background: #e11d48;
+        color: white;
+    }
+
+    /* Legend Box */
+    .map-legend {
+        position: absolute;
+        bottom: 24px;
+        right: 18px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 16px;
+        z-index: 999;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+        font-size: 12px;
+        color: #334155;
+    }
+
+    .legend-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #0f172a;
+        font-size: 12.5px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .legend-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-page-wrapper">
+
+    <!-- Floating Top Bar -->
+    <div class="map-floating-panel">
+        <div class="map-search-bar">
+            <i class="fa-solid fa-magnifying-glass map-search-icon"></i>
+            <input type="text" id="mapSearchInput" class="map-search-input" placeholder="Search any Mumbai locality (e.g. Bandra, Dadar, Marine Drive)..." value="{{ location or '' }}">
+            <button type="button" class="map-locate-btn" id="btnMapLocate">
+                <i class="fa-solid fa-crosshairs"></i>
+                <span>Locate Me</span>
+            </button>
+        </div>
+
+        <!-- Filter Layers -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="map-hint-badge">
+                <i class="fa-solid fa-layer-group" style="color: #2563eb;"></i> <strong>Map Layers:</strong> Tap any category to view on map (all hidden by default to keep map clear)
+            </div>
+            <div class="map-filters">
+                <button type="button" class="map-pill" data-filter="all">
+                    <i class="fa-solid fa-layer-group"></i> Show All
+                </button>
+                <button type="button" class="map-pill police" data-filter="police">
+                    <i class="fa-solid fa-shield-halved"></i> Police Stations <span class="pill-count" id="countPolice">121</span>
+                </button>
+                <button type="button" class="map-pill hospital" data-filter="hospital">
+                    <i class="fa-solid fa-hospital"></i> Hospitals <span class="pill-count" id="countHospital">919</span>
+                </button>
+                <button type="button" class="map-pill fire" data-filter="fire">
+                    <i class="fa-solid fa-fire"></i> Fire Stations <span class="pill-count" id="countFire">39</span>
+                </button>
+                <button type="button" class="map-pill pharmacy" data-filter="pharmacy">
+                    <i class="fa-solid fa-prescription-bottle-medical"></i> Pharmacies <span class="pill-count" id="countPharmacy">197</span>
+                </button>
+                <button type="button" class="map-pill hotspots" data-filter="hotspots">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Accident Hotspots <span class="pill-count" id="countHotspots">35</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet Map Container -->
+    <div id="leafletMap"></div>
+
+    <!-- Legend -->
+    <div class="map-legend">
+        <div class="legend-title">Map Legend</div>
+        <div class="legend-item"><span class="legend-color" style="background: #2563eb;"></span> Police Station</div>
+        <div class="legend-item"><span class="legend-color" style="background: #dc2626;"></span> Hospital</div>
+        <div class="legend-item"><span class="legend-color" style="background: #ea580c;"></span> Fire Station</div>
+        <div class="legend-item"><span class="legend-color" style="background: #16a34a;"></span> Pharmacy</div>
+        <div class="legend-item"><span class="legend-color" style="background: #059669;"></span> Safety Zone (Mumbai)</div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initial Map Setup (Center on Mumbai)
+    const MUMBAI_CENTER = [19.0760, 72.8777];
+    const map = L.map("leafletMap", {
+        center: MUMBAI_CENTER,
+        zoom: 12,
+        zoomControl: false
+    });
+
+    // Zoom control at bottom-left
+    L.control.zoom({ position: "bottomleft" }).addTo(map);
+
+    // Standard 100% Free OpenStreetMap Tile Layer (No API Key Required)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Layer Groups (unattached to map on initial load — clean map by default, user decides what to view)
+    const layers = {
+        police: L.layerGroup(),
+        hospital: L.layerGroup(),
+        fire: L.layerGroup(),
+        pharmacy: L.layerGroup(),
+        safety: L.layerGroup(),
+        hotspots: L.layerGroup()
+    };
+
+    let userLocationMarker = null;
+
+    // Safety zones passed from backend
+    const safetyPlaces = {{ safety_places|tojson|safe }} || [];
+
+    // Helper: Create custom pin
+    function createPin(iconClass, pinClass) {
+        return L.divIcon({
+            className: "sg-custom-marker",
+            html: `<div class="sg-pin ${pinClass}"><i class="fa-solid ${iconClass}"></i></div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -18]
+        });
+    }
+
+    const pinIcons = {
+        police: createPin("fa-shield-halved", "sg-pin-police"),
+        hospital: createPin("fa-hospital", "sg-pin-hospital"),
+        fire: createPin("fa-fire", "sg-pin-fire"),
+        pharmacy: createPin("fa-prescription-bottle-medical", "sg-pin-pharmacy"),
+        blood_bank: createPin("fa-droplet", "sg-pin-blood"),
+        safety: createPin("fa-location-dot", "sg-pin-safety"),
+        hotspot: createPin("fa-triangle-exclamation", "sg-pin-fire")
+    };
+
+    // Load ALL Emergency Services on map (all 1,300+ facilities across Mumbai)
+    function loadEmergencyServices() {
+        fetch("/api/services")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.services) return;
+                
+                const counts = { police: 0, hospital: 0, fire: 0, pharmacy: 0, blood_bank: 0 };
+
+                data.services.forEach(item => {
+                    const lat = parseFloat(item.latitude);
+                    const lon = parseFloat(item.longitude);
+                    if (!lat || !lon) return;
+
+                    const type = item.type;
+                    if (counts[type] !== undefined) counts[type]++;
+
+                    const icon = pinIcons[type] || pinIcons.police;
+                    const marker = L.marker([lat, lon], { icon: icon });
+
+                    const popupContent = `
+                        <div class="map-popup-card">
+                            <span class="map-popup-tag" style="background:#f1f5f9; color:#0f172a;">
+                                <i class="fa-solid ${item.icon || 'fa-shield'}"></i> ${item.label || item.type}
+                            </span>
+                            <div class="map-popup-title">${escapeHtml(item.name)}</div>
+                            <div class="map-popup-address">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${escapeHtml(item.address || 'Mumbai Metropolitan Region')}</span>
+                            </div>
+                            <div class="map-popup-actions">
+                                <a href="/safe-route?destination=${encodeURIComponent(item.name)}&destination_lat=${lat}&destination_lon=${lon}" class="map-popup-btn route">
+                                    <i class="fa-solid fa-route"></i> Safe Route
+                                </a>
+                                <a href="${item.phone ? 'tel:' + item.phone : 'tel:112'}" class="map-popup-btn call">
+                                    <i class="fa-solid fa-phone"></i> ${item.phone ? 'Call' : '112'}
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+
+                    if (layers[type]) {
+                        layers[type].addLayer(marker);
+                    }
+                });
+
+                if (document.getElementById("countPolice")) document.getElementById("countPolice").textContent = counts.police;
+                if (document.getElementById("countHospital")) document.getElementById("countHospital").textContent = counts.hospital;
+                if (document.getElementById("countFire")) document.getElementById("countFire").textContent = counts.fire;
+                if (document.getElementById("countPharmacy")) document.getElementById("countPharmacy").textContent = counts.pharmacy;
+            })
+            .catch(err => console.error("Error loading services:", err));
+    }
+
+    // Load Safety Places (with safety scores)
+    function loadSafetyPlaces() {
+        safetyPlaces.forEach(place => {
+            // Geocode or approximate location for safety places
+            // If they have coordinates, plot them
+            if (place.score !== null) {
+                // Safety circle color by score
+                let color = "#10b981"; // Safe
+                if (place.score < 5.0) color = "#ef4444"; // Caution
+                else if (place.score < 7.5) color = "#f59e0b"; // Moderate
+            }
+        });
+    }
+
+    // Sync "Show All" / "Clear All" pill state dynamically
+    function syncAllButtonState() {
+        const specificPills = document.querySelectorAll(".map-pill:not([data-filter='all'])");
+        const activeCount = document.querySelectorAll(".map-pill.active:not([data-filter='all'])").length;
+        const allBtn = document.querySelector(".map-pill[data-filter='all']");
+        if (!allBtn) return;
+        
+        if (activeCount === specificPills.length) {
+            allBtn.classList.add("active");
+            allBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Clear All';
+        } else {
+            allBtn.classList.remove("active");
+            allBtn.innerHTML = '<i class="fa-solid fa-layer-group"></i> Show All';
+        }
+    }
+
+    // Toggle layer filters (User decides what to view)
+    document.querySelectorAll(".map-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+            const filter = pill.dataset.filter;
+            if (filter === "all") {
+                const specificPills = document.querySelectorAll(".map-pill:not([data-filter='all'])");
+                const isCurrentlyActive = pill.classList.contains("active");
+                if (isCurrentlyActive) {
+                    // Turn all OFF
+                    specificPills.forEach(p => {
+                        p.classList.remove("active");
+                        if (layers[p.dataset.filter]) map.removeLayer(layers[p.dataset.filter]);
+                    });
+                    pill.classList.remove("active");
+                    pill.innerHTML = '<i class="fa-solid fa-layer-group"></i> Show All';
+                } else {
+                    // Turn all ON
+                    specificPills.forEach(p => {
+                        p.classList.add("active");
+                        if (layers[p.dataset.filter]) map.addLayer(layers[p.dataset.filter]);
+                    });
+                    pill.classList.add("active");
+                    pill.innerHTML = '<i class="fa-solid fa-xmark"></i> Clear All';
+                }
+            } else {
+                const isNowActive = pill.classList.toggle("active");
+                if (layers[filter]) {
+                    if (isNowActive) {
+                        map.addLayer(layers[filter]);
+                    } else {
+                        map.removeLayer(layers[filter]);
+                    }
+                }
+                syncAllButtonState();
+            }
+        });
+    });
+
+    // Locate Me Button
+    document.getElementById("btnMapLocate").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                map.flyTo([lat, lon], 15, { animate: true, duration: 1.2 });
+
+                if (userLocationMarker) map.removeLayer(userLocationMarker);
+
+                const userIcon = L.divIcon({
+                    className: "sg-user-marker",
+                    html: `<div class="sg-user-dot"></div>`,
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+
+                userLocationMarker = L.marker([lat, lon], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup("<strong>You are here</strong>")
+                    .openPopup();
+            },
+            (err) => {
+                alert("Could not detect location. Please grant permission or search manually.");
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
+    });
+
+    // Check URL parameters to highlight specific target
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetLat = parseFloat(urlParams.get("lat"));
+    const targetLon = parseFloat(urlParams.get("lon"));
+    const targetName = urlParams.get("name");
+
+    // Optional URL category filter (e.g. /safety-map?filter=police)
+    const initialFilter = urlParams.get("filter");
+    if (initialFilter && layers[initialFilter]) {
+        const matchingPill = document.querySelector(`.map-pill[data-filter='${initialFilter}']`);
+        if (matchingPill) {
+            matchingPill.classList.add("active");
+            map.addLayer(layers[initialFilter]);
+            syncAllButtonState();
+        }
+    }
+
+    if (targetLat && targetLon) {
+        map.setView([targetLat, targetLon], 16);
+        L.marker([targetLat, targetLon], { icon: pinIcons.hospital })
+            .addTo(map)
+            .bindPopup(`<strong>${escapeHtml(targetName || 'Emergency Service')}</strong><br><a href="/safe-route?destination=${encodeURIComponent(targetName || '')}&destination_lat=${targetLat}&destination_lon=${targetLon}" style="color:#0f172a; font-weight:700;">Get Directions &rarr;</a>`)
+            .openPopup();
+    }
+
+    // Search locality input
+    const searchInput = document.getElementById("mapSearchInput");
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Mumbai, Maharashtra')}`)
+                .then(r => r.json())
+                .then(results => {
+                    if (results && results.length > 0) {
+                        const top = results[0];
+                        map.flyTo([parseFloat(top.lat), parseFloat(top.lon)], 14);
+                    } else {
+                        alert("Area not found. Try entering a well-known Mumbai locality like Dadar, Bandra, or Colaba.");
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+    });
+
+    // Load Accident Hotspots
+    function loadAccidentHotspots() {
+        fetch("/api/hotspots")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.hotspots) return;
+                data.hotspots.forEach(hs => {
+                    const lat = parseFloat(hs.latitude);
+                    const lon = parseFloat(hs.longitude);
+                    if (!lat || !lon) return;
+
+                    const marker = L.marker([lat, lon], { icon: pinIcons.hotspot });
+                    const popupContent = `
+                        <div class="map-popup-card">
+                            <span class="map-popup-tag" style="background:#fee2e2; color:#991b1b;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> ${hs.risk_level} Accident Hotspot
+                            </span>
+                            <div class="map-popup-title">${escapeHtml(hs.name)}</div>
+                            <div style="font-size:12px; color:#c2410c; font-weight:700; margin-bottom:6px;">
+                                <i class="fa-solid fa-car-burst"></i> ${escapeHtml(hs.type)} (~${hs.accidents_est} inc/yr)
+                            </div>
+                            <div class="map-popup-address" style="background:#f8fafc; padding:8px; border-radius:6px;">
+                                ${escapeHtml(hs.advisory)}
+                            </div>
+                            <div class="map-popup-actions" style="margin-top:10px;">
+                                <a href="/safe-route?destination=${encodeURIComponent(hs.name)}&destination_lat=${lat}&destination_lon=${lon}" class="map-popup-btn route" style="background:#ef4444;">
+                                    <i class="fa-solid fa-route"></i> Route Around
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    layers.hotspots.addLayer(marker);
+                });
+            })
+            .catch(err => console.error("Error loading hotspots:", err));
+    }
+
+    // Initialize
+    loadEmergencyServices();
+    loadAccidentHotspots();
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[m]);
+    }
+</script>
+{% endblock %}

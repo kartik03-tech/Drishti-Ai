@@ -1,0 +1,721 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Services Directory — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .em-container {
+        width: min(1360px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    /* Hero Banner */
+    .em-hero {
+        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 40px;
+        color: #F4F7FB;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .em-hero::after {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(45, 212, 167, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .em-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(45, 212, 167, 0.15);
+        color: #2DD4A7;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 1px solid rgba(45, 212, 167, 0.3);
+        margin-bottom: 16px;
+    }
+
+    .em-hero h1 {
+        color: #F4F7FB !important;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 10px;
+    }
+
+    .em-hero p {
+        font-size: 15px;
+        color: #9AA8BD !important;
+        max-width: 640px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+
+    /* Hero Controls */
+    .em-hero-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-detect-loc {
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(45, 212, 167, 0.35);
+    }
+
+    .btn-detect-loc:hover {
+        background: #26b992;
+        transform: translateY(-1px);
+    }
+
+    .btn-call-112 {
+        background: #131C2E;
+        color: #F4F7FB;
+        border: 1px solid #22304A;
+        padding: 12px 22px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-call-112:hover {
+        background: #19253d;
+        border-color: #2DD4A7;
+        color: #2DD4A7;
+    }
+
+    .loc-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #9AA8BD;
+        padding: 8px 14px;
+        background: #0B1220;
+        border-radius: 999px;
+        border: 1px solid #22304A;
+    }
+
+    /* Emergency Quick Dial Row */
+    .em-quick-dial {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .dial-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .dial-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .dial-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .dial-card.police .dial-icon { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; }
+    .dial-card.ambulance .dial-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
+    .dial-card.fire .dial-icon { background: rgba(245, 181, 68, 0.15); color: #F5B544; }
+    .dial-card.women .dial-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
+
+    .dial-info strong {
+        display: block;
+        font-size: 14px;
+        color: #F4F7FB;
+    }
+
+    .dial-info span {
+        font-size: 12px;
+        color: #9AA8BD;
+    }
+
+    .dial-number {
+        font-size: 18px;
+        font-weight: 800;
+        color: #F4F7FB;
+    }
+
+    /* Directory Controls & Search */
+    .em-controls-bar {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .em-search-box {
+        position: relative;
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .em-search-box i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9AA8BD;
+        font-size: 14px;
+    }
+
+    .em-search-input {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border-radius: 12px;
+        border: 1px solid #22304A;
+        font-size: 14px;
+        background: #0B1220;
+        color: #F4F7FB;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .em-search-input::placeholder {
+        color: #9AA8BD;
+    }
+
+    .em-search-input:focus {
+        border-color: #2DD4A7;
+        background: #0B1220;
+    }
+
+    /* Filter Tabs */
+    .em-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .em-tab-btn {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #9AA8BD;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .em-tab-btn:hover {
+        background: #19253d;
+        color: #F4F7FB;
+        border-color: #2DD4A7;
+    }
+
+    .em-tab-btn.active {
+        background: #2DD4A7;
+        color: #0B1220;
+        border-color: #2DD4A7;
+        font-weight: 700;
+    }
+
+    .em-tab-count {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 11px;
+    }
+
+    .em-tab-btn:not(.active) .em-tab-count {
+        background: #131C2E;
+        color: #9AA8BD;
+    }
+
+    /* Service Cards Grid */
+    .em-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 18px;
+    }
+
+    .srv-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .srv-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .srv-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .srv-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .srv-pill.hospital { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+    .srv-pill.police { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3); }
+    .srv-pill.fire { background: rgba(245, 181, 68, 0.15); color: #F5B544; border: 1px solid rgba(245, 181, 68, 0.3); }
+    .srv-pill.pharmacy { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3); }
+    .srv-pill.blood_bank { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+
+    .srv-distance {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #2DD4A7;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        padding: 4px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    .srv-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #F4F7FB;
+        line-height: 1.35;
+        margin-top: 6px;
+    }
+
+    .srv-address {
+        font-size: 13px;
+        color: #9AA8BD;
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        line-height: 1.45;
+        margin-top: 6px;
+    }
+
+    .srv-address i {
+        margin-top: 3px;
+        color: #9AA8BD;
+    }
+
+    .srv-actions {
+        display: flex;
+        gap: 8px;
+        border-top: 1px solid #22304A;
+        padding-top: 14px;
+        margin-top: auto;
+    }
+
+    .srv-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+    }
+
+    .srv-btn-map {
+        background: #0B1220;
+        color: #F4F7FB;
+        border: 1px solid #22304A;
+    }
+
+    .srv-btn-map:hover {
+        background: #19253d;
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+    }
+
+    .srv-btn-call {
+        background: #FF5A5F;
+        color: white;
+    }
+
+    .srv-btn-call:hover {
+        background: #e0484d;
+    }
+
+    /* Empty state */
+    .em-empty {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+        color: #9AA8BD;
+    }
+
+    .em-empty i {
+        font-size: 40px;
+        margin-bottom: 12px;
+        color: #22304A;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="em-container">
+
+    <!-- Hero Banner -->
+    <section class="em-hero">
+        <span class="em-badge"><i class="fa-solid fa-bolt"></i> Mumbai Rapid Emergency Directory</span>
+        <h1>24/7 Verified Emergency Services</h1>
+        <p>Instant access to over 1,300+ mapped hospitals, police stations, fire stations, 24/7 pharmacies and blood banks across Mumbai.</p>
+        
+        <div class="em-hero-controls">
+            <button type="button" class="btn-detect-loc" id="btnDetectLocation">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                <span id="btnDetectText">Detect My Location</span>
+            </button>
+            <a href="tel:112" class="btn-call-112">
+                <i class="fa-solid fa-phone"></i>
+                <span>Call National 112</span>
+            </a>
+            <div class="loc-status-pill" id="locStatusPill">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="locStatusText">Location: Central Mumbai (Default)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Helplines Quick Dial -->
+    <div class="em-quick-dial">
+        <a href="tel:100" class="dial-card police">
+            <div class="dial-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="dial-info">
+                <strong>Mumbai Police</strong>
+                <span>Instant dispatch</span>
+            </div>
+            <div class="dial-number">100</div>
+        </a>
+
+        <a href="tel:108" class="dial-card ambulance">
+            <div class="dial-icon"><i class="fa-solid fa-truck-medical"></i></div>
+            <div class="dial-info">
+                <strong>Emergency Ambulance</strong>
+                <span>Govt. Medical EMS</span>
+            </div>
+            <div class="dial-number">108</div>
+        </a>
+
+        <a href="tel:101" class="dial-card fire">
+            <div class="dial-icon"><i class="fa-solid fa-fire-extinguisher"></i></div>
+            <div class="dial-info">
+                <strong>Fire & Rescue</strong>
+                <span>Mumbai Fire Brigade</span>
+            </div>
+            <div class="dial-number">101</div>
+        </a>
+
+        <a href="tel:1091" class="dial-card women">
+            <div class="dial-icon"><i class="fa-solid fa-person-dress"></i></div>
+            <div class="dial-info">
+                <strong>Women Safety</strong>
+                <span>24/7 Helpline</span>
+            </div>
+            <div class="dial-number">1091</div>
+        </a>
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="em-controls-bar">
+        <div class="em-search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="emSearchInput" class="em-search-input" placeholder="Search by name, hospital, or locality (e.g., Dadar, Bandra, KEM)...">
+        </div>
+
+        <div class="em-tabs">
+            <button type="button" class="em-tab-btn active" data-type="">
+                <span>All</span>
+                <span class="em-tab-count">{{ (stats.hospital or 0) + (stats.police or 0) + (stats.fire or 0) + (stats.pharmacy or 0) + (stats.blood_bank or 0) }}</span>
+            </button>
+            <button type="button" class="em-tab-btn" data-type="hospital">
+                <i class="fa-solid fa-hospital"></i>
+                <span>Hospitals</span>
+                <span class="em-tab-count">{{ stats.hospital or 0 }}</span>
+            </button>
+            <button type="button" class="em-tab-btn" data-type="police">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Police</span>
+                <span class="em-tab-count">{{ stats.police or 0 }}</span>
+            </button>
+            <button type="button" class="em-tab-btn" data-type="fire">
+                <i class="fa-solid fa-fire"></i>
+                <span>Fire</span>
+                <span class="em-tab-count">{{ stats.fire or 0 }}</span>
+            </button>
+            <button type="button" class="em-tab-btn" data-type="pharmacy">
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                <span>Pharmacies</span>
+                <span class="em-tab-count">{{ stats.pharmacy or 0 }}</span>
+            </button>
+            <button type="button" class="em-tab-btn" data-type="blood_bank">
+                <i class="fa-solid fa-droplet"></i>
+                <span>Blood Banks</span>
+                <span class="em-tab-count">{{ stats.blood_bank or 0 }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Directory Grid -->
+    <div class="em-grid" id="emServicesGrid">
+        {% for item in services %}
+        <div class="srv-card" data-type="{{ item.type }}" data-name="{{ item.name|lower }}" data-address="{{ (item.address or '')|lower }}">
+            <div>
+                <div class="srv-header">
+                    <span class="srv-pill {{ item.type }}"><i class="fa-solid {{ item.icon }}"></i> {{ item.label }}</span>
+                    {% if item.distance_km is not none %}
+                    <span class="srv-distance">{{ item.distance_km }} km</span>
+                    {% endif %}
+                </div>
+                <div class="srv-name">{{ item.name }}</div>
+                <div class="srv-address">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>{{ item.address or 'Mumbai Metropolitan Region' }}</span>
+                </div>
+            </div>
+            <div class="srv-actions">
+                <a href="{{ url_for('safety_map') }}?lat={{ item.latitude }}&lon={{ item.longitude }}&name={{ item.name|urlencode }}" class="srv-btn srv-btn-map">
+                    <i class="fa-solid fa-map-pin"></i> View on Map
+                </a>
+                {% if item.phone %}
+                <a href="tel:{{ item.phone }}" class="srv-btn srv-btn-call">
+                    <i class="fa-solid fa-phone"></i> Call
+                </a>
+                {% else %}
+                <a href="tel:112" class="srv-btn srv-btn-call">
+                    <i class="fa-solid fa-phone"></i> Call 112
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="em-empty">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>No emergency services found</h3>
+            <p>Try refreshing or clearing the search filter.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentLat = null;
+    let currentLon = null;
+    let activeFilter = "";
+    let searchDebounceTimer = null;
+
+    const btnDetect = document.getElementById("btnDetectLocation");
+    const btnDetectText = document.getElementById("btnDetectText");
+    const locStatusText = document.getElementById("locStatusText");
+    const emGrid = document.getElementById("emServicesGrid");
+    const searchInput = document.getElementById("emSearchInput");
+    const tabButtons = document.querySelectorAll(".em-tab-btn");
+
+    // Geolocation detection
+    btnDetect.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+
+        btnDetectText.textContent = "Locating...";
+        locStatusText.textContent = "Acquiring GPS...";
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                currentLat = pos.coords.latitude;
+                currentLon = pos.coords.longitude;
+                btnDetectText.textContent = "Location Updated";
+                locStatusText.textContent = "Identifying location...";
+
+                fetch(`/api/reverse-geocode?lat=${currentLat}&lon=${currentLon}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.locality) {
+                            locStatusText.textContent = `Location: ${data.locality}`;
+                        } else {
+                            locStatusText.textContent = "Location: Mumbai";
+                        }
+                    })
+                    .catch(() => {
+                        locStatusText.textContent = "Location: Mumbai";
+                    });
+
+                fetchServices();
+            },
+            (err) => {
+                btnDetectText.textContent = "Detect My Location";
+                locStatusText.textContent = "Location: Mumbai Central (Default)";
+                console.warn("Geolocation error:", err.message);
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
+    });
+
+    // Tab filtering
+    tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeFilter = btn.dataset.type || "";
+            fetchServices();
+        });
+    });
+
+    // Search input with debounce
+    searchInput.addEventListener("input", () => {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            fetchServices();
+        }, 300);
+    });
+
+    // Fetch services from API
+    function fetchServices() {
+        const query = searchInput.value.trim();
+        let url = `/api/nearest?limit=36`;
+        if (currentLat && currentLon) {
+            url += `&lat=${currentLat}&lon=${currentLon}`;
+        }
+        if (activeFilter) {
+            url += `&service=${encodeURIComponent(activeFilter)}`;
+        }
+        if (query) {
+            url += `&q=${encodeURIComponent(query)}`;
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.services || data.services.length === 0) {
+                    emGrid.innerHTML = `
+                        <div class="em-empty">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <h3>No matching emergency services found</h3>
+                            <p>Try a different keyword or category.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                emGrid.innerHTML = data.services.map(item => `
+                    <div class="srv-card" data-type="${item.type}">
+                        <div>
+                            <div class="srv-header">
+                                <span class="srv-pill ${item.type}">
+                                    <i class="fa-solid ${item.icon || 'fa-shield'}"></i> ${item.label || item.type}
+                                </span>
+                                ${item.distance_km !== undefined ? `<span class="srv-distance">${item.distance_km} km</span>` : ''}
+                            </div>
+                            <div class="srv-name">${escapeHtml(item.name)}</div>
+                            <div class="srv-address">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${escapeHtml(item.address || 'Mumbai Metropolitan Region')}</span>
+                            </div>
+                        </div>
+                        <div class="srv-actions">
+                            <a href="/safety-map?lat=${item.latitude}&lon=${item.longitude}&name=${encodeURIComponent(item.name)}" class="srv-btn srv-btn-map">
+                                <i class="fa-solid fa-map-pin"></i> View on Map
+                            </a>
+                            <a href="${item.phone ? 'tel:' + item.phone : 'tel:112'}" class="srv-btn srv-btn-call">
+                                <i class="fa-solid fa-phone"></i> ${item.phone ? 'Call' : 'Call 112'}
+                            </a>
+                        </div>
+                    </div>
+                `).join("");
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+            });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[m]);
+    }
+</script>
+{% endblock %}

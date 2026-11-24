@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}AI Intelligence & Risk Model — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .ai-container {
+        width: min(1360px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    /* Hero Banner */
+    .ai-hero {
+        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
+        border: 1px solid #22304A;
+        border-radius: 24px;
+        padding: 44px 40px;
+        color: #F4F7FB;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .ai-hero::after {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(45, 212, 167, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .ai-hero h1 {
+        color: #F4F7FB !important;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 10px;
+    }
+
+    .ai-hero p {
+        color: #9AA8BD !important;
+        font-size: 15px;
+        max-width: 680px;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    /* Split Section: Feature Importance & Simulator */
+    .ai-split-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    @media (max-width: 992px) {
+        .ai-split-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .ai-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .ai-card-title {
+        font-size: 19px;
+        font-weight: 800;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ai-card-subtitle {
+        font-size: 13.5px;
+        color: #9AA8BD;
+        margin-bottom: 24px;
+    }
+
+    /* Feature Importance Bars */
+    .fi-item {
+        margin-bottom: 16px;
+    }
+
+    .fi-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+    }
+
+    .fi-bar-bg {
+        width: 100%;
+        height: 10px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .fi-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #2DD4A7, #059669);
+        border-radius: 999px;
+        transition: width 1s ease;
+    }
+
+    /* Simulator Form */
+    .sim-form-group {
+        margin-bottom: 16px;
+    }
+
+    .sim-form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #F4F7FB;
+        margin-bottom: 6px;
+    }
+
+    .sim-select, .sim-input {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #22304A;
+        font-size: 14px;
+        color: #F4F7FB;
+        background: #0B1220;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .sim-select:focus, .sim-input:focus {
+        border-color: #2DD4A7;
+        background: #0B1220;
+    }
+
+    .btn-sim-predict {
+        width: 100%;
+        background: #2DD4A7;
+        color: #0B1220;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        margin-top: 10px;
+    }
+
+    .btn-sim-predict:hover {
+        background: #26b992;
+        transform: translateY(-1px);
+    }
+
+    /* Simulator Result Card */
+    .sim-result-box {
+        margin-top: 20px;
+        padding: 18px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 14px;
+        display: none;
+    }
+
+    /* Hotspots Section */
+    .hotspots-section {
+        margin-bottom: 40px;
+    }
+
+    .hotspots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 18px;
+    }
+
+    .hotspot-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .hotspot-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .hotspot-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .hs-risk-badge {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+    }
+
+    .hs-risk-badge.Critical { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+    .hs-risk-badge.High { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+    .hs-risk-badge.Medium { background: rgba(245, 181, 68, 0.15); color: #F5B544; border: 1px solid rgba(245, 181, 68, 0.3); }
+
+    .hs-title {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: #F4F7FB;
+        margin-top: 6px;
+        line-height: 1.35;
+    }
+
+    .hs-type {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #2DD4A7;
+        margin-top: 4px;
+    }
+
+    .hs-advisory {
+        font-size: 13px;
+        color: #9AA8BD;
+        background: #0B1220;
+        border-left: 3px solid #22304A;
+        padding: 10px 12px;
+        border-radius: 6px;
+        line-height: 1.45;
+    }
+
+    .hs-actions {
+        display: flex;
+        gap: 8px;
+        border-top: 1px solid #22304A;
+        padding-top: 14px;
+    }
+
+    .btn-view-hotspot {
+        flex: 1;
+        background: #0B1220;
+        color: #2DD4A7;
+        border: 1px solid #22304A;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+    }
+
+    .btn-view-hotspot:hover {
+        background: #19253d;
+        border-color: #2DD4A7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ai-container">
+
+    <!-- Hero Banner -->
+    <section class="ai-hero">
+        <h1>Safety Intelligence & Explainable AI</h1>
+        <p>Explore factor attributions influencing road safety scores and simulate risk assessments in real-time across Mumbai.</p>
+    </section>
+
+    <!-- Split Section: Global Feature Importance & Interactive Simulator -->
+    <div class="ai-split-section">
+        
+        <!-- Feature Importance (Global Explainability) -->
+        <div class="ai-card">
+            <div class="ai-card-title">
+                <i class="fa-solid fa-chart-column" style="color: #6366f1;"></i>
+                <span>Global Feature Importance</span>
+            </div>
+            <div class="ai-card-subtitle">
+                Which factors influence the AI model's safety score predictions the most across Mumbai?
+            </div>
+
+            {% for feat, pct in metrics.feature_importances.items() %}
+            <div class="fi-item">
+                <div class="fi-header">
+                    <span>{{ feat }}</span>
+                    <span>{{ pct }}%</span>
+                </div>
+                <div class="fi-bar-bg">
+                    <div class="fi-bar-fill" style="width: {{ pct }}%;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Interactive AI Simulator -->
+        <div class="ai-card">
+            <div class="ai-card-title">
+                <i class="fa-solid fa-sliders" style="color: #4f46e5;"></i>
+                <span>Interactive AI Prediction Simulator</span>
+            </div>
+            <div class="ai-card-subtitle">
+                Adjust features to observe real-time predictions and factor explanations.
+            </div>
+
+            <form id="simForm">
+                <div class="sim-form-group">
+                    <label>Street Lighting Condition</label>
+                    <select id="simLighting" class="sim-select">
+                        <option value="Good" selected>Good / Well-Illuminated (8.5/10)</option>
+                        <option value="Moderate">Moderate / Partial Lighting (6.0/10)</option>
+                        <option value="Poor">Poor / Dark Streets (3.5/10)</option>
+                    </select>
+                </div>
+
+                <div class="sim-form-group">
+                    <label>Geographic Zone</label>
+                    <select id="simZone" class="sim-select">
+                        <option value="South Mumbai" selected>South Mumbai (High Police Patrolling)</option>
+                        <option value="Bandra/Khar">Bandra / Khar (Active Commercial)</option>
+                        <option value="Andheri">Andheri (High Transit Flow)</option>
+                        <option value="Dadar/Parel">Dadar / Parel (Central Confluence)</option>
+                        <option value="Kurla/Sion">Kurla / Sion (Dense Bottleneck)</option>
+                        <option value="Chembur/Mankhurd">Chembur / Mankhurd (Highway Corridor)</option>
+                    </select>
+                </div>
+
+                <div class="sim-form-group">
+                    <label>Establishment Domain</label>
+                    <select id="simCategory" class="sim-select">
+                        <option value="Commercial" selected>Commercial / Retail Hub</option>
+                        <option value="Transit">Railway Station / Transit Hub</option>
+                        <option value="Residential">Residential Society</option>
+                        <option value="Waterfront">Beach / Waterfront Promenade</option>
+                        <option value="Heritage">Tourist / Heritage Site</option>
+                    </select>
+                </div>
+
+                <div class="sim-form-group">
+                    <label>Incident / Caution Notes (Optional)</label>
+                    <input type="text" id="simNotes" class="sim-input" placeholder="e.g. pickpocketing, deserted at night...">
+                </div>
+
+                <button type="submit" class="btn-sim-predict">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Simulate AI Risk Score</span>
+                </button>
+            </form>
+
+            <div id="simResultBox" class="sim-result-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div>
+                        <strong style="font-size: 15px; color: #F4F7FB;">Predicted Score:</strong>
+                        <span id="simScoreVal" style="font-size: 24px; font-weight: 800; color: #2DD4A7; margin-left: 8px;">8.2</span> / 10
+                    </div>
+                    <span id="simRiskPill" style="padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; background: rgba(45, 212, 167, 0.15); color: #2DD4A7;">Safe</span>
+                </div>
+                <div style="font-size: 13px; font-weight: 700; color: #F4F7FB; margin-bottom: 8px;">Factor Attribution Breakdown:</div>
+                <div id="simFactorsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mumbai Accident & High-Risk Corridors (Hotspots) -->
+    <section class="hotspots-section">
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 22px; font-weight: 800; color: #F4F7FB; margin-bottom: 4px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #FF5A5F; margin-right: 8px;"></i>
+                Mumbai Accident & High-Risk Hotspots
+            </h2>
+            <p style="font-size: 14px; color: #9AA8BD;">
+                Critical road merge points, accident clusters, and low-visibility junctions identified across Mumbai.
+            </p>
+        </div>
+
+        <div class="hotspots-grid">
+            {% for hs in hotspots %}
+            <div class="hotspot-card">
+                <div>
+                    <div class="hotspot-header">
+                        <span class="hs-risk-badge {{ hs.risk_level }}">{{ hs.risk_level }} Risk</span>
+                        <span style="font-size: 12px; font-weight: 700; color: #64748b;">~{{ hs.accidents_est }} incidents/yr</span>
+                    </div>
+                    <div class="hs-title">{{ hs.name }}</div>
+                    <div class="hs-type"><i class="fa-solid fa-car-burst"></i> {{ hs.type }}</div>
+                </div>
+
+                <div class="hs-advisory">
+                    <strong>AI Safety Tip:</strong> {{ hs.advisory }}
+                </div>
+
+                <div class="hs-actions">
+                    <a href="{{ url_for('safety_map') }}?lat={{ hs.latitude }}&lon={{ hs.longitude }}&name={{ hs.name|urlencode }}" class="btn-view-hotspot">
+                        <i class="fa-solid fa-map-pin"></i> View Hotspot on Map
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById("simForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const payload = {
+            lighting: document.getElementById("simLighting").value,
+            zone: document.getElementById("simZone").value,
+            category: document.getElementById("simCategory").value,
+            notes: document.getElementById("simNotes").value
+        };
+
+        fetch("/api/ai-predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const pred = data.prediction;
+            const box = document.getElementById("simResultBox");
+            box.style.display = "block";
+
+            document.getElementById("simScoreVal").textContent = pred.predicted_score;
+            const pill = document.getElementById("simRiskPill");
+            pill.textContent = pred.risk_level;
+
+            if (pred.predicted_score >= 7.5) {
+                pill.style.background = "#dcfce7";
+                pill.style.color = "#166534";
+                document.getElementById("simScoreVal").style.color = "#10b981";
+            } else if (pred.predicted_score >= 5.0) {
+                pill.style.background = "#fef3c7";
+                pill.style.color = "#92400e";
+                document.getElementById("simScoreVal").style.color = "#f59e0b";
+            } else {
+                pill.style.background = "#fee2e2";
+                pill.style.color = "#991b1b";
+                document.getElementById("simScoreVal").style.color = "#ef4444";
+            }
+
+            const list = document.getElementById("simFactorsList");
+            list.innerHTML = pred.factors.map(f => `
+                <div style="font-size: 12.5px; display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e2e8f0;">
+                    <span style="color: #334155;"><strong>${f.factor}:</strong> ${f.desc}</span>
+                    <span style="font-weight: 700; color: ${f.direction === 'positive' ? '#10b981' : (f.direction === 'negative' ? '#ef4444' : '#64748b')}; margin-left: 12px;">${f.effect}</span>
+                </div>
+            `).join("");
+        })
+        .catch(err => console.error("Sim error:", err));
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account | Dynamic Risk Intelligence, Safety & Threat Identification</title>
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: #0B1220;
+            color: #9AA8BD;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 40px 20px;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 500px;
+        }
+
+
+        /* =====================================================
+           LOGO
+        ===================================================== */
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 28px;
+        }
+
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+
+            background: #2DD4A7;
+            color: #0B1220;
+
+            border-radius: 14px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+
+            box-shadow:
+                0 8px 20px rgba(45, 212, 167, 0.25);
+        }
+
+        .logo-text-area {
+            margin-left: 13px;
+        }
+
+        .logo-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.7px;
+
+            color: #F4F7FB;
+        }
+
+        .logo-subtitle {
+            margin-top: 2px;
+
+            font-size: 9px;
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            color: #9AA8BD;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .register-card {
+            background: #131C2E;
+
+            border: 1px solid #22304A;
+
+            border-radius: 22px;
+
+            padding: 38px;
+
+            box-shadow:
+                0 18px 55px rgba(0, 0, 0, 0.4);
+        }
+
+
+        /* =====================================================
+           HEADING
+        ===================================================== */
+
+        .heading {
+            text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+        .heading h1 {
+            font-size: 31px;
+            line-height: 1.15;
+
+            font-weight: 800;
+
+            letter-spacing: -1px;
+
+            color: #F4F7FB;
+        }
+
+        .heading p {
+            margin-top: 9px;
+
+            font-size: 14px;
+            line-height: 1.6;
+
+            color: #9AA8BD;
+        }
+
+
+        /* =====================================================
+           ALERT
+        ===================================================== */
+
+        .alert {
+            margin-bottom: 20px;
+
+            padding: 13px 15px;
+
+            border-radius: 11px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            background: rgba(255, 90, 95, 0.15);
+
+            border: 1px solid rgba(255, 90, 95, 0.3);
+
+            color: #FF5A5F;
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            color: #F4F7FB;
+        }
+
+        .form-input {
+            width: 100%;
+
+            height: 50px;
+
+            padding: 0 15px;
+
+            border: 1px solid #22304A;
+
+            border-radius: 11px;
+
+            background: #0B1220;
+
+            color: #F4F7FB;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .form-input::placeholder {
+            color: #9AA8BD;
+        }
+
+        .form-input:hover {
+            border-color: #2e4366;
+        }
+
+        .form-input:focus {
+            border-color: #2DD4A7;
+
+            background: #0B1220;
+
+            box-shadow:
+                0 0 0 4px rgba(45, 212, 167, 0.15);
+        }
+
+
+        /* =====================================================
+           REMOVE BROWSER AUTOFILL BLUE LOOK
+        ===================================================== */
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+
+            -webkit-box-shadow:
+                0 0 0 1000px #0B1220 inset !important;
+
+            -webkit-text-fill-color:
+                #F4F7FB !important;
+
+            transition:
+                background-color 9999s ease-in-out 0s;
+        }
+
+
+        /* =====================================================
+           PASSWORD FIELD
+        ===================================================== */
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .password-wrap .form-input {
+            padding-right: 52px;
+        }
+
+        .toggle-password {
+            position: absolute;
+
+            right: 10px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 34px;
+            height: 34px;
+
+            border: 0;
+
+            background: transparent;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            color: #9AA8BD;
+
+            font-size: 15px;
+        }
+
+        .toggle-password:hover {
+            background: #19253d;
+        }
+
+
+        /* =====================================================
+           PASSWORD STRENGTH
+        ===================================================== */
+
+        .strength {
+            margin-top: 8px;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+        }
+
+        .strength-bar {
+            flex: 1;
+
+            height: 4px;
+
+            border-radius: 10px;
+
+            background: #22304A;
+
+            transition:
+                background 0.2s ease;
+        }
+
+        .strength-text {
+            margin-top: 6px;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            color: #9AA8BD;
+        }
+
+
+        /* =====================================================
+           TERMS
+        ===================================================== */
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-top: 8px;
+            margin-bottom: 22px;
+        }
+
+        .terms input {
+            width: 17px;
+            height: 17px;
+
+            margin-top: 2px;
+
+            accent-color: #2DD4A7;
+
+            cursor: pointer;
+        }
+
+        .terms label {
+            font-size: 12px;
+            line-height: 1.55;
+
+            color: #9AA8BD;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           CREATE ACCOUNT BUTTON
+        ===================================================== */
+
+        .submit-btn {
+            width: 100%;
+
+            height: 52px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #2DD4A7;
+            color: #0B1220;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px rgba(45, 212, 167, 0.25);
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #26b992;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 11px 25px rgba(45, 212, 167, 0.35);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* =====================================================
+           LOGIN LINK
+        ===================================================== */
+
+        .login-row {
+            text-align: center;
+
+            margin-top: 23px;
+
+            padding-top: 22px;
+
+            border-top: 1px solid #22304A;
+        }
+
+        .login-row span {
+            font-size: 13px;
+
+            color: #9AA8BD;
+        }
+
+        .login-link {
+            margin-left: 5px;
+
+            color: #2DD4A7;
+
+            font-weight: 750;
+
+            text-decoration: none;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           FOOTER NOTE
+        ===================================================== */
+
+        .footer-note {
+            text-align: center;
+
+            margin-top: 18px;
+
+            font-size: 10px;
+
+            color: #9AA8BD;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 25px 14px;
+            }
+
+            .register-card {
+                padding: 27px 21px;
+                border-radius: 18px;
+            }
+
+            .heading h1 {
+                font-size: 27px;
+            }
+
+            .logo-title {
+                font-size: 22px;
+            }
+
+            .logo-icon {
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+
+        /* =====================================================
+           REDUCED MOTION
+        ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <main class="register-wrapper">
+
+        <!-- =================================================
+             LOGO
+        ================================================== -->
+
+        <div class="logo-area">
+
+            <div class="logo-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div class="logo-text-area">
+
+                <div class="logo-title">
+                    Dynamic Risk Intelligence
+                </div>
+
+                <div class="logo-subtitle">
+                    SAFETY & THREAT IDENTIFICATION
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             REGISTER CARD
+        ================================================== -->
+
+        <section class="register-card">
+
+            <div class="heading">
+
+                <h1>
+                    Create your account
+                </h1>
+
+                <p>
+                    Enter your details to get started with
+                    Dynamic Risk Intelligence, Safety & Threat Identification.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 SERVER ERROR
+            ================================================== -->
+
+            {% if error %}
+
+            <div class="alert alert-error">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 REGISTER FORM
+            ================================================== -->
+
+            <form
+                method="POST"
+                action="{{ url_for('register') }}"
+                id="registerForm"
+                novalidate
+            >
+
+                <!-- FULL NAME -->
+
+                <div class="form-group">
+
+                    <label
+                        for="name"
+                        class="form-label"
+                    >
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="form-input"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                        minlength="2"
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label
+                        for="email"
+                        class="form-label"
+                    >
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-input"
+                        placeholder="Enter your email address"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label
+                        for="password"
+                        class="form-label"
+                    >
+                        Password
+                    </label>
+
+                    <div class="password-wrap">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            id="passwordToggle"
+                            aria-label="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+
+                    <!-- PASSWORD STRENGTH -->
+
+                    <div class="strength">
+
+                        <div class="strength-bars">
+
+                            <span
+                                class="strength-bar"
+                                id="bar1"
+                            ></span>
+
+                            <span
+                                class="strength-bar"
+                                id="bar2"
+                            ></span>
+
+                            <span
+                                class="strength-bar"
+                                id="bar3"
+                            ></span>
+
+                            <span
+                                class="strength-bar"
+                                id="bar4"
+                            ></span>
+
+                        </div>
+
+                        <div
+                            class="strength-text"
+                            id="strengthText"
+                        >
+                            Use at least 6 characters
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="form-group">
+
+                    <label
+                        for="confirm_password"
+                        class="form-label"
+                    >
+                        Confirm Password
+                    </label>
+
+                    <div class="password-wrap">
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            class="form-input"
+                            placeholder="Re-enter your password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            id="confirmToggle"
+                            aria-label="Show confirm password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TERMS -->
+
+                <div class="terms">
+
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        required
+                    >
+
+                    <label for="terms">
+                        I agree to use the platform responsibly
+                        and understand that emergency information
+                        should be independently verified when
+                        necessary.
+                    </label>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- =================================================
+                 LOGIN
+            ================================================== -->
+
+            <div class="login-row">
+
+                <span>
+                    Already have an account?
+                </span>
+
+                <a
+                    href="{{ url_for('login') }}"
+                    class="login-link"
+                >
+                    Login
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <div class="footer-note">
+            Dynamic Risk Intelligence, Safety & Threat Identification · Mumbai Safety Intelligence
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /* =====================================================
+           PASSWORD TOGGLE
+        ===================================================== */
+
+        function setupPasswordToggle(
+            inputId,
+            buttonId
+        ) {
+
+            const input =
+                document.getElementById(inputId);
+
+            const button =
+                document.getElementById(buttonId);
+
+            if (!input || !button) {
+                return;
+            }
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        input.type === "password"
+                    ) {
+
+                        input.type = "text";
+
+                        button.textContent = "🙈";
+
+                        button.setAttribute(
+                            "aria-label",
+                            "Hide password"
+                        );
+
+                    } else {
+
+                        input.type = "password";
+
+                        button.textContent = "👁";
+
+                        button.setAttribute(
+                            "aria-label",
+                            "Show password"
+                        );
+                    }
+
+                }
+            );
+        }
+
+
+        setupPasswordToggle(
+            "password",
+            "passwordToggle"
+        );
+
+        setupPasswordToggle(
+            "confirm_password",
+            "confirmToggle"
+        );
+
+
+        /* =====================================================
+           PASSWORD STRENGTH
+        ===================================================== */
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const strengthText =
+            document.getElementById("strengthText");
+
+        const bars = [
+            document.getElementById("bar1"),
+            document.getElementById("bar2"),
+            document.getElementById("bar3"),
+            document.getElementById("bar4")
+        ];
+
+
+        function resetBars() {
+
+            bars.forEach(
+                function (bar) {
+                    bar.style.background =
+                        "#e5e4e0";
+                }
+            );
+        }
+
+
+        function updatePasswordStrength() {
+
+            const value =
+                passwordInput.value;
+
+            resetBars();
+
+
+            if (!value) {
+
+                strengthText.textContent =
+                    "Use at least 6 characters";
+
+                strengthText.style.color =
+                    "#8c928e";
+
+                return;
+            }
+
+
+            let score = 0;
+
+
+            if (value.length >= 6) {
+                score++;
+            }
+
+            if (value.length >= 8) {
+                score++;
+            }
+
+            if (/[A-Z]/.test(value)) {
+                score++;
+            }
+
+            if (
+                /[0-9]/.test(value) ||
+                /[^A-Za-z0-9]/.test(value)
+            ) {
+                score++;
+            }
+
+
+            for (
+                let i = 0;
+                i < score;
+                i++
+            ) {
+
+                bars[i].style.background =
+                    "#2ca45c";
+            }
+
+
+            if (score <= 1) {
+
+                strengthText.textContent =
+                    "Weak password";
+
+                strengthText.style.color =
+                    "#c44444";
+
+            } else if (score === 2) {
+
+                strengthText.textContent =
+                    "Fair password";
+
+                strengthText.style.color =
+                    "#b17a24";
+
+            } else if (score === 3) {
+
+                strengthText.textContent =
+                    "Good password";
+
+                strengthText.style.color =
+                    "#4f8c4f";
+
+            } else {
+
+                strengthText.textContent =
+                    "Strong password";
+
+                strengthText.style.color =
+                    "#25834a";
+            }
+        }
+
+
+        passwordInput.addEventListener(
+            "input",
+            updatePasswordStrength
+        );
+
+
+        /* =====================================================
+           FORM VALIDATION
+        ===================================================== */
+
+        const form =
+            document.getElementById("registerForm");
+
+        const nameInput =
+            document.getElementById("name");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const confirmInput =
+            document.getElementById("confirm_password");
+
+        const termsInput =
+            document.getElementById("terms");
+
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+                const name =
+                    nameInput.value.trim();
+
+                const email =
+                    emailInput.value.trim();
+
+                const password =
+                    passwordInput.value;
+
+                const confirmPassword =
+                    confirmInput.value;
+
+
+                if (name.length < 2) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter your full name."
+                    );
+
+                    nameInput.focus();
+
+                    return;
+                }
+
+
+                if (!email) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter your email address."
+                    );
+
+                    emailInput.focus();
+
+                    return;
+                }
+
+
+                if (password.length < 6) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Password must contain at least 6 characters."
+                    );
+
+                    passwordInput.focus();
+
+                    return;
+                }
+
+
+                if (
+                    password !== confirmPassword
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Passwords do not match."
+                    );
+
+                    confirmInput.focus();
+
+                    return;
+                }
+
+
+                if (!termsInput.checked) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please accept the responsibility statement."
+                    );
+
+                    termsInput.focus();
+
+                    return;
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

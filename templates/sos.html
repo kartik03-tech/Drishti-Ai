@@ -1,0 +1,1365 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Assistance & Safety Network — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .sos-hub-container {
+        width: min(1140px, calc(100% - 36px));
+        margin: 30px auto 60px;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* Page Header */
+    .sos-hero-card {
+        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
+        border: 1px solid #22304A;
+        border-radius: 24px;
+        padding: 36px 40px;
+        color: #F4F7FB;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .sos-hero-card::after {
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 240px;
+        height: 240px;
+        background: radial-gradient(circle, rgba(255, 90, 95, 0.25) 0%, rgba(255, 90, 95, 0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .sos-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #FF5A5F;
+        background: rgba(255, 90, 95, 0.15);
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(255, 90, 95, 0.3);
+    }
+
+    .sos-hero-card h1 {
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        margin: 0 0 10px;
+        color: #F4F7FB !important;
+    }
+
+    .sos-hero-card p {
+        font-size: 15px;
+        color: #9AA8BD;
+        max-width: 660px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Navigation Tabs */
+    .sos-nav-tabs {
+        display: flex;
+        gap: 8px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        padding: 6px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+        overflow-x: auto;
+    }
+
+    .sos-tab-btn {
+        flex: 1;
+        min-width: 140px;
+        padding: 10px 16px;
+        border: none;
+        background: transparent;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #9AA8BD;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .sos-tab-btn:hover {
+        color: #F4F7FB;
+        background: #19253d;
+    }
+
+    .sos-tab-btn.active {
+        background: #131C2E;
+        color: #2DD4A7;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        border: 1px solid #22304A;
+    }
+
+    .tab-content-panel {
+        display: none;
+    }
+
+    .tab-content-panel.active {
+        display: block;
+        animation: fadeInTab 0.2s ease;
+    }
+
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* TAB 1: ONE-TOUCH SOS */
+    .sos-trigger-layout {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    @media (max-width: 900px) {
+        .sos-trigger-layout { grid-template-columns: 1fr; }
+    }
+
+    .sos-main-panel {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Giant Pulsing SOS Button */
+    .sos-btn-wrapper {
+        position: relative;
+        margin: 24px 0;
+    }
+
+    .sos-giant-button {
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF5A5F 0%, #e0484d 100%);
+        border: none;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+        box-shadow: 0 16px 36px rgba(255, 90, 95, 0.35);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        position: relative;
+        z-index: 2;
+    }
+
+    .sos-giant-button:hover {
+        transform: scale(1.04);
+        box-shadow: 0 20px 48px rgba(255, 90, 95, 0.55);
+    }
+
+    .sos-giant-button:active {
+        transform: scale(0.97);
+    }
+
+    .sos-giant-button i {
+        font-size: 36px;
+    }
+
+    .sos-giant-button strong {
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .sos-giant-button span {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+
+    .sos-ripple {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 90, 95, 0.4);
+        animation: sos-wave 2.2s infinite;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .sos-ripple:nth-child(2) {
+        animation-delay: 0.8s;
+    }
+
+    @keyframes sos-wave {
+        0% { width: 190px; height: 190px; opacity: 0.8; }
+        100% { width: 320px; height: 320px; opacity: 0; }
+    }
+
+    /* GPS Info Pill */
+    .gps-info-bar {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-size: 13px;
+        color: #9AA8BD;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    /* Multi-channel Action Card */
+    .sos-sidebar-panel {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .sidebar-section-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #F4F7FB;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 2px;
+    }
+
+    .dispatch-btn {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        border: 1px solid #22304A;
+        background: #0B1220;
+        color: #F4F7FB;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+
+    .dispatch-btn:hover {
+        background: #19253d;
+        border-color: #2DD4A7;
+        transform: translateY(-1px);
+    }
+
+    .dispatch-btn.wa {
+        background: rgba(45, 212, 167, 0.12);
+        border-color: rgba(45, 212, 167, 0.3);
+        color: #2DD4A7;
+    }
+    .dispatch-btn.wa:hover { background: rgba(45, 212, 167, 0.2); }
+
+    .dispatch-btn.siren {
+        background: rgba(255, 90, 95, 0.12);
+        border-color: rgba(255, 90, 95, 0.3);
+        color: #FF5A5F;
+    }
+    .dispatch-btn.siren:hover { background: rgba(255, 90, 95, 0.2); }
+
+    /* Results / Status Card */
+    .sos-alert-result {
+        display: none;
+        width: 100%;
+        background: rgba(45, 212, 167, 0.12);
+        border: 1px solid #2DD4A7;
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: 18px;
+        text-align: left;
+        color: #F4F7FB;
+    }
+
+    /* TAB 2: CONTACTS MANAGER */
+    .contacts-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .contacts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .contact-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        position: relative;
+        transition: all 0.15s ease;
+    }
+
+    .contact-card:hover {
+        border-color: #2DD4A7;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .contact-card.is-primary {
+        border-color: #F5B544;
+        background: #152035;
+    }
+
+    .contact-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .contact-name {
+        font-size: 16px;
+        font-weight: 800;
+        color: #F4F7FB;
+    }
+
+    .contact-rel-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        color: #9AA8BD;
+    }
+
+    .contact-primary-star {
+        color: #F5B544;
+        font-size: 13px;
+        margin-left: 6px;
+    }
+
+    .contact-detail-line {
+        font-size: 13px;
+        color: #9AA8BD;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .contact-actions {
+        display: flex;
+        gap: 6px;
+        border-top: 1px solid #22304A;
+        padding-top: 12px;
+    }
+
+    .btn-contact-action {
+        flex: 1;
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #22304A;
+        background: #0B1220;
+        color: #F4F7FB;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-contact-action:hover {
+        background: #19253d;
+        color: #2DD4A7;
+        border-color: #2DD4A7;
+    }
+
+    .btn-contact-action.call { color: #FF5A5F; border-color: rgba(255, 90, 95, 0.4); }
+    .btn-contact-action.call:hover { background: rgba(255, 90, 95, 0.2); }
+
+    .btn-contact-action.wa { color: #2DD4A7; border-color: rgba(45, 212, 167, 0.4); }
+    .btn-contact-action.wa:hover { background: rgba(45, 212, 167, 0.2); }
+
+    .btn-contact-action.delete { color: #9AA8BD; }
+    .btn-contact-action.delete:hover { color: #FF5A5F; background: rgba(255, 90, 95, 0.15); border-color: #FF5A5F; }
+
+    /* Add Contact Modal / Box */
+    .add-contact-box {
+        background: #0B1220;
+        border: 1px dashed #22304A;
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 24px;
+        display: none;
+    }
+
+    .add-contact-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        align-items: flex-end;
+    }
+
+    .form-group-contact {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .form-group-contact label {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #F4F7FB;
+    }
+
+    .contact-input {
+        height: 42px;
+        border: 1px solid #22304A;
+        border-radius: 10px;
+        padding: 0 12px;
+        font-size: 13.5px;
+        outline: none;
+        background: #131C2E;
+        color: #F4F7FB;
+    }
+
+    .contact-input:focus {
+        border-color: #2DD4A7;
+    }
+
+    /* TAB 3: LIVE TRACKING */
+    .track-hub-panel {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+    }
+
+    @media (max-width: 860px) {
+        .track-hub-panel { grid-template-columns: 1fr; }
+    }
+
+    .track-share-box {
+        background: #0B1220;
+        border: 1px solid #22304A;
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 16px;
+        display: none;
+    }
+
+    .track-link-copy {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .track-link-input {
+        flex: 1;
+        height: 42px;
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 10px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-family: monospace;
+        color: #2DD4A7;
+    }
+
+    /* TAB 4: HELPLINES */
+    .helpline-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+
+    .helpline-card {
+        background: #131C2E;
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transition: transform 0.15s ease;
+    }
+
+    .helpline-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border-color: #2DD4A7;
+    }
+
+    .helpline-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #0B1220;
+        border: 1px solid #22304A;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        color: #2DD4A7;
+    }
+
+    .helpline-num {
+        font-size: 26px;
+        font-weight: 800;
+        color: #F4F7FB;
+        line-height: 1.1;
+    }
+
+    .helpline-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #F4F7FB;
+    }
+
+    .helpline-desc {
+        font-size: 12px;
+        color: #9AA8BD;
+    }
+
+    .btn-call-helpline {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        background: #0B1220;
+        color: #2DD4A7;
+        border: 1px solid #22304A;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+    }
+    .btn-call-helpline:hover { background: #19253d; border-color: #2DD4A7; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sos-hub-container">
+
+    <!-- Hero Header -->
+    <section class="sos-hero-card">
+        <span class="sos-hero-eyebrow">
+            <i class="fa-solid fa-shield-heart"></i> Rapid Response Network
+        </span>
+        <h1>Emergency Assistance Hub</h1>
+        <p>Immediate location dispatch, trusted guardian network, live "Walk With Me" tracking, and 24/7 Mumbai emergency speed dial.</p>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="sos-nav-tabs">
+        <button type="button" class="sos-tab-btn active" data-tab="tabSos">
+            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> One-Touch SOS
+        </button>
+        <button type="button" class="sos-tab-btn" data-tab="tabContacts">
+            <i class="fa-solid fa-users" style="color: #2563eb;"></i> Trusted Contacts (<span id="contactsCount">{{ personal_contacts|length }}</span>)
+        </button>
+        <button type="button" class="sos-tab-btn" data-tab="tabTracking">
+            <i class="fa-solid fa-person-walking" style="color: #10b981;"></i> Walk With Me
+        </button>
+        <button type="button" class="sos-tab-btn" data-tab="tabHelplines">
+            <i class="fa-solid fa-phone" style="color: #f59e0b;"></i> Speed-Dial Helplines
+        </button>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: ONE-TOUCH EMERGENCY SOS -->
+    <!-- ========================================== -->
+    <div id="tabSos" class="tab-content-panel active">
+        <div class="sos-trigger-layout">
+
+            <!-- Main Trigger -->
+            <div class="sos-main-panel">
+                <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Immediate SOS Trigger</h2>
+                <p style="font-size: 14px; color: #64748b; max-width: 440px;">
+                    Press the button below to capture your GPS coordinates and broadcast multi-channel alerts to your saved emergency contacts.
+                </p>
+
+                <div class="sos-btn-wrapper">
+                    <div class="sos-ripple"></div>
+                    <div class="sos-ripple"></div>
+                    <button type="button" class="sos-giant-button" id="btnTriggerSos">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <strong>SOS</strong>
+                        <span>Press For Help</span>
+                    </button>
+                </div>
+
+                <div class="gps-info-bar" id="gpsStatusBadge">
+                    <i class="fa-solid fa-location-crosshairs" style="color: #2563eb;"></i>
+                    <span id="gpsCoordsText">Detecting live GPS coordinates...</span>
+                </div>
+
+                <!-- SOS Success / Action Box -->
+                <div id="sosAlertResult" class="sos-alert-result">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #15803d; font-weight: 800; font-size: 15px;">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Emergency Alert Dispatched!</span>
+                    </div>
+                    <p style="font-size: 13px; color: #166534; margin-bottom: 12px;" id="sosResultMsg">
+                        Coordinates captured and live tracking session started. Send immediate 1-tap alerts to guardians below:
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="sosDispatchLinksList"></div>
+                </div>
+            </div>
+
+            <!-- Sidebar Actions -->
+            <div class="sos-sidebar-panel">
+                <div>
+                    <div class="sidebar-section-title">
+                        <i class="fa-solid fa-bell-concierge" style="color: #6366f1;"></i> Emergency Quick Tools
+                    </div>
+                    <p style="font-size: 12.5px; color: #64748b; margin-top: 4px;">Instant situational assistance tools</p>
+                </div>
+
+                <!-- Siren Toggle -->
+                <button type="button" class="dispatch-btn siren" id="btnToggleSiren">
+                    <span style="display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <strong id="sirenBtnText">Sound Danger Siren</strong>
+                    </span>
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <!-- Broadcast WhatsApp Link -->
+                <a href="#" target="_blank" class="dispatch-btn wa" id="btnBroadcastWa">
+                    <span style="display:flex; align-items:center; gap:8px;">
+                        <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i>
+                        <span>WhatsApp SOS Broadcast</span>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+
+                <!-- Speed Dial 112 -->
+                <a href="tel:112" class="dispatch-btn" style="background: #0f172a; color: white; border-color: #0f172a;">
+                    <span style="display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-phone-volume" style="color: #ef4444;"></i>
+                        <span>Direct Dial 112 (National)</span>
+                    </span>
+                    <i class="fa-solid fa-phone"></i>
+                </a>
+
+                <!-- Primary Guardian Card -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-top: 8px;">
+                    <div style="font-size: 11.5px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">
+                        Primary Emergency Contact
+                    </div>
+                    {% set primary = personal_contacts|selectattr("is_primary")|first or personal_contacts|first %}
+                    {% if primary %}
+                    <div style="font-weight: 800; color: #0f172a; font-size: 14.5px;">{{ primary.name }}</div>
+                    <div style="font-size: 13px; color: #475569; margin: 2px 0 8px;">{{ primary.phone }}</div>
+                    <div style="display:flex; gap:6px;">
+                        <a href="tel:{{ primary.phone }}" class="btn-contact-action call" style="flex:1;">
+                            <i class="fa-solid fa-phone"></i> Call
+                        </a>
+                        <a href="https://wa.me/{{ primary.phone|replace(' ', '')|replace('+', '') }}?text=Emergency%20SOS%20Alert" target="_blank" class="btn-contact-action wa" style="flex:1;">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
+                    {% else %}
+                    <div style="font-size: 13px; color: #94a3b8;">No contacts saved yet.</div>
+                    <button type="button" class="btn-contact-action" onclick="document.querySelector('[data-tab=tabContacts]').click();" style="margin-top: 6px; width: 100%;">
+                        + Add Contact Now
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: TRUSTED CONTACTS MANAGER -->
+    <!-- ========================================== -->
+    <div id="tabContacts" class="tab-content-panel">
+
+        <div class="contacts-header-row">
+            <div>
+                <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">My Trusted Guardians</h2>
+                <p style="font-size: 13.5px; color: #64748b; margin: 0;">These contacts receive your live GPS coordinates, Google Maps links, and WhatsApp SOS alerts.</p>
+            </div>
+            <button type="button" class="btn-call-helpline" id="btnToggleAddContact" style="width: auto; padding: 9px 18px;">
+                <i class="fa-solid fa-user-plus"></i> Add New Contact
+            </button>
+        </div>
+
+        <!-- Add Contact Inline Form -->
+        <div id="addContactBox" class="add-contact-box">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">Add New Emergency Contact</h3>
+            <form id="formAddContact" class="add-contact-form">
+                <div class="form-group-contact">
+                    <label>Full Name *</label>
+                    <input type="text" id="inputContactName" class="contact-input" placeholder="e.g. Mom, Rahul Sharma" required>
+                </div>
+                <div class="form-group-contact">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="inputContactPhone" class="contact-input" placeholder="e.g. +91 98200 12345" required>
+                </div>
+                <div class="form-group-contact">
+                    <label>Relationship</label>
+                    <select id="inputContactRel" class="contact-input">
+                        <option value="Family" selected>Family</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Spouse">Spouse / Partner</option>
+                        <option value="Friend">Friend</option>
+                        <option value="Colleague">Colleague</option>
+                    </select>
+                </div>
+                <div class="form-group-contact">
+                    <label>Email Address (Optional)</label>
+                    <input type="email" id="inputContactEmail" class="contact-input" placeholder="e.g. guardian@gmail.com">
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-call-helpline" style="height: 42px;">
+                        <i class="fa-solid fa-check"></i> Save
+                    </button>
+                    <button type="button" class="btn-contact-action" id="btnCancelAddContact" style="height: 42px;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Contacts Grid -->
+        <div class="contacts-grid" id="contactsGrid">
+            {% for c in personal_contacts %}
+            <div class="contact-card {% if c.is_primary %}is-primary{% endif %}" data-id="{{ c.id }}">
+                <div class="contact-card-head">
+                    <div>
+                        <div class="contact-name">
+                            {{ c.name }}
+                            {% if c.is_primary %}
+                            <i class="fa-solid fa-star contact-primary-star" title="Primary Emergency Contact"></i>
+                            {% endif %}
+                        </div>
+                        <span class="contact-rel-badge">{{ c.relationship or 'Family' }}</span>
+                    </div>
+                    {% if not c.is_primary %}
+                    <button type="button" class="btn-contact-action btn-make-primary" data-id="{{ c.id }}" style="font-size: 11px; padding: 3px 8px;" title="Set as Primary">
+                        <i class="fa-regular fa-star"></i> Set Primary
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div class="contact-detail-line">
+                        <i class="fa-solid fa-phone" style="color: #64748b;"></i>
+                        <span>{{ c.phone }}</span>
+                    </div>
+                    {% if c.email %}
+                    <div class="contact-detail-line">
+                        <i class="fa-solid fa-envelope" style="color: #64748b;"></i>
+                        <span>{{ c.email }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="contact-actions">
+                    <a href="tel:{{ c.phone }}" class="btn-contact-action call">
+                        <i class="fa-solid fa-phone"></i> Call
+                    </a>
+                    <a href="https://wa.me/{{ c.phone|replace(' ', '')|replace('+', '') }}?text=Emergency%20Alert" target="_blank" class="btn-contact-action wa">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <button type="button" class="btn-contact-action delete btn-delete-contact" data-id="{{ c.id }}">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: LIVE "WALK WITH ME" TRACKING -->
+    <!-- ========================================== -->
+    <div id="tabTracking" class="tab-content-panel">
+        <div class="track-hub-panel">
+
+            <!-- Left Controls -->
+            <div>
+                <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Live "Walk With Me" Tracking</h2>
+                <p style="font-size: 14px; color: #64748b; line-height: 1.6;">
+                    Heading home late or traveling through an unfamiliar street? Start live location sharing so your friends and family can track your real-time path on a live Leaflet map.
+                </p>
+
+                <div style="margin: 20px 0;">
+                    <button type="button" class="btn-call-helpline" id="btnStartTracking" style="padding: 14px 24px; font-size: 15px; background: #10b981; border: none; width: 100%;">
+                        <i class="fa-solid fa-play"></i> Start Live Location Sharing
+                    </button>
+                    <button type="button" class="btn-call-helpline" id="btnStopTracking" style="display: none; padding: 14px 24px; font-size: 15px; background: #ef4444; border: none; width: 100%;">
+                        <i class="fa-solid fa-stop"></i> Stop Location Sharing
+                    </button>
+                </div>
+
+                <div id="trackShareCard" class="track-share-box">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <strong style="font-size: 13.5px; color: #0f172a;"><i class="fa-solid fa-satellite-dish" style="color: #10b981;"></i> Live Sharing Active</strong>
+                        <span style="font-size: 11px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 999px; font-weight: 700;">BROADCASTING</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: #64748b; margin-bottom: 8px;">Share this link with your guardians so they can watch your journey in real time:</p>
+                    <div class="track-link-copy">
+                        <input type="text" id="trackShareUrlInput" class="track-link-input" readonly>
+                        <button type="button" class="btn-call-helpline" id="btnCopyTrackLink" style="width: auto; padding: 0 16px;">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <a href="#" target="_blank" id="btnShareTrackWa" class="dispatch-btn wa" style="justify-content: center;">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 16px; margin-right: 6px;"></i> Send Tracking Link on WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Info & Preview -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">
+                        <i class="fa-solid fa-shield-halved" style="color: #2563eb;"></i> Privacy & How It Works
+                    </h3>
+                    <ul style="font-size: 13px; color: #9AA8BD; padding-left: 18px; line-height: 1.7; margin: 0;">
+                        <li>Generates a secure, temporary token accessible only via your link.</li>
+                        <li>Streams live GPS coordinates, estimated velocity, and battery stats.</li>
+                        <li>Breadcrumb trail draws your movement in real time on OpenStreetMap.</li>
+                        <li>You can stop sharing with a single tap at any moment.</li>
+                    </ul>
+                </div>
+
+                <div style="background: #131C2E; border: 1px solid #22304A; border-radius: 12px; padding: 14px; margin-top: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(45, 212, 167, 0.15); display: grid; place-items: center; color: #2DD4A7;">
+                            <i class="fa-solid fa-battery-half"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11.5px; color: #9AA8BD;">Live Stream Status</div>
+                            <div style="font-size: 13.5px; font-weight: 700; color: #F4F7FB;" id="liveStreamStatusText">Ready to broadcast</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: HELPLINES DIRECTORY -->
+    <!-- ========================================== -->
+    <div id="tabHelplines" class="tab-content-panel">
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 22px; font-weight: 800; color: #F4F7FB; margin-bottom: 4px;">Mumbai & National Emergency Helplines</h2>
+            <p style="font-size: 13.5px; color: #9AA8BD; margin: 0;">Direct 1-tap connection to verified 24/7 public emergency response dispatch centers.</p>
+        </div>
+
+        <div class="helpline-grid">
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #dc2626;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">112</div>
+                    <div class="helpline-label">National Emergency (All-in-One)</div>
+                    <div class="helpline-desc">Police, Medical, Fire, and Disaster unified response helpline</div>
+                </div>
+                <a href="tel:112" class="btn-call-helpline" style="background: #dc2626;">
+                    <i class="fa-solid fa-phone"></i> Call 112
+                </a>
+            </div>
+
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #2563eb;"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">100</div>
+                    <div class="helpline-label">Mumbai Police Control Room</div>
+                    <div class="helpline-desc">Immediate police assistance, crime reporting & mobile patrol</div>
+                </div>
+                <a href="tel:100" class="btn-call-helpline" style="background: #2563eb;">
+                    <i class="fa-solid fa-phone"></i> Call 100
+                </a>
+            </div>
+
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #ea580c;"><i class="fa-solid fa-truck-medical"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">108</div>
+                    <div class="helpline-label">Ambulance & Medical Emergency</div>
+                    <div class="helpline-desc">Free government emergency ambulance and trauma dispatch</div>
+                </div>
+                <a href="tel:108" class="btn-call-helpline" style="background: #ea580c;">
+                    <i class="fa-solid fa-phone"></i> Call 108
+                </a>
+            </div>
+
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #c2410c;"><i class="fa-solid fa-fire-extinguisher"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">101</div>
+                    <div class="helpline-label">Fire & Rescue Services</div>
+                    <div class="helpline-desc">Mumbai Fire Brigade rescue and hazardous fire containment</div>
+                </div>
+                <a href="tel:101" class="btn-call-helpline" style="background: #c2410c;">
+                    <i class="fa-solid fa-phone"></i> Call 101
+                </a>
+            </div>
+
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #db2777;"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">1091</div>
+                    <div class="helpline-label">Women's Safety Helpline</div>
+                    <div class="helpline-desc">24/7 Mumbai Police dedicated women's security assistance</div>
+                </div>
+                <a href="tel:1091" class="btn-call-helpline" style="background: #db2777;">
+                    <i class="fa-solid fa-phone"></i> Call 1091
+                </a>
+            </div>
+
+            <div class="helpline-card">
+                <div>
+                    <div class="helpline-icon-wrap" style="color: #059669;"><i class="fa-solid fa-child"></i></div>
+                    <div class="helpline-num" style="margin-top: 10px;">1098</div>
+                    <div class="helpline-label">Childline India</div>
+                    <div class="helpline-desc">24-hour national emergency outreach service for children</div>
+                </div>
+                <a href="tel:1098" class="btn-call-helpline" style="background: #059669;">
+                    <i class="fa-solid fa-phone"></i> Call 1098
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab Switching
+    document.querySelectorAll(".sos-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".sos-tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content-panel").forEach(p => p.classList.remove("active"));
+            btn.classList.add("active");
+            const target = document.getElementById(btn.dataset.tab);
+            if (target) target.classList.add("active");
+        });
+    });
+
+    // Live Geolocation State
+    let userLat = 19.0760;
+    let userLon = 72.8777;
+    let hasGps = false;
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                userLat = pos.coords.latitude;
+                userLon = pos.coords.longitude;
+                hasGps = true;
+                const txt = document.getElementById("gpsCoordsText");
+                if (txt) {
+                    txt.textContent = "Identifying current area...";
+                    fetch(`/api/reverse-geocode?lat=${userLat}&lon=${userLon}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.locality) {
+                                txt.textContent = `Location: ${data.locality}`;
+                            } else {
+                                txt.textContent = "Location: Mumbai";
+                            }
+                        })
+                        .catch(() => {
+                            txt.textContent = "Location: Mumbai";
+                        });
+                }
+            },
+            err => {
+                const txt = document.getElementById("gpsCoordsText");
+                if (txt) txt.textContent = "Location: Mumbai Central (Default)";
+            },
+            { enableHighAccuracy: true, timeout: 6000 }
+        );
+    }
+
+    // ==========================================
+    // 1. ONE-TOUCH SOS TRIGGER
+    // ==========================================
+    const btnTriggerSos = document.getElementById("btnTriggerSos");
+    const sosAlertResult = document.getElementById("sosAlertResult");
+    const sosDispatchLinksList = document.getElementById("sosDispatchLinksList");
+    const btnBroadcastWa = document.getElementById("btnBroadcastWa");
+
+    btnTriggerSos.addEventListener("click", () => {
+        btnTriggerSos.disabled = true;
+        btnTriggerSos.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><strong>SENDING</strong><span>Broadcasting...</span>`;
+
+        fetch("/api/sos-send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                latitude: userLat,
+                longitude: userLon
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnTriggerSos.disabled = false;
+            btnTriggerSos.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><strong>SOS</strong><span>SENT!</span>`;
+
+            if (data.success) {
+                sosAlertResult.style.display = "block";
+                sosDispatchLinksList.innerHTML = "";
+
+                if (data.broadcast_whatsapp_link && btnBroadcastWa) {
+                    btnBroadcastWa.href = data.broadcast_whatsapp_link;
+                }
+
+                if (data.whatsapp_links && data.whatsapp_links.length > 0) {
+                    data.whatsapp_links.forEach(w => {
+                        const linkCard = document.createElement("a");
+                        linkCard.href = w.url;
+                        linkCard.target = "_blank";
+                        linkCard.className = "dispatch-btn wa";
+                        linkCard.innerHTML = `
+                            <span><i class="fa-brands fa-whatsapp"></i> WhatsApp <strong>${escapeHtml(w.name)}</strong> (${escapeHtml(w.relationship || 'Guardian')})</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        `;
+                        sosDispatchLinksList.appendChild(linkCard);
+                    });
+                } else if (data.broadcast_whatsapp_link) {
+                    const linkCard = document.createElement("a");
+                    linkCard.href = data.broadcast_whatsapp_link;
+                    linkCard.target = "_blank";
+                    linkCard.className = "dispatch-btn wa";
+                    linkCard.innerHTML = `
+                        <span><i class="fa-brands fa-whatsapp"></i> Broadcast SOS on WhatsApp</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    `;
+                    sosDispatchLinksList.appendChild(linkCard);
+                }
+
+                if (data.tracking_url) {
+                    const trackCard = document.createElement("a");
+                    trackCard.href = data.tracking_url;
+                    trackCard.target = "_blank";
+                    trackCard.className = "dispatch-btn";
+                    trackCard.style.background = "#eff6ff";
+                    trackCard.style.color = "#1d4ed8";
+                    trackCard.style.borderColor = "#bfdbfe";
+                    trackCard.innerHTML = `
+                        <span><i class="fa-solid fa-person-walking"></i> View Live Tracking Link</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    `;
+                    sosDispatchLinksList.appendChild(trackCard);
+                }
+            } else {
+                alert("Error sending SOS: " + (data.message || "Unknown error"));
+            }
+        })
+        .catch(err => {
+            btnTriggerSos.disabled = false;
+            btnTriggerSos.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><strong>SOS</strong><span>RETRY</span>`;
+            alert("Network error dispatching SOS alert.");
+        });
+    });
+
+    // Siren Generator (Web Audio API Synthesizer)
+    let audioCtx = null;
+    let sirenOsc = null;
+    let isSirenOn = false;
+
+    const btnToggleSiren = document.getElementById("btnToggleSiren");
+    const sirenBtnText = document.getElementById("sirenBtnText");
+
+    btnToggleSiren.addEventListener("click", () => {
+        if (!isSirenOn) {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sirenOsc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                sirenOsc.type = "sawtooth";
+                sirenOsc.frequency.setValueAtTime(600, audioCtx.currentTime);
+
+                // Alternating Police / Ambulance frequency sweep
+                let freq = 600;
+                let goingUp = true;
+                const sweepInterval = setInterval(() => {
+                    if (!isSirenOn) {
+                        clearInterval(sweepInterval);
+                        return;
+                    }
+                    freq = goingUp ? 900 : 500;
+                    goingUp = !goingUp;
+                    sirenOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.15);
+                }, 300);
+
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                sirenOsc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                sirenOsc.start();
+
+                isSirenOn = true;
+                sirenBtnText.textContent = "STOP SIREN";
+                btnToggleSiren.style.background = "#dc2626";
+                btnToggleSiren.style.color = "white";
+            } catch (e) {
+                console.error("Audio API error:", e);
+            }
+        } else {
+            if (sirenOsc) {
+                try { sirenOsc.stop(); } catch(e) {}
+            }
+            if (audioCtx) {
+                try { audioCtx.close(); } catch(e) {}
+            }
+            isSirenOn = false;
+            sirenBtnText.textContent = "Sound Danger Siren";
+            btnToggleSiren.style.background = "";
+            btnToggleSiren.style.color = "";
+        }
+    });
+
+    // ==========================================
+    // 2. TRUSTED CONTACTS MANAGER
+    // ==========================================
+    const btnToggleAddContact = document.getElementById("btnToggleAddContact");
+    const addContactBox = document.getElementById("addContactBox");
+    const btnCancelAddContact = document.getElementById("btnCancelAddContact");
+    const formAddContact = document.getElementById("formAddContact");
+
+    btnToggleAddContact.addEventListener("click", () => {
+        addContactBox.style.display = addContactBox.style.display === "block" ? "none" : "block";
+    });
+
+    btnCancelAddContact.addEventListener("click", () => {
+        addContactBox.style.display = "none";
+    });
+
+    formAddContact.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("inputContactName").value.trim();
+        const phone = document.getElementById("inputContactPhone").value.trim();
+        const relationship = document.getElementById("inputContactRel").value;
+        const email = document.getElementById("inputContactEmail").value.trim();
+
+        if (!name || !phone) {
+            alert("Name and phone number are required.");
+            return;
+        }
+
+        fetch("/api/contacts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, phone, relationship, email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || "Could not save contact.");
+            }
+        })
+        .catch(err => alert("Error saving contact."));
+    });
+
+    // Delete Contact
+    document.querySelectorAll(".btn-delete-contact").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            if (confirm("Remove this emergency contact?")) {
+                fetch(`/api/contacts/${id}`, { method: "DELETE" })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) window.location.reload();
+                    });
+            }
+        });
+    });
+
+    // Set Primary Contact
+    document.querySelectorAll(".btn-make-primary").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            fetch(`/api/contacts/${id}/primary`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) window.location.reload();
+                });
+        });
+    });
+
+    // ==========================================
+    // 3. LIVE "WALK WITH ME" TRACKING
+    // ==========================================
+    let trackingToken = null;
+    let watchId = null;
+    const btnStartTracking = document.getElementById("btnStartTracking");
+    const btnStopTracking = document.getElementById("btnStopTracking");
+    const trackShareCard = document.getElementById("trackShareCard");
+    const trackShareUrlInput = document.getElementById("trackShareUrlInput");
+    const btnCopyTrackLink = document.getElementById("btnCopyTrackLink");
+    const btnShareTrackWa = document.getElementById("btnShareTrackWa");
+    const liveStreamStatusText = document.getElementById("liveStreamStatusText");
+
+    btnStartTracking.addEventListener("click", () => {
+        btnStartTracking.disabled = true;
+        btnStartTracking.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Initializing GPS stream...`;
+
+        fetch("/api/tracking/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                latitude: userLat,
+                longitude: userLon
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnStartTracking.disabled = false;
+            if (data.success) {
+                trackingToken = data.token;
+                btnStartTracking.style.display = "none";
+                btnStopTracking.style.display = "block";
+                trackShareCard.style.display = "block";
+                trackShareUrlInput.value = data.tracking_url;
+
+                const waShareText = `I am sharing my live location with you via Dynamic Risk Intelligence, Safety & Threat Identification: ${data.tracking_url}`;
+                btnShareTrackWa.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waShareText)}`;
+                liveStreamStatusText.textContent = "Broadcasting live GPS coordinates every 4s";
+
+                // Start watchPosition
+                if (navigator.geolocation) {
+                    watchId = navigator.geolocation.watchPosition(
+                        pos => {
+                            userLat = pos.coords.latitude;
+                            userLon = pos.coords.longitude;
+                            const speed = (pos.coords.speed || 0) * 3.6; // m/s to km/h
+                            const heading = pos.coords.heading || 0;
+
+                            fetch("/api/tracking/update", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    token: trackingToken,
+                                    latitude: userLat,
+                                    longitude: userLon,
+                                    speed: speed,
+                                    heading: heading
+                                })
+                            });
+                        },
+                        err => console.error("GPS Watch error:", err),
+                        { enableHighAccuracy: true, maximumAge: 3000 }
+                    );
+                }
+            } else {
+                alert("Could not start tracking: " + data.message);
+                btnStartTracking.innerHTML = `<i class="fa-solid fa-play"></i> Start Live Location Sharing`;
+            }
+        })
+        .catch(err => {
+            btnStartTracking.disabled = false;
+            btnStartTracking.innerHTML = `<i class="fa-solid fa-play"></i> Start Live Location Sharing`;
+            alert("Error starting live tracking session.");
+        });
+    });
+
+    btnStopTracking.addEventListener("click", () => {
+        if (!trackingToken) return;
+
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+        }
+
+        fetch("/api/tracking/stop", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: trackingToken })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnStartTracking.style.display = "block";
+            btnStartTracking.innerHTML = `<i class="fa-solid fa-play"></i> Start Live Location Sharing`;
+            btnStopTracking.style.display = "none";
+            trackShareCard.style.display = "none";
+            liveStreamStatusText.textContent = "Session ended";
+            alert("Live tracking session ended.");
+        });
+    });
+
+    btnCopyTrackLink.addEventListener("click", () => {
+        trackShareUrlInput.select();
+        navigator.clipboard.writeText(trackShareUrlInput.value);
+        btnCopyTrackLink.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+        setTimeout(() => {
+            btnCopyTrackLink.innerHTML = `<i class="fa-solid fa-copy"></i> Copy`;
+        }, 2000);
+    });
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[m]);
+    }
+</script>
+{% endblock %}

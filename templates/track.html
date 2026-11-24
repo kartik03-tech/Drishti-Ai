@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Live Location Sharing — Dynamic Risk Intelligence, Safety & Threat Identification{% endblock %}
+
+{% block head %}
+<style>
+    .track-wrapper {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 72px);
+        min-height: 560px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Floating Status Card */
+    .track-top-panel {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(840px, calc(100% - 32px));
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .track-card {
+        background: rgba(19, 28, 46, 0.95);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid #22304A;
+        border-radius: 18px;
+        padding: 14px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .track-user-info {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .track-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #0B1220;
+        color: #2DD4A7;
+        border: 2px solid #2DD4A7;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .track-title {
+        font-size: 16.5px;
+        font-weight: 800;
+        color: #F4F7FB;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .track-status-pill {
+        font-size: 11.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .status-active {
+        background: rgba(45, 212, 167, 0.15);
+        color: #2DD4A7;
+        border: 1px solid rgba(45, 212, 167, 0.3);
+    }
+
+    .status-ended {
+        background: rgba(255, 90, 95, 0.15);
+        color: #FF5A5F;
+        border: 1px solid rgba(255, 90, 95, 0.3);
+    }
+
+    .track-sub {
+        font-size: 12.5px;
+        color: #9AA8BD;
+        display: flex;
+        gap: 12px;
+    }
+
+    .track-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-track-action {
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-emergency-call {
+        background: #FF5A5F;
+        color: white;
+    }
+    .btn-emergency-call:hover {
+        background: #e0484d;
+    }
+
+    .btn-recenter {
+        background: #0B1220;
+        color: #2DD4A7;
+        border: 1px solid #22304A;
+    }
+    .btn-recenter:hover {
+        background: #19253d;
+        border-color: #2DD4A7;
+    }
+
+    #liveMap {
+        width: 100%;
+        height: 100%;
+        background: #0B1220;
+        z-index: 1;
+    }
+
+    /* Pulsing Live Dot */
+    .track-pin-dot {
+        width: 22px;
+        height: 22px;
+        background: #2DD4A7;
+        border: 3px solid white;
+        border-radius: 50%;
+        box-shadow: 0 0 0 6px rgba(45, 212, 167, 0.4);
+        animation: pulse-track 1.8s infinite;
+    }
+
+    @keyframes pulse-track {
+        0% { box-shadow: 0 0 0 4px rgba(45, 212, 167, 0.6); }
+        70% { box-shadow: 0 0 0 18px rgba(45, 212, 167, 0); }
+        100% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0); }
+    }
+
+    /* Trail start & end marker */
+    .track-trail-dot {
+        width: 10px;
+        height: 10px;
+        background: #10b981;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="track-wrapper">
+
+    {% if error %}
+    <div style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); z-index: 999; text-align: center; background: #131C2E; border: 1px solid #22304A; padding: 36px 40px; border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); max-width: 460px;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; color: #FF5A5F; margin-bottom: 16px;"></i>
+        <h2 style="font-size: 22px; font-weight: 800; color: #F4F7FB; margin-bottom: 8px;">Session Not Found</h2>
+        <p style="color: #9AA8BD; font-size: 14px; margin-bottom: 24px;">{{ error }}</p>
+        <a href="{{ url_for('sos') }}" class="btn-track-action btn-recenter" style="justify-content: center; width: 100%;">
+            <i class="fa-solid fa-arrow-left"></i> Go to Emergency SOS
+        </a>
+    </div>
+    {% else %}
+
+    <!-- Top Info Card -->
+    <div class="track-top-panel">
+        <div class="track-card">
+            <div class="track-user-info">
+                <div class="track-avatar">
+                    <i class="fa-solid fa-person-walking"></i>
+                </div>
+                <div>
+                    <div class="track-title">
+                        <span>{{ track_session.user_name or 'User' }}'s Live Location</span>
+                        <span id="sessionStatusPill" class="track-status-pill {% if track_session.active %}status-active{% else %}status-ended{% endif %}">
+                            <i class="fa-solid fa-circle" style="font-size: 8px;"></i>
+                            <span id="sessionStatusText">{% if track_session.active %}Live Active{% else %}Ended{% endif %}</span>
+                        </span>
+                    </div>
+                    <div class="track-sub">
+                        <span><i class="fa-solid fa-clock"></i> Last updated: <strong id="lastUpdatedVal">{{ track_session.last_updated }}</strong></span>
+                        <span id="speedBlock"><i class="fa-solid fa-gauge-high"></i> Speed: <strong id="speedVal">{{ "%.1f"|format(track_session.speed or 0) }} km/h</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="track-actions">
+                <button type="button" class="btn-track-action btn-recenter" id="btnRecenter">
+                    <i class="fa-solid fa-crosshairs"></i> Recenter
+                </button>
+                <a href="tel:112" class="btn-track-action btn-emergency-call">
+                    <i class="fa-solid fa-phone"></i> Call 112
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Map -->
+    <div id="liveMap"></div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if track_session %}
+<script>
+    const SESSION_TOKEN = "{{ track_session.token }}";
+    let currentLat = {{ track_session.current_lat or 19.0760 }};
+    let currentLon = {{ track_session.current_lon or 72.8777 }};
+    let initialTrail = {{ track_session.trail|tojson|safe }} || [];
+
+    // Initialize Leaflet Map
+    const map = L.map("liveMap", {
+        center: [currentLat, currentLon],
+        zoom: 16,
+        zoomControl: false
+    });
+
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    // OpenStreetMap Free Tile Layer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Custom Live Marker
+    const userPinIcon = L.divIcon({
+        className: "sg-track-marker",
+        html: `<div class="track-pin-dot"></div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    });
+
+    const userMarker = L.marker([currentLat, currentLon], { icon: userPinIcon }).addTo(map);
+    userMarker.bindPopup(`<strong>{{ track_session.user_name or 'User' }}</strong><br>Live GPS Location`).openPopup();
+
+    // Route Breadcrumb Trail
+    const trailPolyline = L.polyline(initialTrail, {
+        color: "#2563eb",
+        weight: 5,
+        opacity: 0.85,
+        lineCap: "round",
+        lineJoin: "round",
+        dashArray: "8, 6"
+    }).addTo(map);
+
+    // Recenter Button
+    document.getElementById("btnRecenter").addEventListener("click", () => {
+        map.flyTo([currentLat, currentLon], 16, { animate: true, duration: 1 });
+    });
+
+    // Real-Time Polling every 3.5 seconds
+    let isTrackingActive = {{ 'true' if track_session.active else 'false' }};
+
+    function pollTrackingStatus() {
+        if (!isTrackingActive) return;
+
+        fetch(`/api/tracking/${SESSION_TOKEN}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.session) return;
+                const sess = data.session;
+
+                // Update Coordinates
+                currentLat = parseFloat(sess.current_lat);
+                currentLon = parseFloat(sess.current_lon);
+
+                userMarker.setLatLng([currentLat, currentLon]);
+
+                // Update Trail
+                if (sess.trail && sess.trail.length > 0) {
+                    trailPolyline.setLatLngs(sess.trail);
+                }
+
+                // Update Subtitle Info
+                if (document.getElementById("lastUpdatedVal")) {
+                    document.getElementById("lastUpdatedVal").textContent = sess.last_updated;
+                }
+                if (document.getElementById("speedVal")) {
+                    document.getElementById("speedVal").textContent = `${(sess.speed || 0).toFixed(1)} km/h`;
+                }
+
+                // Update Status if ended
+                if (!sess.active) {
+                    isTrackingActive = false;
+                    const pill = document.getElementById("sessionStatusPill");
+                    const txt = document.getElementById("sessionStatusText");
+                    if (pill && txt) {
+                        pill.className = "track-status-pill status-ended";
+                        txt.textContent = "Ended";
+                    }
+                }
+            })
+            .catch(err => console.error("Tracking poll error:", err));
+    }
+
+    if (isTrackingActive) {
+        setInterval(pollTrackingStatus, 3500);
+    }
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{
+    "algorithm": "RandomForestRegressor (120 Trees)",
+    "training_samples": 119,
+    "test_samples": 30,
+    "r2_score": 0.72,
+    "mean_absolute_error": 0.462,
+    "root_mean_squared_error": 0.558,
+    "cross_val_r2": 0.68,
+    "feature_importances": {
+        "Street Lighting": 72.5,
+        "Caution & Incident Penalty": 7.5,
+        "Emergency Services Density": 1.0,
+        "Geographic Zone": 9.3,
+        "Establishment Category": 7.5,
+        "Night-time Accessibility": 2.2
+    },
+    "features_used": [
+        "lighting_score",
+        "category_code",
+        "zone_code",
+        "emergency_density",
+        "night_accessible",
+        "caution_penalty"
+    ],
+    "model_version": "2.0.0",
+    "last_trained": "2026-11-24 12:41:01"
+}
