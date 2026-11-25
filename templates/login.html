@@ -110,75 +110,6 @@
 
 
         /* =========================================
-           LOGO
-        ========================================== */
-
-        .auth-logo {
-
-            position: absolute;
-
-            top: 28px;
-
-            left: 35px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            text-decoration: none;
-
-            color: #1F1315;
-
-            z-index: 10;
-        }
-
-
-        .auth-logo-icon {
-
-            width: 42px;
-
-            height: 42px;
-
-            border-radius: 11px;
-
-            background: #D6203A;
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-weight: 900;
-
-            font-size: 14px;
-
-            box-shadow:
-                0 8px 20px rgba(214, 32, 58, 0.22);
-        }
-
-
-        .auth-logo-text {
-
-            font-size: 20px;
-
-            font-weight: 700;
-
-            letter-spacing: -0.4px;
-        }
-
-
-        .auth-logo-text span {
-
-            color: #D6203A;
-        }
-
-
-        /* =========================================
            AUTH CARD
         ========================================== */
 
@@ -285,23 +216,29 @@
 
         .brand-mini {
 
-            display: flex;
+            display: inline-flex;
 
             align-items: center;
 
-            gap: 11px;
+            gap: 12px;
 
-            margin-bottom: 72px;
+            margin-bottom: 56px;
+
+            text-decoration: none;
+
+            color: #FFFFFF;
         }
 
 
         .brand-mini-icon {
 
-            width: 47px;
+            width: 44px;
 
-            height: 47px;
+            height: 44px;
 
-            border-radius: 13px;
+            min-width: 44px;
+
+            border-radius: 12px;
 
             display: flex;
 
@@ -313,27 +250,53 @@
 
             color: #D6203A;
 
-            font-weight: 900;
-
-            font-size: 14px;
+            font-size: 18px;
 
             box-shadow:
-                0 9px 22px
+                0 6px 18px
                 rgba(0, 0, 0, 0.15);
+
+            flex-shrink: 0;
+
+            transition: transform 0.18s ease;
         }
 
+        .brand-mini:hover .brand-mini-icon {
+            transform: scale(1.05);
+        }
+
+        .brand-mini-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
 
         .brand-mini-name {
 
-            font-size: 19px;
+            font-size: 17.5px;
 
             font-weight: 800;
+
+            color: #FFFFFF;
+
+            letter-spacing: -0.3px;
+
+            white-space: nowrap;
         }
 
 
         .brand-mini-name span {
 
             color: #FDECEF;
+        }
+
+        .brand-mini-sub {
+            font-size: 9.5px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            text-transform: uppercase;
         }
 
 
@@ -854,53 +817,55 @@
 
                 grid-template-columns: 1fr;
 
-                max-width: 560px;
+                max-width: 540px;
 
             }
 
             .auth-left {
 
-                padding: 40px 34px;
+                padding: 34px 28px;
 
             }
 
             .brand-mini {
 
-                margin-bottom: 40px;
+                margin-bottom: 24px;
 
             }
 
             .auth-left h1 {
 
-                font-size: 42px;
+                font-size: 32px;
+
+                line-height: 1.15;
 
             }
 
             .auth-description {
 
-                margin-bottom: 30px;
+                margin-bottom: 0;
+
+                font-size: 14px;
+
+            }
+
+            .feature-list {
+
+                display: none;
 
             }
 
             .auth-right {
 
-                padding: 40px 34px;
-
-            }
-
-            .auth-logo {
-
-                position: static;
-
-                margin-bottom: 20px;
+                padding: 34px 28px;
 
             }
 
             .auth-page {
 
-                display: block;
+                display: flex;
 
-                padding-top: 25px;
+                padding: 24px 16px;
 
             }
 
@@ -916,34 +881,28 @@
 
             .auth-page {
 
-                padding: 20px 14px;
-
-            }
-
-            .auth-logo {
-
-                margin-left: 5px;
+                padding: 16px 12px;
 
             }
 
             .auth-left,
             .auth-right {
 
-                padding: 32px 24px;
+                padding: 28px 20px;
 
             }
 
             .auth-left h1 {
 
-                font-size: 36px;
+                font-size: 26px;
 
-                letter-spacing: -1px;
+                letter-spacing: -0.5px;
 
             }
 
             .login-content h2 {
 
-                font-size: 29px;
+                font-size: 24px;
 
             }
 
@@ -959,24 +918,6 @@
     <div class="auth-page">
 
 
-        <!-- LOGO ONLY -->
-
-        <a
-            href="{{ url_for('login') }}"
-            class="auth-logo"
-        >
-
-            <div class="auth-logo-icon">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-
-            <div class="auth-logo-text">
-                Dynamic Risk <span>Intelligence</span>
-            </div>
-
-        </a>
-
-
         <div class="auth-card">
 
 
@@ -989,17 +930,22 @@
                 <div class="left-content">
 
 
-                    <div class="brand-mini">
+                    <a href="{{ url_for('dashboard') }}" class="brand-mini" title="Dynamic Risk Intelligence, Safety &amp; Threat Identification">
 
                         <div class="brand-mini-icon">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
 
-                        <div class="brand-mini-name">
-                            Dynamic Risk <span>Intelligence</span>
+                        <div class="brand-mini-text">
+                            <div class="brand-mini-name">
+                                Dynamic Risk <span>Intelligence</span>
+                            </div>
+                            <div class="brand-mini-sub">
+                                Safety &amp; Threat Identification
+                            </div>
                         </div>
 
-                    </div>
+                    </a>
 
 
                     <h1>
