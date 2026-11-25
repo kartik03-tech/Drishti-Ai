@@ -100,32 +100,45 @@
         .sg-brand {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 11px;
             text-decoration: none;
             color: inherit;
             flex-shrink: 0;
-            white-space: nowrap;
+            min-width: 0;
         }
 
         .sg-brand-logo {
-            width: 36px;
-            height: 36px;
-            min-width: 36px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
             background: #D6203A;
             border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #FFFFFF;
-            font-size: 16px;
+            font-size: 18px;
             box-shadow: 0 4px 12px rgba(214, 32, 58, 0.25);
             flex-shrink: 0;
+            transition: transform 0.18s ease;
+        }
+
+        .sg-brand:hover .sg-brand-logo {
+            transform: scale(1.04);
+        }
+
+        .sg-brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.15;
+            min-width: 0;
         }
 
         .sg-brand-title {
-            font-size: 19px;
+            font-size: 15.5px;
             font-weight: 800;
-            letter-spacing: -0.4px;
+            letter-spacing: -0.3px;
             color: #1F1315;
             white-space: nowrap;
         }
@@ -133,6 +146,15 @@
         .sg-brand-title span {
             color: #D6203A;
             font-weight: 800;
+        }
+
+        .sg-brand-sub {
+            font-size: 10px;
+            font-weight: 600;
+            color: #6B5559;
+            letter-spacing: 0.25px;
+            white-space: nowrap;
+            text-transform: uppercase;
         }
 
         /* Desktop Nav Items */
@@ -386,10 +408,29 @@
         }
 
         /* Responsive Breakpoints */
-        @media (max-width: 1200px) {
+        @media (max-width: 1280px) {
+            .sg-brand-title {
+                font-size: 14.5px;
+            }
+            .sg-brand-sub {
+                font-size: 9px;
+            }
             .sg-nav-link {
                 padding: 6px 12px;
                 font-size: 13px;
+            }
+        }
+
+        @media (max-width: 1140px) {
+            .sg-brand-title {
+                font-size: 13.5px;
+            }
+            .sg-brand-sub {
+                font-size: 8.5px;
+            }
+            .sg-nav-link {
+                padding: 6px 9px;
+                font-size: 12px;
             }
         }
 
@@ -403,29 +444,56 @@
             .sg-main {
                 padding-bottom: 90px;
             }
+            .sg-brand-title {
+                font-size: 15.5px;
+            }
+            .sg-brand-sub {
+                font-size: 10px;
+            }
         }
 
-        @media (max-width: 560px) {
+        @media (max-width: 600px) {
             .sg-header {
-                min-height: 64px;
+                min-height: 62px;
             }
             .sg-header-container {
                 gap: 8px;
                 width: calc(100% - 16px);
             }
+            .sg-brand {
+                gap: 8px;
+            }
             .sg-brand-logo {
-                width: 32px;
-                height: 32px;
-                min-width: 32px;
-                font-size: 14px;
+                width: 34px;
+                height: 34px;
+                min-width: 34px;
+                font-size: 15px;
                 border-radius: 9px;
             }
             .sg-brand-title {
-                font-size: 16px;
+                font-size: 13px;
+            }
+            .sg-brand-sub {
+                font-size: 8px;
             }
             .sg-sos-btn {
-                padding: 7px 14px;
+                padding: 7px 12px;
                 font-size: 12px;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .sg-brand-title {
+                font-size: 12px;
+            }
+            .sg-brand-sub {
+                display: none;
+            }
+            .sg-user-pill span {
+                display: none;
+            }
+            .sg-user-pill {
+                padding: 4px;
             }
         }
     </style>
@@ -436,11 +504,14 @@
     <!-- Header Navigation -->
     <header class="sg-header">
         <div class="sg-header-container">
-            <a href="{{ url_for('dashboard') }}" class="sg-brand">
+            <a href="{{ url_for('dashboard') }}" class="sg-brand" title="Dynamic Risk Intelligence, Safety &amp; Threat Identification">
                 <div class="sg-brand-logo">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <div class="sg-brand-title">SafeGuard <span>AI</span></div>
+                <div class="sg-brand-text">
+                    <div class="sg-brand-title">Dynamic Risk <span>Intelligence</span></div>
+                    <div class="sg-brand-sub">Safety &amp; Threat Identification</div>
+                </div>
             </a>
 
             <!-- Desktop Nav Links (Clean text pills matching design) -->
