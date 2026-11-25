@@ -21,36 +21,36 @@
 
     <style>
         :root {
-            /* User Design System Tokens */
-            --sg-bg: #0B1220;              /* Page ground (deep navy) */
-            --sg-surface: #131C2E;         /* Cards, search bar, panels */
-            --sg-card: #131C2E;
-            --sg-surface-hover: #19253d;
-            --sg-border: #22304A;          /* Outlines, dividers */
-            --sg-border-light: rgba(34, 48, 74, 0.7);
+            /* User Specified Palette */
+            --sg-bg: #FFFFFF;              /* Base: #FFFFFF white */
+            --sg-surface: #FFFFFF;
+            --sg-card: #FFFFFF;
+            --sg-surface-subtle: #FAF7F8;
+            --sg-border: #F3D9DE;          /* Borders: #F3D9DE */
+            --sg-border-light: #F9EBEF;
 
-            --sg-primary: #2DD4A7;         /* Brand, 'Assess Risk' button, safe state */
-            --sg-primary-hover: #26b992;
-            --sg-primary-soft: rgba(45, 212, 167, 0.12);
-            --sg-safe: #2DD4A7;
+            --sg-primary: #D6203A;         /* Primary red: #D6203A (hero panel, buttons, logo) */
+            --sg-primary-hover: #BF1B32;
+            --sg-deep-red: #8F1226;        /* Deep red: #8F1226 (SOS button, accent text) */
+            --sg-soft-red: #FDECEF;        /* Soft red tint: #FDECEF (active nav tab, stat tiles) */
+            --sg-safe: #10B981;
 
-            --sg-warning: #F5B544;         /* Moderate-risk labels */
-            --sg-warning-soft: rgba(245, 181, 68, 0.14);
+            --sg-warning: #F59E0B;
+            --sg-warning-soft: #FEF3C7;
+            --sg-danger: #D6203A;
+            --sg-sos: #8F1226;
 
-            --sg-danger: #FF5A5F;          /* SOS button and high-risk labels only */
-            --sg-danger-hover: #e0484d;
-            --sg-danger-soft: rgba(255, 90, 95, 0.14);
-            --sg-sos: #FF5A5F;
+            --sg-heading: #1F1315;         /* Text: #1F1315 for headings */
+            --sg-text-heading: #1F1315;
+            --sg-body: #6B5559;            /* #6B5559 for body */
+            --sg-text: #1F1315;
+            --sg-text-muted: #6B5559;
+            --sg-text-sub: #8F767A;
 
-            --sg-text: #F4F7FB;            /* Headings */
-            --sg-text-heading: #F4F7FB;
-            --sg-text-muted: #9AA8BD;      /* Body text */
-            --sg-text-sub: #7a89a0;
-
-            --sg-radius: 14px;
-            --sg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
-            --sg-shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-            --sg-shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+            --sg-radius: 16px;
+            --sg-shadow-sm: 0 1px 3px rgba(31, 19, 21, 0.04);
+            --sg-shadow-md: 0 6px 20px rgba(31, 19, 21, 0.06);
+            --sg-shadow-lg: 0 16px 40px rgba(31, 19, 21, 0.1);
         }
 
         * {
@@ -61,8 +61,8 @@
 
         body {
             font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
-            background-color: var(--sg-bg);
-            color: var(--sg-text-muted);
+            background-color: #FFFFFF;
+            color: #6B5559;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -71,19 +71,18 @@
         }
 
         h1, h2, h3, h4, h5, h6 {
-            color: var(--sg-text-heading);
+            color: #1F1315;
             font-weight: 700;
         }
 
-        /* Top Header Navigation */
+        /* Top Header Navigation (White + Clean from user screenshot) */
         .sg-header {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: rgba(19, 28, 46, 0.96);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--sg-border);
+            background: #FFFFFF;
+            border-bottom: 1px solid #F3D9DE;
+            box-shadow: 0 2px 10px rgba(31, 19, 21, 0.03);
             min-height: 72px;
             display: flex;
             align-items: center;
@@ -101,78 +100,49 @@
         .sg-brand {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
             color: inherit;
             flex-shrink: 0;
             white-space: nowrap;
-            min-width: max-content;
         }
 
         .sg-brand-logo {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            background: linear-gradient(135deg, #2DD4A7, #059669);
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            background: #D6203A;
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0B1220;
-            font-size: 18px;
-            box-shadow: 0 4px 14px rgba(45, 212, 167, 0.3);
+            color: #FFFFFF;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(214, 32, 58, 0.25);
             flex-shrink: 0;
-        }
-
-        .sg-brand-text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex-shrink: 0;
-            min-width: max-content;
         }
 
         .sg-brand-title {
-            font-size: 15px;
+            font-size: 19px;
             font-weight: 800;
-            letter-spacing: -0.2px;
-            color: #F4F7FB;
+            letter-spacing: -0.4px;
+            color: #1F1315;
             white-space: nowrap;
-            word-break: keep-all;
-            line-height: 1.25;
-            margin: 0;
-            padding: 0;
-            display: block;
         }
 
         .sg-brand-title span {
-            color: #2DD4A7;
+            color: #D6203A;
             font-weight: 800;
-        }
-
-        .sg-brand-sub {
-            font-size: 9.5px;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            color: #9AA8BD;
-            white-space: nowrap;
-            word-break: keep-all;
-            line-height: 1.15;
-            margin-top: 2px;
-            padding: 0;
-            display: block;
         }
 
         /* Desktop Nav Items */
         .sg-nav {
             display: flex;
             align-items: center;
-            gap: 3px;
-            background: #0B1220;
-            padding: 4px 6px;
-            border-radius: 999px;
-            border: 1px solid var(--sg-border);
+            gap: 4px;
+            background: transparent;
+            padding: 0;
+            border: none;
             flex-shrink: 1;
         }
 
@@ -180,31 +150,26 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 999px;
             text-decoration: none;
-            font-size: 12.5px;
+            font-size: 14px;
             font-weight: 600;
-            color: #9AA8BD;
-            transition: all 0.2s ease;
+            color: #6B5559;
+            transition: all 0.15s ease;
             white-space: nowrap;
             flex-shrink: 0;
         }
 
-        .sg-nav-link i {
-            font-size: 12.5px;
-        }
-
         .sg-nav-link:hover {
-            color: #F4F7FB;
-            background: rgba(45, 212, 167, 0.08);
+            color: #1F1315;
+            background: #FDECEF;
         }
 
         .sg-nav-link.active {
-            color: #2DD4A7;
-            background: #131C2E;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--sg-border);
+            color: #8F1226 !important;
+            background: #FDECEF !important;
+            font-weight: 700;
         }
 
         /* Header Actions */
@@ -215,82 +180,63 @@
         }
 
         .sg-sos-btn {
-            background: linear-gradient(135deg, #FF5A5F, #e0484d);
-            color: white !important;
-            padding: 9px 18px;
+            background: #8F1226;
+            color: #FFFFFF !important;
+            padding: 9px 20px;
             border-radius: 999px;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            box-shadow: 0 4px 14px rgba(255, 90, 95, 0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            animation: pulse-sos 2.5s infinite;
-        }
-
-        @keyframes pulse-sos {
-            0% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.5); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 90, 95, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0); }
+            box-shadow: 0 4px 12px rgba(143, 18, 38, 0.25);
+            transition: all 0.15s ease;
         }
 
         .sg-sos-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 6px 18px rgba(255, 90, 95, 0.55);
+            background: #730e1e;
+            transform: translateY(-1px);
         }
 
         .sg-user-pill {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 6px 14px;
-            background: #131C2E;
-            border: 1px solid var(--sg-border);
+            gap: 8px;
+            padding: 4px 12px 4px 4px;
+            background: #FFFFFF;
+            border: 1px solid #F3D9DE;
             border-radius: 999px;
             font-size: 13px;
             font-weight: 600;
-            color: #F4F7FB;
+            color: #6B5559;
         }
 
         .sg-user-avatar {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: #2DD4A7;
-            color: #0B1220;
+            background: #FDECEF;
+            color: #8F1226;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 12.5px;
             font-weight: 800;
         }
 
         .sg-logout-btn {
-            color: #9AA8BD;
+            color: #6B5559;
             text-decoration: none;
             font-size: 13px;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 8px;
             transition: color 0.15s ease;
         }
 
         .sg-logout-btn:hover {
-            color: #FF5A5F;
-        }
-
-        /* Mobile Menu Toggle */
-        .sg-mobile-toggle {
-            display: none;
-            background: none;
-            border: 1px solid var(--sg-border);
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 18px;
-            color: #F4F7FB;
-            cursor: pointer;
+            color: #D6203A;
         }
 
         /* Flash Message Banner */
@@ -312,9 +258,9 @@
             border: 1px solid transparent;
         }
 
-        .sg-alert-success { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border-color: rgba(45, 212, 167, 0.35); }
-        .sg-alert-danger { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border-color: rgba(255, 90, 95, 0.35); }
-        .sg-alert-info { background: rgba(245, 181, 68, 0.15); color: #F5B544; border-color: rgba(245, 181, 68, 0.35); }
+        .sg-alert-success { background: #E6F8F0; color: #047857; border-color: #A7F3D0; }
+        .sg-alert-danger { background: #FDECEF; color: #8F1226; border-color: #F3D9DE; }
+        .sg-alert-info { background: #FDECEF; color: #8F1226; border-color: #F3D9DE; }
 
         /* Main Content Layout */
         .sg-main {
@@ -330,9 +276,8 @@
             left: 0;
             right: 0;
             height: 64px;
-            background: rgba(19, 28, 46, 0.96);
-            backdrop-filter: blur(14px);
-            border-top: 1px solid var(--sg-border);
+            background: #FFFFFF;
+            border-top: 1px solid #F3D9DE;
             z-index: 1000;
             justify-content: space-around;
             align-items: center;
@@ -345,7 +290,7 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
-            color: #9AA8BD;
+            color: #6B5559;
             text-decoration: none;
             font-size: 11px;
             font-weight: 600;
@@ -359,11 +304,12 @@
         }
 
         .sg-bottom-link.active {
-            color: #2DD4A7;
+            color: #D6203A;
+            font-weight: 700;
         }
 
         .sg-bottom-sos {
-            background: #FF5A5F;
+            background: #8F1226;
             color: white !important;
             width: 46px;
             height: 46px;
@@ -372,7 +318,7 @@
             align-items: center;
             justify-content: center;
             margin-top: -18px;
-            box-shadow: 0 4px 14px rgba(255, 90, 95, 0.45);
+            box-shadow: 0 4px 14px rgba(143, 18, 38, 0.4);
         }
 
         .sg-bottom-sos i {
@@ -381,11 +327,11 @@
 
         /* Footer */
         .sg-footer {
-            background: #131C2E;
-            border-top: 1px solid var(--sg-border);
+            background: #FFFFFF;
+            border-top: 1px solid #F3D9DE;
             padding: 36px 0;
             margin-top: auto;
-            color: #9AA8BD;
+            color: #6B5559;
             font-size: 13.5px;
         }
 
@@ -401,18 +347,18 @@
 
         .sg-footer-helplines {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .sg-helpline-tag {
-            background: #0B1220;
+            background: #FDECEF;
             padding: 5px 12px;
             border-radius: 999px;
             font-weight: 600;
             font-size: 12.5px;
-            color: #F4F7FB;
-            border: 1px solid var(--sg-border);
+            color: #8F1226;
+            border: 1px solid #F3D9DE;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -421,60 +367,33 @@
         }
 
         .sg-helpline-tag:hover {
-            background: #131C2E;
-            color: #2DD4A7;
-            border-color: #2DD4A7;
+            background: #F8D5DC;
+            color: #8F1226;
         }
 
-        /* Global Leaflet Dark Theme Overrides */
+        /* Leaflet Overrides for Light Theme */
         .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-            background: #131C2E !important;
-            color: #F4F7FB !important;
-            border: 1px solid #22304A;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+            background: #FFFFFF !important;
+            color: #1F1315 !important;
+            border: 1px solid #F3D9DE;
+            box-shadow: 0 10px 30px rgba(31, 19, 21, 0.12) !important;
         }
         .leaflet-popup-content h3, .leaflet-popup-content strong {
-            color: #F4F7FB !important;
+            color: #1F1315 !important;
         }
         .leaflet-popup-content p, .leaflet-popup-content span, .leaflet-popup-content div {
-            color: #9AA8BD !important;
-        }
-        .leaflet-container a.leaflet-popup-close-button {
-            color: #9AA8BD !important;
-        }
-        .leaflet-container a.leaflet-popup-close-button:hover {
-            color: #FF5A5F !important;
-        }
-        .leaflet-bar a {
-            background-color: #131C2E !important;
-            color: #F4F7FB !important;
-            border-bottom: 1px solid #22304A !important;
-        }
-        .leaflet-bar a:hover {
-            background-color: #0B1220 !important;
-            color: #2DD4A7 !important;
+            color: #6B5559 !important;
         }
 
         /* Responsive Breakpoints */
-        @media (max-width: 1400px) {
-            .sg-header-container {
-                gap: 10px;
-                width: calc(100% - 24px);
-            }
+        @media (max-width: 1200px) {
             .sg-nav-link {
-                padding: 6px 9px;
-                font-size: 12px;
-                gap: 5px;
-            }
-            .sg-brand-title {
-                font-size: 14.5px;
-            }
-            .sg-brand-sub {
-                font-size: 9px;
+                padding: 6px 12px;
+                font-size: 13px;
             }
         }
 
-        @media (max-width: 1180px) {
+        @media (max-width: 1080px) {
             .sg-nav {
                 display: none !important;
             }
@@ -483,9 +402,6 @@
             }
             .sg-main {
                 padding-bottom: 90px;
-            }
-            .sg-mobile-toggle {
-                display: block;
             }
         }
 
@@ -497,39 +413,18 @@
                 gap: 8px;
                 width: calc(100% - 16px);
             }
-            .sg-brand {
-                gap: 8px;
-            }
             .sg-brand-logo {
-                width: 36px;
-                height: 36px;
-                min-width: 36px;
-                font-size: 16px;
-                border-radius: 10px;
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                font-size: 14px;
+                border-radius: 9px;
             }
             .sg-brand-title {
-                font-size: 13px;
-                letter-spacing: -0.2px;
-            }
-            .sg-brand-sub {
-                font-size: 8px;
-                letter-spacing: 0.3px;
+                font-size: 16px;
             }
             .sg-sos-btn {
-                padding: 7px 12px;
-                font-size: 12px;
-                gap: 5px;
-            }
-            .sg-header-actions {
-                gap: 8px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .sg-brand-sub {
-                display: none;
-            }
-            .sg-brand-title {
+                padding: 7px 14px;
                 font-size: 12px;
             }
         }
@@ -545,60 +440,36 @@
                 <div class="sg-brand-logo">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <div class="sg-brand-text">
-                    <div class="sg-brand-title">Dynamic Risk <span>Intelligence</span></div>
-                    <div class="sg-brand-sub">Safety &amp; Threat Identification</div>
-                </div>
+                <div class="sg-brand-title">SafeGuard <span>AI</span></div>
             </a>
 
-            <!-- Desktop Nav Links -->
+            <!-- Desktop Nav Links (Clean text pills matching design) -->
             <nav class="sg-nav">
-                <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Home & Search</span>
-                </a>
-                <a href="{{ url_for('safety_map') }}" class="sg-nav-link {% if request.endpoint == 'safety_map' %}active{% endif %}">
-                    <i class="fa-solid fa-map-location-dot"></i>
-                    <span>Interactive Map</span>
-                </a>
-                <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">
-                    <i class="fa-solid fa-truck-medical"></i>
-                    <span>Emergency Directory</span>
-                </a>
-                <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">
-                    <i class="fa-solid fa-brain"></i>
-                    <span>AI Intelligence</span>
-                </a>
-                <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">
-                    <i class="fa-solid fa-route"></i>
-                    <span>Safe Route</span>
-                </a>
-                <a href="{{ url_for('report') }}" class="sg-nav-link {% if request.endpoint == 'report' %}active{% endif %}">
-                    <i class="fa-solid fa-bullhorn"></i>
-                    <span>Community Reports</span>
-                </a>
+                <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Home &amp; Search</a>
+                <a href="{{ url_for('safety_map') }}" class="sg-nav-link {% if request.endpoint == 'safety_map' %}active{% endif %}">Interactive Map</a>
+                <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">Emergency Directory</a>
+                <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">AI Intelligence</a>
+                <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">Safe Route</a>
             </nav>
 
             <!-- Actions (SOS & User Profile) -->
             <div class="sg-header-actions">
                 <a href="{{ url_for('sos') }}" class="sg-sos-btn">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
                     <span>SOS 112</span>
                 </a>
 
                 {% if session.get('user_id') or session.get('guest') %}
                 <div class="sg-user-pill">
                     <div class="sg-user-avatar">
-                        {{ (session.get('user_name', 'G'))[0]|upper }}
+                        {{ (session.get('user_name', 'N'))[0]|upper }}
                     </div>
-                    <span>{{ session.get('user_name', 'Guest') }}</span>
+                    <span>{{ session.get('user_name', 'noone') }}</span>
                     <a href="{{ url_for('logout') }}" class="sg-logout-btn" title="Sign out">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     </a>
                 </div>
                 {% else %}
-                <a href="{{ url_for('login') }}" class="sg-nav-link" style="border: 1px solid var(--sg-border); background: #131C2E; color: #F4F7FB;">
-                    <i class="fa-solid fa-user"></i>
+                <a href="{{ url_for('login') }}" class="sg-nav-link" style="border: 1px solid var(--sg-border); background: var(--sg-tint); color: var(--sg-deep-red); font-weight: 700;">
                     <span>Sign In</span>
                 </a>
                 {% endif %}
