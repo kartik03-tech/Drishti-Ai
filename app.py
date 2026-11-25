@@ -25,6 +25,7 @@ from flask import (
     session,
     url_for,
 )
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 import ai_model
 
@@ -49,11 +50,17 @@ ENV_FILE = os.path.join(BASE_DIR, ".env")
 load_dotenv(ENV_FILE, override=True)
 
 app = Flask(__name__)
+# Enable ProxyFix so Flask correctly identifies HTTPS scheme and host behind reverse proxies (Render, Railway, etc.)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 app.config["SECRET_KEY"] = os.environ.get(
     "DRISTI_SECRET_KEY",
     os.environ.get("SAFEGUARD_SECRET_KEY", "dynamic-risk-intelligence-key"),
 )
 app.config["JSON_SORT_KEYS"] = False
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 
 
 # ============================================================
@@ -2038,6 +2045,7 @@ def login():
             session.clear()
             session["user_id"] = user["id"]
             session["user_name"] = user["name"]
+            session.permanent = True
 
             next_url = (
                 request.args.get("next")
@@ -2117,6 +2125,7 @@ def register():
             )
 
         conn = get_db()
+        cursor = conn.cursor()
 
         try:
             columns = table_columns(
@@ -2132,7 +2141,7 @@ def register():
                     "TEXT",
                 )
 
-            conn.execute(
+            cursor.execute(
                 """
                 INSERT INTO users
                 (name, email, password_hash)
@@ -2146,6 +2155,17 @@ def register():
             )
 
             conn.commit()
+            new_user_id = cursor.lastrowid
+
+            # Automatically log the user in upon successful registration
+            session.clear()
+            session["user_id"] = new_user_id
+            session["user_name"] = name
+            session.permanent = True
+
+            return redirect(
+                url_for("dashboard")
+            )
 
         except sqlite3.IntegrityError:
             return render_template(
@@ -2155,13 +2175,17 @@ def register():
                     "already registered."
                 ),
             )
+        except Exception as exc:
+            app.logger.error("Registration error: %s", exc)
+            return render_template(
+                "register.html",
+                error=(
+                    "An error occurred while creating your account. Please try again."
+                ),
+            )
 
         finally:
             conn.close()
-
-        return redirect(
-            url_for("login")
-        )
 
     return render_template(
         "register.html"
