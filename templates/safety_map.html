@@ -27,20 +27,20 @@
     }
 
     .map-search-bar {
-        background: rgba(19, 28, 46, 0.95);
+        background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border: 1px solid #22304A;
+        border: 1px solid #F3D9DE;
         border-radius: 16px;
         padding: 8px 12px;
         display: flex;
         align-items: center;
         gap: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 24px rgba(143, 18, 38, 0.08);
     }
 
     .map-search-icon {
-        color: #9AA8BD;
+        color: #6B5559;
         font-size: 15px;
         margin-left: 6px;
     }
@@ -52,31 +52,33 @@
         background: transparent;
         font-size: 14.5px;
         font-weight: 500;
-        color: #F4F7FB;
+        color: #1F1315;
     }
 
     .map-search-input::placeholder {
-        color: #9AA8BD;
+        color: #6B5559;
+        opacity: 0.8;
     }
 
     .map-locate-btn {
-        background: #2DD4A7;
-        color: #0B1220;
+        background: #D6203A;
+        color: #FFFFFF;
         border: none;
         border-radius: 10px;
-        padding: 8px 14px;
+        padding: 8px 16px;
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
         gap: 7px;
         cursor: pointer;
         transition: all 0.15s ease;
         white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(214, 32, 58, 0.25);
     }
 
     .map-locate-btn:hover {
-        background: #26b992;
+        background: #8F1226;
     }
 
     /* Layer Filter Pills */
@@ -93,61 +95,61 @@
     }
 
     .map-pill {
-        background: rgba(19, 28, 46, 0.94);
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        border: 1px solid #22304A;
+        border: 1px solid #F3D9DE;
         border-radius: 999px;
         padding: 6px 14px;
         font-size: 12.5px;
         font-weight: 600;
-        color: #9AA8BD;
+        color: #6B5559;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 6px;
         white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 8px rgba(143, 18, 38, 0.04);
         transition: all 0.15s ease;
         user-select: none;
     }
 
     .map-pill:hover {
-        background: #19253d;
-        color: #F4F7FB;
-        border-color: #2DD4A7;
+        background: #FDECEF;
+        color: #1F1315;
+        border-color: #F3D9DE;
         transform: translateY(-1px);
     }
 
-    .map-pill.police { color: #2DD4A7; border-color: rgba(45, 212, 167, 0.4); }
-    .map-pill.hospital { color: #FF5A5F; border-color: rgba(255, 90, 95, 0.4); }
-    .map-pill.fire { color: #F5B544; border-color: rgba(245, 181, 68, 0.4); }
-    .map-pill.pharmacy { color: #2DD4A7; border-color: rgba(45, 212, 167, 0.4); }
-    .map-pill.hotspots { color: #FF5A5F; border-color: rgba(255, 90, 95, 0.4); background: rgba(255, 90, 95, 0.1); }
+    .map-pill.police { color: #8F1226; border-color: #F3D9DE; }
+    .map-pill.hospital { color: #D6203A; border-color: #F3D9DE; }
+    .map-pill.fire { color: #B45309; border-color: #FDE68A; }
+    .map-pill.pharmacy { color: #047857; border-color: #A7F3D0; }
+    .map-pill.hotspots { color: #8F1226; border-color: #F3D9DE; background: #FDECEF; }
 
     .map-pill.active {
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 3px 10px rgba(143, 18, 38, 0.15);
     }
 
-    .map-pill.active.police { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
-    .map-pill.active.hospital { background: #FF5A5F !important; border-color: #FF5A5F !important; color: white !important; font-weight: 700; }
-    .map-pill.active.fire { background: #F5B544 !important; border-color: #F5B544 !important; color: #0B1220 !important; font-weight: 700; }
-    .map-pill.active.pharmacy { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
-    .map-pill.active.hotspots { background: #FF5A5F !important; border-color: #FF5A5F !important; color: white !important; font-weight: 700; }
-    .map-pill.active.safety { background: #2DD4A7 !important; border-color: #2DD4A7 !important; color: #0B1220 !important; font-weight: 700; }
+    .map-pill.active.police { background: #D6203A !important; border-color: #D6203A !important; color: #FFFFFF !important; font-weight: 700; }
+    .map-pill.active.hospital { background: #D6203A !important; border-color: #D6203A !important; color: #FFFFFF !important; font-weight: 700; }
+    .map-pill.active.fire { background: #D97706 !important; border-color: #D97706 !important; color: #FFFFFF !important; font-weight: 700; }
+    .map-pill.active.pharmacy { background: #059669 !important; border-color: #059669 !important; color: #FFFFFF !important; font-weight: 700; }
+    .map-pill.active.hotspots { background: #8F1226 !important; border-color: #8F1226 !important; color: #FFFFFF !important; font-weight: 700; }
+    .map-pill.active.safety { background: #D6203A !important; border-color: #D6203A !important; color: #FFFFFF !important; font-weight: 700; }
 
     .map-hint-badge {
         font-size: 11.5px;
         font-weight: 500;
-        color: #9AA8BD;
-        background: rgba(19, 28, 46, 0.9);
+        color: #6B5559;
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(8px);
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 999px;
-        border: 1px solid #22304A;
+        border: 1px solid #F3D9DE;
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 6px rgba(143, 18, 38, 0.04);
         align-self: flex-start;
     }
 

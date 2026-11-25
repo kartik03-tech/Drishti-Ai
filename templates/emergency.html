@@ -9,50 +9,38 @@
         margin: 0 auto;
     }
 
-    /* Hero Banner */
+    /* Hero Banner (White & Crimson Theme) */
     .em-hero {
-        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
-        border: 1px solid #22304A;
-        border-radius: 20px;
-        padding: 40px;
-        color: #F4F7FB;
+        background: #D6203A;
+        border: none;
+        border-radius: 32px;
+        padding: 44px 40px;
+        color: #FFFFFF;
         margin-bottom: 28px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    .em-hero::after {
-        content: '';
-        position: absolute;
-        top: -50px;
-        right: -50px;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(45, 212, 167, 0.2) 0%, transparent 70%);
-        border-radius: 50%;
-        pointer-events: none;
+        box-shadow: 0 16px 44px rgba(214, 32, 58, 0.22);
     }
 
     .em-badge {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(45, 212, 167, 0.15);
-        color: #2DD4A7;
+        background: rgba(0, 0, 0, 0.22);
+        color: #FFFFFF;
         padding: 6px 14px;
         border-radius: 999px;
         font-size: 12.5px;
         font-weight: 700;
         letter-spacing: 0.5px;
         text-transform: uppercase;
-        border: 1px solid rgba(45, 212, 167, 0.3);
+        border: none;
         margin-bottom: 16px;
     }
 
     .em-hero h1 {
-        color: #F4F7FB !important;
-        font-size: 32px;
+        color: #FFFFFF !important;
+        font-size: clamp(28px, 4vw, 36px);
         font-weight: 800;
         letter-spacing: -0.5px;
         margin-bottom: 10px;
@@ -60,7 +48,7 @@
 
     .em-hero p {
         font-size: 15px;
-        color: #9AA8BD !important;
+        color: rgba(255, 255, 255, 0.92) !important;
         max-width: 640px;
         line-height: 1.6;
         margin-bottom: 24px;
@@ -75,11 +63,11 @@
     }
 
     .btn-detect-loc {
-        background: #2DD4A7;
-        color: #0B1220;
+        background: #FFFFFF;
+        color: #D6203A;
         border: none;
-        padding: 12px 22px;
-        border-radius: 12px;
+        padding: 12px 24px;
+        border-radius: 999px;
         font-size: 14px;
         font-weight: 800;
         display: inline-flex;
@@ -87,20 +75,20 @@
         gap: 9px;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 4px 14px rgba(45, 212, 167, 0.35);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     }
 
     .btn-detect-loc:hover {
-        background: #26b992;
+        background: #FDECEF;
         transform: translateY(-1px);
     }
 
     .btn-call-112 {
-        background: #131C2E;
-        color: #F4F7FB;
-        border: 1px solid #22304A;
-        padding: 12px 22px;
-        border-radius: 12px;
+        background: #8F1226;
+        color: #FFFFFF;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 999px;
         font-size: 14px;
         font-weight: 700;
         text-decoration: none;
@@ -108,12 +96,13 @@
         align-items: center;
         gap: 9px;
         transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(143, 18, 38, 0.3);
     }
 
     .btn-call-112:hover {
-        background: #19253d;
-        border-color: #2DD4A7;
-        color: #2DD4A7;
+        background: #730e1e;
+        transform: translateY(-1px);
+        color: #FFFFFF;
     }
 
     .loc-status-pill {
@@ -121,11 +110,11 @@
         align-items: center;
         gap: 8px;
         font-size: 13px;
-        color: #9AA8BD;
-        padding: 8px 14px;
-        background: #0B1220;
+        color: #FFFFFF;
+        padding: 8px 16px;
+        background: rgba(0, 0, 0, 0.2);
         border-radius: 999px;
-        border: 1px solid #22304A;
+        border: none;
     }
 
     /* Emergency Quick Dial Row */
@@ -137,23 +126,23 @@
     }
 
     .dial-card {
-        background: #131C2E;
-        border: 1px solid #22304A;
-        border-radius: 16px;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 18px;
         padding: 18px 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         text-decoration: none;
         color: inherit;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 8px rgba(143, 18, 38, 0.04);
         transition: all 0.2s ease;
     }
 
     .dial-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        border-color: #2DD4A7;
+        box-shadow: 0 8px 24px rgba(214, 32, 58, 0.12);
+        border-color: #D6203A;
     }
 
     .dial-icon {
@@ -164,34 +153,37 @@
         align-items: center;
         justify-content: center;
         font-size: 18px;
+        background: #FDECEF;
+        color: #D6203A;
     }
 
-    .dial-card.police .dial-icon { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; }
-    .dial-card.ambulance .dial-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
-    .dial-card.fire .dial-icon { background: rgba(245, 181, 68, 0.15); color: #F5B544; }
-    .dial-card.women .dial-icon { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; }
+    .dial-card.police .dial-icon { background: #FDECEF; color: #8F1226; }
+    .dial-card.ambulance .dial-icon { background: #FDECEF; color: #D6203A; }
+    .dial-card.fire .dial-icon { background: #FEF3C7; color: #B45309; }
+    .dial-card.women .dial-icon { background: #FDECEF; color: #8F1226; }
 
     .dial-info strong {
         display: block;
-        font-size: 14px;
-        color: #F4F7FB;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #1F1315;
     }
 
     .dial-info span {
         font-size: 12px;
-        color: #9AA8BD;
+        color: #6B5559;
     }
 
     .dial-number {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 800;
-        color: #F4F7FB;
+        color: #8F1226;
     }
 
     /* Directory Controls & Search */
     .em-controls-bar {
-        background: #131C2E;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         border-radius: 18px;
         padding: 16px 20px;
         margin-bottom: 24px;
@@ -200,7 +192,7 @@
         gap: 16px;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 8px rgba(143, 18, 38, 0.04);
     }
 
     .em-search-box {
@@ -214,7 +206,7 @@
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #9AA8BD;
+        color: #6B5559;
         font-size: 14px;
     }
 
@@ -222,21 +214,22 @@
         width: 100%;
         padding: 10px 16px 10px 40px;
         border-radius: 12px;
-        border: 1px solid #22304A;
+        border: 1px solid #F3D9DE;
         font-size: 14px;
-        background: #0B1220;
-        color: #F4F7FB;
+        background: #FFFFFF;
+        color: #1F1315;
         outline: none;
-        transition: border-color 0.2s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .em-search-input::placeholder {
-        color: #9AA8BD;
+        color: #6B5559;
+        opacity: 0.8;
     }
 
     .em-search-input:focus {
-        border-color: #2DD4A7;
-        background: #0B1220;
+        border-color: #D6203A;
+        box-shadow: 0 0 0 3px #FDECEF;
     }
 
     /* Filter Tabs */
@@ -247,13 +240,13 @@
     }
 
     .em-tab-btn {
-        background: #0B1220;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         border-radius: 999px;
         padding: 8px 16px;
         font-size: 13px;
         font-weight: 600;
-        color: #9AA8BD;
+        color: #6B5559;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -262,28 +255,35 @@
     }
 
     .em-tab-btn:hover {
-        background: #19253d;
-        color: #F4F7FB;
-        border-color: #2DD4A7;
+        background: #FDECEF;
+        color: #1F1315;
+        border-color: #F3D9DE;
     }
 
     .em-tab-btn.active {
-        background: #2DD4A7;
-        color: #0B1220;
-        border-color: #2DD4A7;
+        background: #D6203A;
+        color: #FFFFFF;
+        border-color: #D6203A;
         font-weight: 700;
     }
 
     .em-tab-count {
-        background: rgba(0, 0, 0, 0.2);
+        background: #FDECEF;
+        color: #8F1226;
         padding: 1px 7px;
         border-radius: 999px;
         font-size: 11px;
+        font-weight: 700;
+    }
+
+    .em-tab-btn.active .em-tab-count {
+        background: rgba(255, 255, 255, 0.25);
+        color: #FFFFFF;
     }
 
     .em-tab-btn:not(.active) .em-tab-count {
-        background: #131C2E;
-        color: #9AA8BD;
+        background: #FDECEF;
+        color: #8F1226;
     }
 
     /* Service Cards Grid */
@@ -294,22 +294,22 @@
     }
 
     .srv-card {
-        background: #131C2E;
-        border: 1px solid #22304A;
-        border-radius: 16px;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 18px;
         padding: 20px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         gap: 16px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 8px rgba(143, 18, 38, 0.04);
         transition: all 0.2s ease;
     }
 
     .srv-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
-        border-color: #2DD4A7;
+        box-shadow: 0 10px 24px rgba(214, 32, 58, 0.12);
+        border-color: #D6203A;
     }
 
     .srv-header {
@@ -331,18 +331,18 @@
         letter-spacing: 0.5px;
     }
 
-    .srv-pill.hospital { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
-    .srv-pill.police { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3); }
-    .srv-pill.fire { background: rgba(245, 181, 68, 0.15); color: #F5B544; border: 1px solid rgba(245, 181, 68, 0.3); }
-    .srv-pill.pharmacy { background: rgba(45, 212, 167, 0.15); color: #2DD4A7; border: 1px solid rgba(45, 212, 167, 0.3); }
-    .srv-pill.blood_bank { background: rgba(255, 90, 95, 0.15); color: #FF5A5F; border: 1px solid rgba(255, 90, 95, 0.3); }
+    .srv-pill.hospital { background: #FDECEF; color: #8F1226; border: 1px solid #F3D9DE; }
+    .srv-pill.police { background: #FDECEF; color: #8F1226; border: 1px solid #F3D9DE; }
+    .srv-pill.fire { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+    .srv-pill.pharmacy { background: #E6F8F0; color: #047857; border: 1px solid #A7F3D0; }
+    .srv-pill.blood_bank { background: #FDECEF; color: #8F1226; border: 1px solid #F3D9DE; }
 
     .srv-distance {
         font-size: 12.5px;
         font-weight: 700;
-        color: #2DD4A7;
-        background: #0B1220;
-        border: 1px solid #22304A;
+        color: #8F1226;
+        background: #FDECEF;
+        border: 1px solid #F3D9DE;
         padding: 4px 10px;
         border-radius: 8px;
         white-space: nowrap;
@@ -351,14 +351,14 @@
     .srv-name {
         font-size: 16px;
         font-weight: 700;
-        color: #F4F7FB;
+        color: #1F1315;
         line-height: 1.35;
         margin-top: 6px;
     }
 
     .srv-address {
         font-size: 13px;
-        color: #9AA8BD;
+        color: #6B5559;
         display: flex;
         gap: 8px;
         align-items: flex-start;
@@ -368,23 +368,23 @@
 
     .srv-address i {
         margin-top: 3px;
-        color: #9AA8BD;
+        color: #6B5559;
     }
 
     .srv-actions {
         display: flex;
         gap: 8px;
-        border-top: 1px solid #22304A;
+        border-top: 1px solid #F3D9DE;
         padding-top: 14px;
         margin-top: auto;
     }
 
     .srv-btn {
         flex: 1;
-        padding: 8px 12px;
+        padding: 9px 12px;
         border-radius: 10px;
         font-size: 12.5px;
-        font-weight: 600;
+        font-weight: 700;
         text-align: center;
         text-decoration: none;
         display: inline-flex;
@@ -395,24 +395,23 @@
     }
 
     .srv-btn-map {
-        background: #0B1220;
-        color: #F4F7FB;
-        border: 1px solid #22304A;
+        background: #FDECEF;
+        color: #8F1226;
+        border: 1px solid #F3D9DE;
     }
 
     .srv-btn-map:hover {
-        background: #19253d;
-        color: #2DD4A7;
-        border-color: #2DD4A7;
+        background: #F3D9DE;
+        color: #1F1315;
     }
 
     .srv-btn-call {
-        background: #FF5A5F;
+        background: #D6203A;
         color: white;
     }
 
     .srv-btn-call:hover {
-        background: #e0484d;
+        background: #8F1226;
     }
 
     /* Empty state */
@@ -420,13 +419,13 @@
         text-align: center;
         padding: 60px 20px;
         grid-column: 1 / -1;
-        color: #9AA8BD;
+        color: #6B5559;
     }
 
     .em-empty i {
         font-size: 40px;
         margin-bottom: 12px;
-        color: #22304A;
+        color: #F3D9DE;
     }
 </style>
 {% endblock %}

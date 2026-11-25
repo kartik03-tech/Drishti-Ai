@@ -10,17 +10,17 @@
         font-family: 'Inter', -apple-system, sans-serif;
     }
 
-    /* Page Header */
+    /* Page Header (Crimson #8F1226) */
     .sos-hero-card {
-        background: linear-gradient(135deg, #131C2E 0%, #0B1220 100%);
-        border: 1px solid #22304A;
-        border-radius: 24px;
-        padding: 36px 40px;
-        color: #F4F7FB;
+        background: #8F1226;
+        border: none;
+        border-radius: 32px;
+        padding: 44px 40px;
+        color: #FFFFFF;
         margin-bottom: 28px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 16px 44px rgba(143, 18, 38, 0.25);
     }
 
     .sos-hero-card::after {
@@ -30,7 +30,7 @@
         right: -60px;
         width: 240px;
         height: 240px;
-        background: radial-gradient(circle, rgba(255, 90, 95, 0.25) 0%, rgba(255, 90, 95, 0) 70%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
         border-radius: 50%;
         pointer-events: none;
     }
@@ -43,25 +43,25 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: #FF5A5F;
-        background: rgba(255, 90, 95, 0.15);
-        padding: 4px 12px;
+        color: #FFFFFF;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 6px 14px;
         border-radius: 999px;
         margin-bottom: 12px;
-        border: 1px solid rgba(255, 90, 95, 0.3);
+        border: none;
     }
 
     .sos-hero-card h1 {
-        font-size: 36px;
+        font-size: clamp(28px, 4vw, 36px);
         font-weight: 800;
         letter-spacing: -0.6px;
         margin: 0 0 10px;
-        color: #F4F7FB !important;
+        color: #FFFFFF !important;
     }
 
     .sos-hero-card p {
         font-size: 15px;
-        color: #9AA8BD;
+        color: rgba(255, 255, 255, 0.92);
         max-width: 660px;
         line-height: 1.6;
         margin: 0;
@@ -71,8 +71,8 @@
     .sos-nav-tabs {
         display: flex;
         gap: 8px;
-        background: #0B1220;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         padding: 6px;
         border-radius: 16px;
         margin-bottom: 28px;
@@ -88,7 +88,7 @@
         border-radius: 12px;
         font-size: 13.5px;
         font-weight: 700;
-        color: #9AA8BD;
+        color: #6B5559;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -99,15 +99,15 @@
     }
 
     .sos-tab-btn:hover {
-        color: #F4F7FB;
-        background: #19253d;
+        color: #1F1315;
+        background: #FDECEF;
     }
 
     .sos-tab-btn.active {
-        background: #131C2E;
-        color: #2DD4A7;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-        border: 1px solid #22304A;
+        background: #FDECEF;
+        color: #8F1226;
+        box-shadow: none;
+        border: 1px solid #F3D9DE;
     }
 
     .tab-content-panel {
@@ -137,11 +137,11 @@
     }
 
     .sos-main-panel {
-        background: #131C2E;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         border-radius: 20px;
         padding: 32px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 16px rgba(143, 18, 38, 0.04);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -158,7 +158,7 @@
         width: 190px;
         height: 190px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #FF5A5F 0%, #e0484d 100%);
+        background: #8F1226;
         border: none;
         color: white;
         display: flex;
@@ -167,7 +167,7 @@
         justify-content: center;
         gap: 6px;
         cursor: pointer;
-        box-shadow: 0 16px 36px rgba(255, 90, 95, 0.35);
+        box-shadow: 0 16px 36px rgba(143, 18, 38, 0.35);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         position: relative;
         z-index: 2;
@@ -175,7 +175,8 @@
 
     .sos-giant-button:hover {
         transform: scale(1.04);
-        box-shadow: 0 20px 48px rgba(255, 90, 95, 0.55);
+        background: #730e1e;
+        box-shadow: 0 20px 48px rgba(143, 18, 38, 0.55);
     }
 
     .sos-giant-button:active {
@@ -208,7 +209,7 @@
         width: 190px;
         height: 190px;
         border-radius: 50%;
-        border: 2px solid rgba(255, 90, 95, 0.4);
+        border: 2px solid rgba(143, 18, 38, 0.4);
         animation: sos-wave 2.2s infinite;
         z-index: 1;
         pointer-events: none;
@@ -225,12 +226,12 @@
 
     /* GPS Info Pill */
     .gps-info-bar {
-        background: #0B1220;
-        border: 1px solid #22304A;
+        background: #FDECEF;
+        border: 1px solid #F3D9DE;
         border-radius: 12px;
         padding: 10px 16px;
         font-size: 13px;
-        color: #9AA8BD;
+        color: #8F1226;
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -239,11 +240,11 @@
 
     /* Multi-channel Action Card */
     .sos-sidebar-panel {
-        background: #131C2E;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         border-radius: 20px;
         padding: 24px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 16px rgba(143, 18, 38, 0.04);
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -252,7 +253,7 @@
     .sidebar-section-title {
         font-size: 15px;
         font-weight: 800;
-        color: #F4F7FB;
+        color: #1F1315;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -269,44 +270,44 @@
         align-items: center;
         justify-content: space-between;
         text-decoration: none;
-        border: 1px solid #22304A;
-        background: #0B1220;
-        color: #F4F7FB;
+        border: 1px solid #F3D9DE;
+        background: #FFFFFF;
+        color: #1F1315;
         transition: all 0.15s ease;
         cursor: pointer;
     }
 
     .dispatch-btn:hover {
-        background: #19253d;
-        border-color: #2DD4A7;
+        background: #FDECEF;
+        border-color: #D6203A;
         transform: translateY(-1px);
     }
 
     .dispatch-btn.wa {
-        background: rgba(45, 212, 167, 0.12);
-        border-color: rgba(45, 212, 167, 0.3);
-        color: #2DD4A7;
+        background: #E6F8F0;
+        border-color: #A7F3D0;
+        color: #047857;
     }
-    .dispatch-btn.wa:hover { background: rgba(45, 212, 167, 0.2); }
+    .dispatch-btn.wa:hover { background: #d1fae5; }
 
     .dispatch-btn.siren {
-        background: rgba(255, 90, 95, 0.12);
-        border-color: rgba(255, 90, 95, 0.3);
-        color: #FF5A5F;
+        background: #FDECEF;
+        border-color: #F3D9DE;
+        color: #8F1226;
     }
-    .dispatch-btn.siren:hover { background: rgba(255, 90, 95, 0.2); }
+    .dispatch-btn.siren:hover { background: #fcd7dd; }
 
     /* Results / Status Card */
     .sos-alert-result {
         display: none;
         width: 100%;
-        background: rgba(45, 212, 167, 0.12);
-        border: 1px solid #2DD4A7;
+        background: #E6F8F0;
+        border: 1px solid #A7F3D0;
         border-radius: 14px;
         padding: 16px;
         margin-top: 18px;
         text-align: left;
-        color: #F4F7FB;
+        color: #047857;
     }
 
     /* TAB 2: CONTACTS MANAGER */
@@ -327,11 +328,11 @@
     }
 
     .contact-card {
-        background: #131C2E;
-        border: 1px solid #22304A;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
         border-radius: 18px;
         padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 2px 8px rgba(143, 18, 38, 0.04);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -341,13 +342,13 @@
     }
 
     .contact-card:hover {
-        border-color: #2DD4A7;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border-color: #D6203A;
+        box-shadow: 0 8px 20px rgba(214, 32, 58, 0.12);
     }
 
     .contact-card.is-primary {
-        border-color: #F5B544;
-        background: #152035;
+        border-color: #D6203A;
+        background: #FDECEF;
     }
 
     .contact-card-head {
@@ -359,7 +360,7 @@
     .contact-name {
         font-size: 16px;
         font-weight: 800;
-        color: #F4F7FB;
+        color: #1F1315;
     }
 
     .contact-rel-badge {
