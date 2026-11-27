@@ -39,6 +39,22 @@ print(f"   Predicted Score: {prediction.get('predicted_score')}, Risk Level: {pr
 assert len(prediction.get("factors", [])) > 0, "Expected factors in explainability breakdown"
 print("   AI Explainability (XAI) API verified!")
 
+# 3b. Location-Specific AI Predict API
+for loc_name in ["Marine Drive", "Kala Ghoda Cafe", "Sakinaka"]:
+    r_loc = client.post("/api/ai-predict", json={"location": loc_name})
+    assert r_loc.status_code == 200
+    loc_data = r_loc.get_json()
+    assert loc_data.get("success") is True
+    details = loc_data.get("location_details") or {}
+    assert details.get("matched") is True, f"Expected matched details for {loc_name}"
+    assert details.get("nearest_station") is not None, f"Expected nearest_station for {loc_name}"
+    assert loc_data["prediction"].get("predicted_score") is not None
+print("   Location-specific AI prediction verified!")
+
+r1_loc = client.get("/ai-insights?location=Bandra+West")
+assert r1_loc.status_code == 200
+assert b"Calculate for a Particular Mumbai Location" in r1_loc.data
+
 # 4. Area Search with AI Explainability
 r4 = client.get("/dashboard?location=Marine+Drive")
 print(f"4. GET /dashboard?location=Marine+Drive -> {r4.status_code}")

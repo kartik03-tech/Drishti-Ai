@@ -790,6 +790,12 @@ MUMBAI_LOCATION_FALLBACKS = {
     "andheri": (19.1197, 72.8468),
     "andheri west": (19.1364, 72.8277),
     "andheri east": (19.1150, 72.8690),
+    "sakinaka": (19.1030, 72.8878),
+    "marol": (19.1190, 72.8825),
+    "lokhandwala": (19.1436, 72.8257),
+    "chandivali": (19.1112, 72.8976),
+    "wadala": (19.0172, 72.8648),
+    "dharavi": (19.0422, 72.8536),
     "versova": (19.1352, 72.8143),
     "jogeshwari": (19.1378, 72.8498),
     "goregaon": (19.1663, 72.8526),
@@ -978,6 +984,23 @@ def _local_coordinates(query):
         or _station_location(query)
         or _fallback_location(query)
     )
+
+
+def _resolve_place_coords(query, rec=None):
+    """Resolve coordinates from query, matched place name, or zone parts without network calls."""
+    coords = _local_coordinates(query)
+    if coords:
+        return coords
+    if rec:
+        coords = _local_coordinates(rec.get("place"))
+        if coords:
+            return coords
+        zone_text = clean(rec.get("zone"))
+        for part in re.split(r"[/,]", zone_text):
+            coords = _local_coordinates(part.strip())
+            if coords:
+                return coords
+    return None
 
 
 def _fallback_location(query):
@@ -3010,9 +3033,7 @@ def dashboard():
             safety_result = safety_record(
                 location
             )
-            loc_coords = _local_coordinates(location)
-            if not loc_coords and safety_result:
-                loc_coords = _local_coordinates(safety_result.get("place"))
+            loc_coords = _resolve_place_coords(location, safety_result)
 
         if loc_coords and valid_coordinates(loc_coords.get("lat"), loc_coords.get("lon")):
             lat_val = loc_coords["lat"]
@@ -3075,10 +3096,19 @@ def dashboard():
 def ai_insights():
     metrics = ai_model.get_model_metrics()
     hotspots = ai_model.get_accident_hotspots()
+    all_places = all_safety_places()
+    hangouts_list = get_hangout_catalog()
+    place_names = sorted(
+        {p["place"] for p in all_places if p.get("place")}
+        | {h["name"] for h in hangouts_list if h.get("name")}
+    )
+    selected_location = clean(request.args.get("location"))
     return render_template(
         "ai_insights.html",
         metrics=metrics,
         hotspots=hotspots,
+        place_names=place_names,
+        selected_location=selected_location,
     )
 
 
@@ -3093,10 +3123,100 @@ def api_hotspots():
 @app.route("/api/ai-predict", methods=["POST"])
 def api_ai_predict():
     data = request.get_json(silent=True) or {}
-    lighting = data.get("lighting", "Good")
-    category = data.get("category", "Commercial")
-    zone = data.get("zone", "South Mumbai")
-    notes = data.get("notes", "")
+    location_query = clean(data.get("location"))
+
+    lighting = clean(data.get("lighting")) or "Good"
+    category = clean(data.get("category")) or "Commercial"
+    zone = clean(data.get("zone")) or "South Mumbai"
+    notes = clean(data.get("notes"))
+
+    location_details = None
+    if location_query:
+        rec = safety_record(location_query)
+        matched_hangout = None
+        if not rec:
+            q_low = location_query.casefold()
+            for item in hangout_places.RAW_HANGOUT_PLACES:
+                if q_low == item["name"].casefold() or item["name"].casefold() in q_low:
+                    matched_hangout = item
+                    rec = safety_record(item["safety_lookup"])
+                    break
+
+        loc_coords = _resolve_place_coords(location_query, rec)
+
+        station_info = None
+        police_info = None
+        hospital_info = None
+        if loc_coords and valid_coordinates(loc_coords.get("lat"), loc_coords.get("lon")):
+            station_info = nearest_station(loc_coords["lat"], loc_coords["lon"])
+            p_hits = nearest_services(loc_coords["lat"], loc_coords["lon"], "police", limit=1) or []
+            h_hits = nearest_services(loc_coords["lat"], loc_coords["lon"], "hospital", limit=1) or []
+            police_info = p_hits[0] if p_hits else None
+            hospital_info = h_hits[0] if h_hits else None
+
+        if rec:
+            lighting = rec.get("lighting") or lighting
+            category = rec.get("category") or category
+            zone = rec.get("zone") or zone
+            notes = rec.get("notes") or notes
+
+            modes = hangout_places.assess_time_and_solo_safety(
+                score=rec.get("score"),
+                lighting=lighting,
+                best_time=rec.get("best_time"),
+                notes=notes,
+                category=category,
+                open_late=(matched_hangout.get("open_late") if matched_hangout else None),
+                police_distance_km=(police_info.get("distance_km") if police_info else None),
+            )
+            location_details = {
+                "matched": True,
+                "query": location_query,
+                "place": matched_hangout["name"] if matched_hangout else rec.get("place"),
+                "safety_record_place": rec.get("place"),
+                "zone": zone,
+                "category": category,
+                "lighting": lighting,
+                "best_time": rec.get("best_time") or "Day & Evening Hours",
+                "notes": notes,
+                "dataset_score": rec.get("score"),
+                "night_label": modes["night_label"],
+                "night_safe": modes["night_safe"],
+                "solo_label": modes["solo_label"],
+                "solo_safe": modes["solo_safe"],
+                "nearest_station": station_info,
+                "nearest_police": (
+                    {"name": police_info.get("name"), "distance_km": police_info.get("distance_km")}
+                    if police_info
+                    else None
+                ),
+                "nearest_hospital": (
+                    {"name": hospital_info.get("name"), "distance_km": hospital_info.get("distance_km")}
+                    if hospital_info
+                    else None
+                ),
+            }
+        else:
+            location_details = {
+                "matched": False,
+                "query": location_query,
+                "place": location_query,
+                "zone": zone,
+                "category": category,
+                "lighting": lighting,
+                "notes": notes,
+                "nearest_station": station_info,
+                "nearest_police": (
+                    {"name": police_info.get("name"), "distance_km": police_info.get("distance_km")}
+                    if police_info
+                    else None
+                ),
+                "nearest_hospital": (
+                    {"name": hospital_info.get("name"), "distance_km": hospital_info.get("distance_km")}
+                    if hospital_info
+                    else None
+                ),
+            }
 
     result = ai_model.explain_prediction(
         lighting_score=lighting,
@@ -3107,6 +3227,7 @@ def api_ai_predict():
     return jsonify({
         "success": True,
         "prediction": result,
+        "location_details": location_details,
     })
 
 

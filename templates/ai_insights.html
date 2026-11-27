@@ -316,15 +316,50 @@
             {% endfor %}
         </div>
 
-        <!-- Interactive AI Simulator -->
+        <!-- Interactive AI Location Predictor & Simulator -->
         <div class="ai-card">
             <div class="ai-card-title">
                 <i class="fa-solid fa-sliders" style="color: #4f46e5;"></i>
-                <span>Interactive AI Prediction Simulator</span>
+                <span>AI Location Analyzer &amp; Simulator</span>
             </div>
             <div class="ai-card-subtitle">
-                Adjust features to observe real-time predictions and factor explanations.
+                Calculate the AI safety score for any specific Mumbai locality or hangout, or adjust conditions below to simulate changes.
             </div>
+
+            <!-- Specific Location Lookup Form -->
+            <form id="locPredictForm" style="background:#FAF7F8; border:1px solid #F3D9DE; border-radius:14px; padding:12px 14px; margin-bottom:16px;">
+                <label for="simLocationInput" style="display:block; font-size:12px; font-weight:800; color:#8F1226; margin-bottom:6px; text-transform:uppercase;">
+                    <i class="fa-solid fa-location-dot"></i> Calculate for a Particular Mumbai Location
+                </label>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <input
+                        type="text"
+                        id="simLocationInput"
+                        list="mumbaiPlacesList"
+                        class="sim-input"
+                        style="flex:1; min-width:180px; background:#FFFFFF;"
+                        placeholder="Type location (e.g., Marine Drive, Bandra West, Sakinaka)..."
+                        value="{{ selected_location or '' }}"
+                    >
+                    <button type="submit" id="btnAnalyzeLocation" class="btn-sim-predict" style="width:auto; padding:10px 16px; white-space:nowrap;">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <span>Calculate</span>
+                    </button>
+                </div>
+                <datalist id="mumbaiPlacesList">
+                    {% for pname in place_names or [] %}
+                    <option value="{{ pname }}">
+                    {% endfor %}
+                </datalist>
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center;">
+                    <span style="font-size:11.5px; color:#6B5559; font-weight:700;">Try:</span>
+                    {% for quick_loc in ['Marine Drive', 'Bandra West', 'Colaba Causeway', 'Dadar Market', 'Juhu Beach', 'Sakinaka'] %}
+                    <button type="button" class="quick-loc-chip" data-loc="{{ quick_loc }}" style="background:#FFFFFF; border:1px solid #F3D9DE; color:#8F1226; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; cursor:pointer;">
+                        {{ quick_loc }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </form>
 
             <form id="simForm">
                 <div class="sim-form-group">
@@ -371,9 +406,17 @@
             </form>
 
             <div id="simResultBox" class="sim-result-box">
+                <div id="simLocHeader" style="display:none; background:#FFFFFF; border:1px solid #F3D9DE; border-radius:10px; padding:10px 12px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <strong id="simLocTitle" style="font-size:14.5px; color:#1F1315;"></strong>
+                        <span id="simDatasetTag" style="font-size:11.5px; font-weight:700; color:#6B5559;"></span>
+                    </div>
+                    <div id="simLocMeta" style="font-size:12px; color:#6B5559; margin-top:4px;"></div>
+                    <div id="simLocTransit" style="font-size:11.8px; color:#1F1315; margin-top:6px; display:flex; flex-wrap:wrap; gap:8px;"></div>
+                </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <div>
-                        <strong style="font-size: 15px; color: #1F1315;">Predicted Score:</strong>
+                        <strong style="font-size: 15px; color: #1F1315;">AI Predicted Score:</strong>
                         <span id="simScoreVal" style="font-size: 24px; font-weight: 800; color: #D6203A; margin-left: 8px;">8.2</span> / 10
                     </div>
                     <span id="simRiskPill" style="padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; background: #FDECEF; color: #8F1226;">Safe</span>
@@ -428,9 +471,122 @@
 
 {% block scripts %}
 <script>
+    function setSelectClosest(selectId, value) {
+        const el = document.getElementById(selectId);
+        if (!el || !value) return;
+        const low = String(value).toLowerCase();
+        for (const opt of el.options) {
+            if (opt.value.toLowerCase() === low || low.includes(opt.value.toLowerCase())) {
+                el.value = opt.value;
+                return;
+            }
+        }
+    }
+
+    function renderPredictionResult(data) {
+        if (!data || !data.success) return;
+        const pred = data.prediction;
+        const details = data.location_details;
+        const box = document.getElementById("simResultBox");
+        box.style.display = "block";
+
+        const locHeader = document.getElementById("simLocHeader");
+        if (details && locHeader) {
+            locHeader.style.display = "block";
+            document.getElementById("simLocTitle").textContent = details.place || details.query;
+            document.getElementById("simDatasetTag").textContent = details.matched
+                ? `Dataset Score: ${details.dataset_score}/10`
+                : "Not in dataset — estimated from selected features";
+            document.getElementById("simLocMeta").textContent = details.matched
+                ? `${details.zone} · ${details.category} · Lighting: ${details.lighting} · Best Time: ${details.best_time}`
+                : `Estimated using ${details.zone} · ${details.category} · Lighting: ${details.lighting}`;
+
+            const transitParts = [];
+            if (details.night_label) {
+                transitParts.push(`<span style="background:#EEF2FF; color:#312E81; padding:2px 8px; border-radius:999px; font-weight:700;">${details.night_label}</span>`);
+            }
+            if (details.solo_label && details.solo_safe) {
+                transitParts.push(`<span style="background:#ECFDF5; color:#065F46; padding:2px 8px; border-radius:999px; font-weight:700;">${details.solo_label}</span>`);
+            }
+            if (details.nearest_station) {
+                transitParts.push(`<span><i class="fa-solid fa-train-subway" style="color:#1D4ED8;"></i> ${details.nearest_station.station} (${details.nearest_station.distance_km} km)</span>`);
+            }
+            if (details.nearest_police) {
+                transitParts.push(`<span><i class="fa-solid fa-shield-halved" style="color:#D6203A;"></i> ${details.nearest_police.name} (${details.nearest_police.distance_km} km)</span>`);
+            }
+            if (details.nearest_hospital) {
+                transitParts.push(`<span><i class="fa-solid fa-hospital" style="color:#059669;"></i> ${details.nearest_hospital.name} (${details.nearest_hospital.distance_km} km)</span>`);
+            }
+            document.getElementById("simLocTransit").innerHTML = transitParts.join("");
+
+            if (details.matched) {
+                setSelectClosest("simLighting", details.lighting);
+                setSelectClosest("simZone", details.zone);
+                setSelectClosest("simCategory", details.category);
+                document.getElementById("simNotes").value = details.notes || "";
+            }
+        } else if (locHeader) {
+            locHeader.style.display = "none";
+        }
+
+        document.getElementById("simScoreVal").textContent = pred.predicted_score;
+        const pill = document.getElementById("simRiskPill");
+        pill.textContent = pred.risk_level;
+
+        if (pred.predicted_score >= 7.5) {
+            pill.style.background = "#dcfce7";
+            pill.style.color = "#166534";
+            document.getElementById("simScoreVal").style.color = "#10b981";
+        } else if (pred.predicted_score >= 5.0) {
+            pill.style.background = "#fef3c7";
+            pill.style.color = "#92400e";
+            document.getElementById("simScoreVal").style.color = "#f59e0b";
+        } else {
+            pill.style.background = "#fee2e2";
+            pill.style.color = "#991b1b";
+            document.getElementById("simScoreVal").style.color = "#ef4444";
+        }
+
+        const list = document.getElementById("simFactorsList");
+        list.innerHTML = pred.factors.map(f => `
+            <div style="font-size: 12.5px; display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #334155;"><strong>${f.factor}:</strong> ${f.desc}</span>
+                <span style="font-weight: 700; color: ${f.direction === 'positive' ? '#10b981' : (f.direction === 'negative' ? '#ef4444' : '#64748b')}; margin-left: 12px;">${f.effect}</span>
+            </div>
+        `).join("");
+    }
+
+    function predictForLocation(locName) {
+        const cleanLoc = (locName || "").trim();
+        if (!cleanLoc) return;
+        document.getElementById("simLocationInput").value = cleanLoc;
+        fetch("/api/ai-predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                location: cleanLoc,
+                lighting: document.getElementById("simLighting").value,
+                zone: document.getElementById("simZone").value,
+                category: document.getElementById("simCategory").value,
+                notes: document.getElementById("simNotes").value
+            })
+        })
+        .then(res => res.json())
+        .then(renderPredictionResult)
+        .catch(err => console.error("Location predict error:", err));
+    }
+
+    document.getElementById("locPredictForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        predictForLocation(document.getElementById("simLocationInput").value);
+    });
+
+    document.querySelectorAll(".quick-loc-chip").forEach(btn => {
+        btn.addEventListener("click", () => predictForLocation(btn.dataset.loc));
+    });
+
     document.getElementById("simForm").addEventListener("submit", function(e) {
         e.preventDefault();
-        
         const payload = {
             lighting: document.getElementById("simLighting").value,
             zone: document.getElementById("simZone").value,
@@ -444,39 +600,12 @@
             body: JSON.stringify(payload)
         })
         .then(res => res.json())
-        .then(data => {
-            if (!data.success) return;
-            const pred = data.prediction;
-            const box = document.getElementById("simResultBox");
-            box.style.display = "block";
-
-            document.getElementById("simScoreVal").textContent = pred.predicted_score;
-            const pill = document.getElementById("simRiskPill");
-            pill.textContent = pred.risk_level;
-
-            if (pred.predicted_score >= 7.5) {
-                pill.style.background = "#dcfce7";
-                pill.style.color = "#166534";
-                document.getElementById("simScoreVal").style.color = "#10b981";
-            } else if (pred.predicted_score >= 5.0) {
-                pill.style.background = "#fef3c7";
-                pill.style.color = "#92400e";
-                document.getElementById("simScoreVal").style.color = "#f59e0b";
-            } else {
-                pill.style.background = "#fee2e2";
-                pill.style.color = "#991b1b";
-                document.getElementById("simScoreVal").style.color = "#ef4444";
-            }
-
-            const list = document.getElementById("simFactorsList");
-            list.innerHTML = pred.factors.map(f => `
-                <div style="font-size: 12.5px; display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e2e8f0;">
-                    <span style="color: #334155;"><strong>${f.factor}:</strong> ${f.desc}</span>
-                    <span style="font-weight: 700; color: ${f.direction === 'positive' ? '#10b981' : (f.direction === 'negative' ? '#ef4444' : '#64748b')}; margin-left: 12px;">${f.effect}</span>
-                </div>
-            `).join("");
-        })
+        .then(renderPredictionResult)
         .catch(err => console.error("Sim error:", err));
     });
+
+    {% if selected_location %}
+    predictForLocation({{ selected_location|tojson }});
+    {% endif %}
 </script>
 {% endblock %}
