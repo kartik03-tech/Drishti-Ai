@@ -28,6 +28,7 @@ from flask import (
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 import ai_model
+import hangout_places
 
 
 
@@ -832,7 +833,26 @@ def _find_nearest_mumbai_locality(lat, lon):
     return None
 
 
+def _hangout_location(query):
+    normalized = clean(query).casefold()
+    if not normalized:
+        return None
+    for place in hangout_places.RAW_HANGOUT_PLACES:
+        place_name = place["name"].casefold()
+        if normalized == place_name or normalized == place["slug"] or place_name in normalized:
+            return {
+                "lat": place["lat"],
+                "lon": place["lon"],
+                "display_name": f"{place['name']}, {place['area']}, Mumbai, Maharashtra, India",
+            }
+    return None
+
+
 def _fallback_location(query):
+    hangout_match = _hangout_location(query)
+    if hangout_match:
+        return hangout_match
+
     normalized = clean(query).casefold()
 
     if not normalized:
@@ -1129,6 +1149,10 @@ def resolve_location(value):
             "lon": direct[1],
             "display_name": "Current Location",
         }
+
+    hangout_match = _hangout_location(value)
+    if hangout_match:
+        return hangout_match
 
     return geocode(value)
 
@@ -1952,22 +1976,99 @@ def inject_globals():
 
 
 # ============================================================
-# HOME
+# HOME & TOURIST HANGOUT SUGGESTIONS
 # ============================================================
+
+_HANGOUT_CATALOG_CACHE = None
+
+
+def get_hangout_catalog():
+    global _HANGOUT_CATALOG_CACHE
+    if _HANGOUT_CATALOG_CACHE is None:
+        _HANGOUT_CATALOG_CACHE = hangout_places.build_hangout_catalog(
+            safety_record,
+            nearest_services,
+        )
+    return _HANGOUT_CATALOG_CACHE
+
 
 @app.route("/")
 def index():
-    if (
-        session.get("user_id")
-        or session.get("guest")
-    ):
-        return redirect(
-            url_for("dashboard")
-        )
+    catalog = get_hangout_catalog()
+    featured_hangouts = [p for p in catalog if p.get("featured")]
+    if len(featured_hangouts) < 6:
+        featured_hangouts = catalog[:6]
 
-    return redirect(
-        url_for("login")
+    return render_template(
+        "home.html",
+        stats=dashboard_stats(),
+        featured_hangouts=featured_hangouts[:6],
+        hangout_categories=[c for c in hangout_places.HANGOUT_CATEGORIES if c["key"] != "all"],
+        hotspots_count=len(ai_model.get_accident_hotspots()),
+        total_hangouts=len(catalog),
     )
+
+
+@app.route("/hangouts")
+def hangouts():
+    catalog = get_hangout_catalog()
+    category = clean(request.args.get("category")) or "all"
+    zone = clean(request.args.get("zone")) or "all"
+    search_query = clean(request.args.get("q"))
+    min_score_raw = clean(request.args.get("min_score"))
+    min_score = to_float(min_score_raw) if min_score_raw else None
+    sort_by = clean(request.args.get("sort")) or "recommended"
+
+    filtered = hangout_places.filter_hangout_places(
+        catalog,
+        category=category,
+        zone=zone,
+        query=search_query,
+        min_score=min_score,
+        sort_by=sort_by,
+    )
+
+    category_counts = {"all": len(catalog)}
+    for cat in hangout_places.HANGOUT_CATEGORIES:
+        if cat["key"] != "all":
+            category_counts[cat["key"]] = sum(1 for p in catalog if p["category"] == cat["key"])
+
+    zones = sorted({p["zone_group"] for p in catalog})
+
+    return render_template(
+        "hangouts.html",
+        hangouts=filtered,
+        categories=hangout_places.HANGOUT_CATEGORIES,
+        category_counts=category_counts,
+        zones=zones,
+        selected_category=category,
+        selected_zone=zone,
+        search_query=search_query,
+        min_score=min_score_raw,
+        sort_by=sort_by,
+        total_count=len(catalog),
+    )
+
+
+@app.route("/api/hangouts")
+def api_hangouts():
+    catalog = get_hangout_catalog()
+    category = clean(request.args.get("category")) or "all"
+    zone = clean(request.args.get("zone")) or "all"
+    search_query = clean(request.args.get("q"))
+    min_score_raw = clean(request.args.get("min_score"))
+    min_score = to_float(min_score_raw) if min_score_raw else None
+    sort_by = clean(request.args.get("sort")) or "recommended"
+
+    filtered = hangout_places.filter_hangout_places(
+        catalog,
+        category=category,
+        zone=zone,
+        query=search_query,
+        min_score=min_score,
+        sort_by=sort_by,
+    )
+    return jsonify({"hangouts": filtered, "count": len(filtered)})
 
 
 # ============================================================

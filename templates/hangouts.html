@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+
+{% block title %}Hangout Place Suggestions — Mumbai Tourist Guide | Dynamic Risk Intelligence{% endblock %}
+
+{% block head %}
+<style>
+    .hangouts-container {
+        width: min(1360px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    /* Banner */
+    .hangouts-banner {
+        background: linear-gradient(135deg, #D6203A 0%, #8F1226 100%);
+        color: #FFFFFF;
+        border-radius: 26px;
+        padding: 34px 36px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 14px 34px rgba(214, 32, 58, 0.2);
+    }
+
+    .hangouts-banner h1 {
+        color: #FFFFFF !important;
+        font-size: clamp(26px, 3.2vw, 36px);
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+    }
+
+    .hangouts-banner p {
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 14.5px;
+        max-width: 660px;
+    }
+
+    .hangouts-stats-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hangouts-stat-pill {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 14px;
+        padding: 10px 16px;
+        text-align: center;
+        min-width: 110px;
+    }
+
+    .hangouts-stat-pill strong {
+        display: block;
+        font-size: 20px;
+        font-weight: 800;
+        color: #FFFFFF;
+    }
+
+    .hangouts-stat-pill span {
+        font-size: 11.5px;
+        color: rgba(255, 255, 255, 0.88);
+        font-weight: 600;
+    }
+
+    /* Filter Bar */
+    .filter-panel {
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 14px rgba(31, 19, 21, 0.04);
+    }
+
+    .cat-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .cat-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid #F3D9DE;
+        background: #FAF7F8;
+        color: #6B5559;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+
+    .cat-tab:hover {
+        background: #FDECEF;
+        color: #8F1226;
+    }
+
+    .cat-tab.active {
+        background: #D6203A;
+        color: #FFFFFF;
+        border-color: #D6203A;
+    }
+
+    .cat-tab-count {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.08);
+    }
+
+    .cat-tab.active .cat-tab-count {
+        background: rgba(255, 255, 255, 0.22);
+        color: #FFFFFF;
+    }
+
+    .filter-controls {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr auto auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    @media (max-width: 1024px) {
+        .filter-controls {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .filter-controls {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .filter-input, .filter-select {
+        width: 100%;
+        padding: 10px 13px;
+        border: 1px solid #F3D9DE;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-family: inherit;
+        color: #1F1315;
+        background: #FAF7F8;
+        outline: none;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        border-color: #D6203A;
+        background: #FFFFFF;
+    }
+
+    .filter-btn {
+        padding: 10px 18px;
+        border-radius: 12px;
+        border: none;
+        background: #D6203A;
+        color: #FFFFFF;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+        background: #8F1226;
+    }
+
+    .map-toggle-btn {
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid #F3D9DE;
+        background: #FDECEF;
+        color: #8F1226;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .map-toggle-btn:hover {
+        background: #F8D5DC;
+    }
+
+    /* Map Drawer */
+    .hangouts-map-box {
+        display: none;
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 6px 20px rgba(31, 19, 21, 0.06);
+    }
+
+    .hangouts-map-box.open {
+        display: block;
+    }
+
+    #hangoutsMap {
+        width: 100%;
+        height: 360px;
+    }
+
+    .results-meta-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        font-size: 13.5px;
+        color: #6B5559;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* Hangout Cards Grid */
+    .hangouts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 1080px) {
+        .hangouts-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 680px) {
+        .hangouts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .hangout-card {
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 22px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: 0 4px 16px rgba(31, 19, 21, 0.04);
+        transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .hangout-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(214, 32, 58, 0.08);
+    }
+
+    .hc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .hc-cat {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .hc-score {
+        font-size: 12px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .hc-score.safe {
+        background: #ECFDF5;
+        color: #065F46;
+        border: 1px solid #A7F3D0;
+    }
+
+    .hc-score.moderate {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+
+    .hc-score.caution {
+        background: #FDECEF;
+        color: #8F1226;
+        border: 1px solid #F3D9DE;
+    }
+
+    .hc-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F1315;
+        line-height: 1.25;
+    }
+
+    .hc-loc {
+        font-size: 13px;
+        font-weight: 600;
+        color: #8F1226;
+        margin-top: 2px;
+    }
+
+    .hc-highlight {
+        font-size: 13.5px;
+        color: #1F1315;
+        line-height: 1.5;
+    }
+
+    .hc-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .hc-tag {
+        font-size: 11.5px;
+        font-weight: 600;
+        background: #FAF7F8;
+        border: 1px solid #F3D9DE;
+        color: #6B5559;
+        padding: 4px 9px;
+        border-radius: 8px;
+    }
+
+    .hc-safety-box {
+        background: #FAF7F8;
+        border: 1px solid #F3D9DE;
+        border-radius: 14px;
+        padding: 12px;
+        font-size: 12.5px;
+        color: #6B5559;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .hc-safety-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .hc-safety-row strong {
+        color: #1F1315;
+    }
+
+    .hc-tip {
+        border-top: 1px dashed #F3D9DE;
+        padding-top: 6px;
+        line-height: 1.45;
+    }
+
+    .hc-nearest {
+        border-top: 1px dashed #F3D9DE;
+        padding-top: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 11.8px;
+    }
+
+    .hc-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 2px;
+    }
+
+    .hc-btn {
+        text-align: center;
+        text-decoration: none;
+        padding: 9px 10px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        font-weight: 700;
+        transition: all 0.15s ease;
+    }
+
+    .hc-btn.primary {
+        background: #D6203A;
+        color: #FFFFFF;
+    }
+
+    .hc-btn.primary:hover {
+        background: #8F1226;
+    }
+
+    .hc-btn.secondary {
+        background: #FDECEF;
+        color: #8F1226;
+        border: 1px solid #F3D9DE;
+    }
+
+    .hc-btn.secondary:hover {
+        background: #F8D5DC;
+    }
+
+    .hc-btn.full {
+        grid-column: 1 / -1;
+        background: #FFFFFF;
+        color: #1F1315;
+        border: 1px solid #F3D9DE;
+    }
+
+    .hc-btn.full:hover {
+        background: #FAF7F8;
+    }
+
+    .empty-state {
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 20px;
+        padding: 44px 20px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hangouts-container">
+
+    <!-- Header Banner -->
+    <section class="hangouts-banner">
+        <div>
+            <h1><i class="fa-solid fa-compass" style="margin-right: 10px;"></i>Mumbai Tourist Hangout Suggestions</h1>
+            <p>
+                Discover curated cafes, restaurants, gardens &amp; parks, shopping malls, and tourist attractions —
+                each paired with Mumbai area safety ratings, street lighting, best visiting hours, and nearest emergency help.
+            </p>
+        </div>
+
+        <div class="hangouts-stats-pills">
+            <div class="hangouts-stat-pill">
+                <strong>{{ total_count }}</strong>
+                <span>Curated Spots</span>
+            </div>
+            <div class="hangouts-stat-pill">
+                <strong>5</strong>
+                <span>Categories</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Tabs & Search/Filter Controls -->
+    <section class="filter-panel">
+        <div class="cat-tabs">
+            {% for cat in categories %}
+            <a
+                href="{{ url_for('hangouts', category=cat.key, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by) }}"
+                class="cat-tab {% if selected_category == cat.key %}active{% endif %}"
+            >
+                <i class="{{ cat.icon }}"></i>
+                <span>{{ cat.label }}</span>
+                <span class="cat-tab-count">{{ category_counts.get(cat.key, 0) }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <form method="get" action="{{ url_for('hangouts') }}" class="filter-controls">
+            <input type="hidden" name="category" value="{{ selected_category }}">
+
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="filter-input"
+                placeholder="Search cafe, garden, mall, Colaba, Bandra..."
+            >
+
+            <select name="zone" class="filter-select">
+                <option value="all" {% if selected_zone == 'all' %}selected{% endif %}>All Mumbai Zones</option>
+                {% for z in zones %}
+                <option value="{{ z }}" {% if selected_zone == z %}selected{% endif %}>{{ z }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="min_score" class="filter-select">
+                <option value="" {% if not min_score %}selected{% endif %}>Any Safety Score</option>
+                <option value="7.5" {% if min_score == '7.5' %}selected{% endif %}>High Safety (7.5+)</option>
+                <option value="7.0" {% if min_score == '7.0' %}selected{% endif %}>Score 7.0+</option>
+            </select>
+
+            <select name="sort" class="filter-select">
+                <option value="recommended" {% if sort_by == 'recommended' %}selected{% endif %}>Recommended</option>
+                <option value="safest" {% if sort_by == 'safest' %}selected{% endif %}>Safest First</option>
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A–Z</option>
+            </select>
+
+            <button type="submit" class="filter-btn">Apply</button>
+
+            <button type="button" id="toggleMapBtn" class="map-toggle-btn">
+                <i class="fa-solid fa-map"></i> <span>Map View</span>
+            </button>
+        </form>
+    </section>
+
+    <!-- Collapsible Interactive Map -->
+    <div id="hangoutsMapBox" class="hangouts-map-box">
+        <div id="hangoutsMap"></div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-meta-bar">
+        <div>
+            Showing <strong>{{ hangouts|length }}</strong> recommended place{{ '' if hangouts|length == 1 else 's' }}
+            {% if selected_category != 'all' %} in <strong>{{ selected_category|title }}</strong>{% endif %}
+            {% if selected_zone != 'all' %} · <strong>{{ selected_zone }}</strong>{% endif %}
+            {% if search_query %} matching "<strong>{{ search_query }}</strong>"{% endif %}
+        </div>
+
+        {% if selected_category != 'all' or selected_zone != 'all' or search_query or min_score %}
+        <a href="{{ url_for('hangouts') }}" style="color:#D6203A; font-weight:700; text-decoration:none;">
+            <i class="fa-solid fa-rotate-left"></i> Reset Filters
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Hangouts Grid -->
+    {% if hangouts %}
+    <section class="hangouts-grid">
+        {% for place in hangouts %}
+        <article class="hangout-card">
+            <div class="hc-top">
+                <span class="hc-cat" style="background: {{ place.badge_bg }}; color: {{ place.badge_color }};">
+                    <i class="{{ place.category_icon }}"></i> {{ place.category_label }}
+                </span>
+                <span class="hc-score {{ place.safety_level }}">
+                    {{ place.safety_score }}/10 · {{ place.safety_label }}
+                </span>
+            </div>
+
+            <div>
+                <h2 class="hc-title">{{ place.name }}</h2>
+                <div class="hc-loc">
+                    <i class="fa-solid fa-location-dot"></i> {{ place.area }} · {{ place.zone }}
+                </div>
+            </div>
+
+            <p class="hc-highlight">{{ place.highlight }}</p>
+
+            <div class="hc-tags">
+                <span class="hc-tag">{{ place.vibe }}</span>
+                <span class="hc-tag">{{ place.budget }}</span>
+            </div>
+
+            <div class="hc-safety-box">
+                <div class="hc-safety-row">
+                    <span><strong>Best Time:</strong> {{ place.best_time }}</span>
+                    <span><strong>Lighting:</strong> {{ place.lighting }}</span>
+                </div>
+
+                <div class="hc-tip">
+                    <strong>Tourist Safety Tip:</strong> {{ place.tourist_tip }}
+                </div>
+
+                {% if place.nearest_police or place.nearest_hospital %}
+                <div class="hc-nearest">
+                    {% if place.nearest_police %}
+                    <span><i class="fa-solid fa-shield-halved" style="color:#D6203A;"></i> Police: <strong>{{ place.nearest_police.name }}</strong> ({{ place.nearest_police.distance_km }} km)</span>
+                    {% endif %}
+                    {% if place.nearest_hospital %}
+                    <span><i class="fa-solid fa-hospital" style="color:#065F46;"></i> Hospital: <strong>{{ place.nearest_hospital.name }}</strong> ({{ place.nearest_hospital.distance_km }} km)</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="hc-actions">
+                <a href="{{ url_for('dashboard', location=place.safety_lookup) }}" class="hc-btn secondary">
+                    <i class="fa-solid fa-shield"></i> Area Safety
+                </a>
+                <a href="{{ url_for('safe_route', destination=place.name) }}" class="hc-btn primary">
+                    <i class="fa-solid fa-route"></i> Safe Route
+                </a>
+                <a href="{{ url_for('emergency', q=place.area) }}" class="hc-btn full">
+                    <i class="fa-solid fa-truck-medical"></i> Nearby Emergency Directory
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-compass" style="font-size: 36px; color: #D6203A; margin-bottom: 10px;"></i>
+        <h3 style="font-size: 19px; margin-bottom: 6px;">No matching hangout places found</h3>
+        <p style="font-size: 14px; margin-bottom: 16px;">Try clearing your search or choosing a different Mumbai zone or category.</p>
+        <a href="{{ url_for('hangouts') }}" class="filter-btn" style="text-decoration:none; display:inline-block;">Show All Hangouts</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        const places = {{ hangouts|tojson }};
+        const toggleBtn = document.getElementById("toggleMapBtn");
+        const mapBox = document.getElementById("hangoutsMapBox");
+        let mapInstance = null;
+
+        if (!toggleBtn || !mapBox) return;
+
+        toggleBtn.addEventListener("click", function () {
+            const isOpen = mapBox.classList.toggle("open");
+            toggleBtn.querySelector("span").textContent = isOpen ? "Hide Map" : "Map View";
+
+            if (isOpen && !mapInstance && typeof L !== "undefined") {
+                mapInstance = L.map("hangoutsMap").setView([19.0176, 72.8562], 11);
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: "&copy; OpenStreetMap contributors",
+                    maxZoom: 18
+                }).addTo(mapInstance);
+
+                const bounds = [];
+                places.forEach(function (p) {
+                    if (typeof p.lat !== "number" || typeof p.lon !== "number") return;
+                    bounds.push([p.lat, p.lon]);
+
+                    const markerColor = p.safety_score >= 7.5 ? "#10B981" : (p.safety_score >= 6.0 ? "#F59E0B" : "#D6203A");
+                    const marker = L.circleMarker([p.lat, p.lon], {
+                        radius: 8,
+                        fillColor: markerColor,
+                        color: "#FFFFFF",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(mapInstance);
+
+                    marker.bindPopup(
+                        `<div style="min-width:190px;">` +
+                        `<strong>${p.name}</strong><br>` +
+                        `<span style="font-size:12px;">${p.category_label} · ${p.area}</span><br>` +
+                        `<span style="font-size:12px; font-weight:700;">Safety: ${p.safety_score}/10 (${p.safety_label})</span><br>` +
+                        `<a href="/safe-route?destination=${encodeURIComponent(p.name)}" style="display:inline-block; margin-top:6px; color:#D6203A; font-weight:700; text-decoration:none;">Plan Safe Route &rarr;</a>` +
+                        `</div>`
+                    );
+                });
+
+                if (bounds.length > 0) {
+                    mapInstance.fitBounds(bounds, { padding: [30, 30] });
+                }
+            } else if (isOpen && mapInstance) {
+                setTimeout(function () {
+                    mapInstance.invalidateSize();
+                }, 120);
+            }
+        });
+    })();
+</script>
+{% endblock %}

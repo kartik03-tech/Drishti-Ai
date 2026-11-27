@@ -172,10 +172,10 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 999px;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             color: #6B5559;
             transition: all 0.15s ease;
@@ -416,8 +416,8 @@
                 font-size: 9px;
             }
             .sg-nav-link {
-                padding: 6px 12px;
-                font-size: 13px;
+                padding: 6px 9px;
+                font-size: 12.5px;
             }
         }
 
@@ -429,7 +429,7 @@
                 font-size: 8.5px;
             }
             .sg-nav-link {
-                padding: 6px 9px;
+                padding: 6px 8px;
                 font-size: 12px;
             }
         }
@@ -504,7 +504,7 @@
     <!-- Header Navigation -->
     <header class="sg-header">
         <div class="sg-header-container">
-            <a href="{{ url_for('dashboard') }}" class="sg-brand" title="Dynamic Risk Intelligence, Safety &amp; Threat Identification">
+            <a href="{{ url_for('index') }}" class="sg-brand" title="Dynamic Risk Intelligence, Safety &amp; Threat Identification">
                 <div class="sg-brand-logo">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
@@ -516,11 +516,13 @@
 
             <!-- Desktop Nav Links (Clean text pills matching design) -->
             <nav class="sg-nav">
-                <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Home &amp; Search</a>
+                <a href="{{ url_for('index') }}" class="sg-nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+                <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Risk Search</a>
+                <a href="{{ url_for('hangouts') }}" class="sg-nav-link {% if request.endpoint == 'hangouts' %}active{% endif %}">Hangouts</a>
                 <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">Safe Route</a>
-                <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">Emergency Directory</a>
-                <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">AI Intelligence</a>
-                <a href="{{ url_for('report') }}" class="sg-nav-link {% if request.endpoint == 'report' %}active{% endif %}">Community Reports</a>
+                <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">Emergency</a>
+                <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">AI Insights</a>
+                <a href="{{ url_for('report') }}" class="sg-nav-link {% if request.endpoint == 'report' %}active{% endif %}">Reports</a>
             </nav>
 
             <!-- Actions (SOS & User Profile) -->
@@ -540,7 +542,7 @@
                     </a>
                 </div>
                 {% else %}
-                <a href="{{ url_for('login') }}" class="sg-nav-link" style="border: 1px solid var(--sg-border); background: var(--sg-tint); color: var(--sg-deep-red); font-weight: 700;">
+                <a href="{{ url_for('login') }}" class="sg-nav-link" style="border: 1px solid var(--sg-border); background: var(--sg-soft-red); color: var(--sg-deep-red); font-weight: 700;">
                     <span>Sign In</span>
                 </a>
                 {% endif %}
@@ -569,24 +571,24 @@
 
     <!-- Mobile Bottom Navigation Bar -->
     <nav class="sg-bottom-nav">
-        <a href="{{ url_for('dashboard') }}" class="sg-bottom-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+        <a href="{{ url_for('index') }}" class="sg-bottom-link {% if request.endpoint == 'index' %}active{% endif %}">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
+        </a>
+        <a href="{{ url_for('hangouts') }}" class="sg-bottom-link {% if request.endpoint == 'hangouts' %}active{% endif %}">
+            <i class="fa-solid fa-compass"></i>
+            <span>Hangouts</span>
+        </a>
+        <a href="{{ url_for('sos') }}" class="sg-bottom-sos" title="Emergency SOS">
+            <i class="fa-solid fa-triangle-exclamation"></i>
         </a>
         <a href="{{ url_for('safe_route') }}" class="sg-bottom-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">
             <i class="fa-solid fa-route"></i>
             <span>Routes</span>
         </a>
-        <a href="{{ url_for('sos') }}" class="sg-bottom-sos" title="Emergency SOS">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-        </a>
-        <a href="{{ url_for('emergency') }}" class="sg-bottom-link {% if request.endpoint == 'emergency' %}active{% endif %}">
-            <i class="fa-solid fa-truck-medical"></i>
-            <span>Emergency</span>
-        </a>
-        <a href="{{ url_for('report') }}" class="sg-bottom-link {% if request.endpoint == 'report' %}active{% endif %}">
-            <i class="fa-solid fa-bullhorn"></i>
-            <span>Report</span>
+        <a href="{{ url_for('dashboard') }}" class="sg-bottom-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
         </a>
     </nav>
 

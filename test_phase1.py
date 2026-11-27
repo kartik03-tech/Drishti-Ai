@@ -4,10 +4,33 @@ client = app.app.test_client()
 
 print("--- Testing Phase 1 Endpoints ---")
 
-# 1. Dashboard Home
+# 1. Tourist Home Landing Page
+r0 = client.get("/")
+print(f"0. GET / -> {r0.status_code}")
+assert r0.status_code == 200, f"Expected 200, got {r0.status_code}"
+assert b"Explore Mumbai Safely" in r0.data
+assert b"Hangout Place Suggestions" in r0.data
+print("   Tourist Home Landing Page verified!")
+
+# 1b. Dashboard Risk Search
 r1 = client.get("/dashboard")
 print(f"1. GET /dashboard -> {r1.status_code}")
 assert r1.status_code == 200, f"Expected 200, got {r1.status_code}"
+
+# 1c. Hangout Place Suggestions & API
+r_hangouts = client.get("/hangouts")
+print(f"1c. GET /hangouts -> {r_hangouts.status_code}")
+assert r_hangouts.status_code == 200
+assert b"Kala Ghoda Cafe" in r_hangouts.data
+assert b"Hanging Gardens" in r_hangouts.data
+assert b"Gateway of India" in r_hangouts.data
+
+for cat in ["cafe", "restaurant", "garden", "mall", "attraction"]:
+    r_api = client.get(f"/api/hangouts?category={cat}")
+    assert r_api.status_code == 200
+    payload = r_api.get_json()
+    assert payload["count"] >= 5, f"Expected >=5 places for {cat}, got {payload['count']}"
+print("   Hangout Place Suggestions & categories verified!")
 
 # 2. Location Search & Area Risk Assessment
 r2 = client.get("/dashboard?location=Bandra+West")
