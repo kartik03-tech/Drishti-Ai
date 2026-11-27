@@ -505,6 +505,7 @@ def evaluate_and_rank_routes(all_routes, start_lat=None, start_lon=None, end_lat
             "duration_minutes": r.get("duration_minutes", 0),
             "geometry": r.get("geometry", {}),
             "steps": r.get("steps", []),
+            "turn_instructions": r.get("turn_instructions", []),
             "safety_score": safety_analysis["safety_score"],
             "risk_level": safety_analysis["risk_level"],
             "lighting_pct": safety_analysis["lighting_pct"],
@@ -549,6 +550,7 @@ def evaluate_and_rank_routes(all_routes, start_lat=None, start_lon=None, end_lat
             "duration_minutes": alt_dur,
             "geometry": {"type": "LineString", "coordinates": alt_coords},
             "steps": [],
+            "turn_instructions": [],
             "safety_score": alt_safety["safety_score"],
             "risk_level": alt_safety["risk_level"],
             "lighting_pct": alt_safety["lighting_pct"],
@@ -557,39 +559,141 @@ def evaluate_and_rank_routes(all_routes, start_lat=None, start_lon=None, end_lat
             "provider": "Dynamic Risk Arterial Bypass"
         })
 
-    # Assign Profiles (Safest vs Fastest vs Balanced)
+    # Sort routes so the safest (then fewest hotspots, then fastest) route is always #1 (Best)
+    ranked.sort(
+        key=lambda r: (
+            -r["safety_score"],
+            r["hotspots_count"],
+            r["duration_minutes"],
+        )
+    )
+    for idx, r in enumerate(ranked):
+        r["id"] = idx + 1
+        r["is_best"] = (idx == 0)
+        if start_lat and start_lon and end_lat and end_lon:
+            coords = (r.get("geometry") or {}).get("coordinates") or []
+            gmap_url = (
+                f"https://www.google.com/maps/dir/?api=1"
+                f"&origin={start_lat},{start_lon}"
+                f"&destination={end_lat},{end_lon}"
+                f"&travelmode=driving"
+            )
+            if len(coords) > 4:
+                mid_pt = coords[len(coords) // 2]
+                if len(mid_pt) >= 2:
+                    gmap_url += f"&waypoints={mid_pt[1]},{mid_pt[0]}"
+            r["google_maps_url"] = gmap_url
+
+    # Assign Profiles (Safest vs Fastest vs Alternative)
     if len(ranked) >= 2:
-        safest_idx = max(range(len(ranked)), key=lambda i: ranked[i]["safety_score"])
+        safest_idx = 0
         fastest_idx = min(range(len(ranked)), key=lambda i: ranked[i]["duration_minutes"])
 
         if safest_idx == fastest_idx:
-            other_idx = 1 if safest_idx == 0 else 0
-            ranked[safest_idx]["badge"] = "Safest & Fastest Route"
-            ranked[safest_idx]["badge_color"] = "safest"
-            ranked[safest_idx]["color_hex"] = "#10b981"
-            ranked[other_idx]["badge"] = "Alternative Scenic Route"
-            ranked[other_idx]["badge_color"] = "balanced"
-            ranked[other_idx]["color_hex"] = "#f59e0b"
+            ranked[0]["badge"] = "Safest & Fastest Route"
+            ranked[0]["badge_color"] = "safest"
+            ranked[0]["color_hex"] = "#10B981"
+            for i in range(1, len(ranked)):
+                ranked[i]["badge"] = "Alternative Route" if i == 1 else f"Alternative Route #{i + 1}"
+                ranked[i]["badge_color"] = "balanced"
+                ranked[i]["color_hex"] = "#2563EB" if i == 1 else "#D97706"
         else:
-            ranked[safest_idx]["badge"] = "Safest Route"
-            ranked[safest_idx]["badge_color"] = "safest"
-            ranked[safest_idx]["color_hex"] = "#10b981"
-            
+            ranked[0]["badge"] = "Safest Route (Best)"
+            ranked[0]["badge_color"] = "safest"
+            ranked[0]["color_hex"] = "#10B981"
+
             ranked[fastest_idx]["badge"] = "Fastest Route"
             ranked[fastest_idx]["badge_color"] = "fastest"
-            ranked[fastest_idx]["color_hex"] = "#0284c7"
+            ranked[fastest_idx]["color_hex"] = "#2563EB"
 
-            for i in range(len(ranked)):
-                if i not in [safest_idx, fastest_idx]:
-                    ranked[i]["badge"] = "Balanced Route"
+            for i in range(1, len(ranked)):
+                if i != fastest_idx:
+                    ranked[i]["badge"] = "Alternative Route"
                     ranked[i]["badge_color"] = "balanced"
-                    ranked[i]["color_hex"] = "#f59e0b"
+                    ranked[i]["color_hex"] = "#D97706"
     elif len(ranked) == 1:
         ranked[0]["badge"] = "Recommended Route"
         ranked[0]["badge_color"] = "safest"
-        ranked[0]["color_hex"] = "#10b981"
+        ranked[0]["color_hex"] = "#10B981"
 
     return ranked
+
+
+def build_route_comparison(ranked_routes):
+    """Build a direct side-by-side comparison explaining which route is best and why."""
+    if not ranked_routes:
+        return None
+
+    best = ranked_routes[0]
+    reasons = []
+    seen_hs = {}
+    for r in ranked_routes:
+        for hs in r.get("hotspots_encountered", []):
+            key = hs.get("name")
+            if key and key not in seen_hs:
+                seen_hs[key] = hs
+
+    if len(ranked_routes) == 1:
+        verdict_title = f"Route #{best['id']} ({best.get('badge', 'Recommended')}) is your best path"
+        verdict_summary = (
+            f"Scores {best['safety_score']}/10 for safety with {best['lighting_pct']}% street lighting "
+            f"over {best['distance_km']} km ({best['duration_minutes']} min)."
+        )
+        reasons.append(f"Safety Score: {best['safety_score']}/10 ({best['risk_level']})")
+        reasons.append(f"Estimated Travel: {best['duration_minutes']} min across {best['distance_km']} km")
+    else:
+        alt = ranked_routes[1]
+        safety_diff = round(best["safety_score"] - alt["safety_score"], 1)
+        hs_diff = alt["hotspots_count"] - best["hotspots_count"]
+        time_diff = best["duration_minutes"] - alt["duration_minutes"]
+        light_diff = best["lighting_pct"] - alt["lighting_pct"]
+
+        if time_diff <= 0:
+            verdict_title = f"Route #{best['id']} is Best Overall — Safest & Fastest"
+        else:
+            verdict_title = f"Route #{best['id']} is Best — Safer Corridor (+{safety_diff} pts)"
+
+        if safety_diff > 0:
+            reasons.append(
+                f"Higher safety rating: {best['safety_score']}/10 vs {alt['safety_score']}/10 (+{safety_diff} pts)"
+            )
+        else:
+            reasons.append(
+                f"Top safety rating: {best['safety_score']}/10 ({best['risk_level']})"
+            )
+
+        if hs_diff > 0:
+            reasons.append(
+                f"Avoids {hs_diff} more accident hotspot(s): {best['hotspots_count']} vs {alt['hotspots_count']} on Route #{alt['id']}"
+            )
+        elif best["hotspots_count"] == 0:
+            reasons.append("Zero known accident hotspots along the recommended path")
+        else:
+            reasons.append(f"Passes {best['hotspots_count']} monitored hotspot(s) vs {alt['hotspots_count']} on Route #{alt['id']}")
+
+        if light_diff > 0:
+            reasons.append(f"Better street lighting coverage: {best['lighting_pct']}% vs {alt['lighting_pct']}%")
+
+        if time_diff < 0:
+            reasons.append(f"Also {abs(time_diff)} min faster ({best['duration_minutes']} min vs {alt['duration_minutes']} min)")
+        elif time_diff == 0:
+            reasons.append(f"Same travel time ({best['duration_minutes']} min) with safer road conditions")
+        else:
+            reasons.append(f"Trade-off: only +{time_diff} min longer ({best['duration_minutes']} min vs {alt['duration_minutes']} min) for a safer route")
+
+        verdict_summary = (
+            f"Comparing {len(ranked_routes)} routes simultaneously: Route #{best['id']} is recommended over "
+            f"Route #{alt['id']} based on safety score, hotspot exposure, and lighting."
+        )
+
+    return {
+        "best_route_id": best["id"],
+        "best_badge": best.get("badge", "Safest Route"),
+        "verdict_title": verdict_title,
+        "verdict_summary": verdict_summary,
+        "reasons": reasons,
+        "route_hotspots": list(seen_hs.values()),
+    }
 
 def get_model_metrics():
     """Retrieve saved model performance metrics."""

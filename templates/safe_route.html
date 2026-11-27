@@ -391,9 +391,283 @@
         border-radius: 2px;
     }
 
-    .leg-line.safest { background: #047857; }
-    .leg-line.fastest { background: #D6203A; }
-    .leg-line.balanced { background: #D97706; }
+    .leg-line.safest { background: #10B981; }
+    .leg-line.fastest { background: #2563EB; }
+    .leg-line.balanced { background: #D97706; border-top: 2px dashed #D97706; }
+
+    /* Side-by-Side Comparison & Best Route Verdict */
+    .sr-compare-panel {
+        background: #FFFFFF;
+        border: 1.5px solid #A7F3D0;
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 6px 22px rgba(16, 185, 129, 0.08);
+        display: grid;
+        grid-template-columns: 0.95fr 1.25fr;
+        gap: 22px;
+        align-items: center;
+    }
+
+    @media (max-width: 1040px) {
+        .sr-compare-panel {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .sr-winner-box {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        border-radius: 16px;
+        padding: 16px 18px;
+    }
+
+    .sr-winner-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #047857;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+    }
+
+    .sr-winner-title {
+        font-size: 17px;
+        font-weight: 800;
+        color: #1F1315;
+        margin-bottom: 6px;
+    }
+
+    .sr-winner-reasons {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        font-size: 12.8px;
+        color: #065F46;
+        font-weight: 600;
+    }
+
+    .sr-compare-table-wrap {
+        overflow-x: auto;
+    }
+
+    .sr-compare-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .sr-compare-table th {
+        text-align: left;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #6B5559;
+        padding: 8px 10px;
+        border-bottom: 1.5px solid #F3D9DE;
+    }
+
+    .sr-compare-table td {
+        padding: 10px;
+        border-bottom: 1px solid #F9EBEF;
+        color: #1F1315;
+        font-weight: 600;
+        vertical-align: middle;
+    }
+
+    .sr-compare-row {
+        cursor: pointer;
+        transition: background 0.14s ease;
+    }
+
+    .sr-compare-row:hover {
+        background: #FAF7F8;
+    }
+
+    .sr-compare-row.active-row {
+        background: #ECFDF5;
+    }
+
+    .sr-route-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        flex-shrink: 0;
+    }
+
+    .sr-best-tag {
+        display: inline-block;
+        background: #047857;
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 999px;
+        margin-left: 5px;
+        text-transform: uppercase;
+    }
+
+    .sr-leg-btn {
+        background: #FAF7F8;
+        border: 1px solid #F3D9DE;
+        color: #1F1315;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 999px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .sr-leg-btn:hover {
+        background: #FDECEF;
+        color: #8F1226;
+    }
+
+    /* Nearest Hospitals & Police Along Route Panel */
+    .sr-help-panel {
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 20px;
+        padding: 22px 24px;
+        margin-bottom: 36px;
+        box-shadow: 0 4px 16px rgba(143, 18, 38, 0.04);
+    }
+
+    .sr-help-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .sr-help-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+        .sr-help-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .sr-help-col {
+        background: #FAF7F8;
+        border: 1px solid #F3D9DE;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sr-help-col-title {
+        font-size: 14.5px;
+        font-weight: 800;
+        color: #1F1315;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sr-help-item {
+        background: #FFFFFF;
+        border: 1px solid #F3D9DE;
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .sr-help-item:hover {
+        border-color: #D6203A;
+        box-shadow: 0 4px 12px rgba(214, 32, 58, 0.08);
+    }
+
+    .sr-help-info {
+        min-width: 180px;
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .sr-help-name {
+        font-size: 14px;
+        font-weight: 800;
+        color: #1F1315;
+    }
+
+    .sr-help-meta {
+        font-size: 12px;
+        color: #6B5559;
+        margin-top: 2px;
+    }
+
+    .sr-help-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .sr-call-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        color: #FFFFFF;
+        background: #059669;
+        white-space: nowrap;
+    }
+
+    .sr-call-btn.police {
+        background: #1D4ED8;
+    }
+
+    .sr-call-btn:hover {
+        filter: brightness(0.92);
+    }
+
+    .sr-locate-btn {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid #F3D9DE;
+        background: #FDECEF;
+        color: #8F1226;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .sr-locate-btn:hover {
+        background: #F8D5DC;
+    }
 
     /* Empty state */
     .sr-placeholder {
@@ -478,6 +752,61 @@
         <a href="{{ url_for('report') }}" style="font-weight: 700; color: #D6203A; text-decoration: none; font-size: 12.5px;">View Hazard Feed &rarr;</a>
     </div>
     {% endif %}
+    {% if route_result.comparison %}
+    <section class="sr-compare-panel">
+        <div class="sr-winner-box">
+            <span class="sr-winner-pill"><i class="fa-solid fa-trophy"></i> Recommended Best Route</span>
+            <div class="sr-winner-title">{{ route_result.comparison.verdict_title }}</div>
+            <p style="font-size: 12.8px; color: #1F1315; margin: 0;">{{ route_result.comparison.verdict_summary }}</p>
+            <ul class="sr-winner-reasons">
+                {% for reason in route_result.comparison.reasons %}
+                <li><i class="fa-solid fa-circle-check" style="color:#047857; margin-right:6px;"></i>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="sr-compare-table-wrap">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
+                <strong style="font-size:14px; color:#1F1315;">Side-by-Side Route Comparison (All {{ route_result.ranked_routes|length }} Routes Shown on Map)</strong>
+                <button type="button" class="sr-leg-btn" onclick="resetCompareView()">
+                    <i class="fa-solid fa-layer-group"></i> Show Both Routes Equally
+                </button>
+            </div>
+            <table class="sr-compare-table">
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Safety</th>
+                        <th>Time</th>
+                        <th>Distance</th>
+                        <th>Hotspots</th>
+                        <th>Lighting</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in route_result.ranked_routes %}
+                    <tr class="sr-compare-row {% if loop.first %}active-row{% endif %}" data-compare-route-id="{{ r.id }}" onclick="selectRoute({{ r.id }})">
+                        <td>
+                            <span class="sr-route-dot" style="background: {{ r.color_hex or ('#10B981' if loop.first else '#2563EB') }};"></span>
+                            <strong>Route #{{ r.id }}</strong>
+                            {% if r.is_best %}<span class="sr-best-tag">Best</span>{% endif %}
+                            <div style="font-size:11px; color:#6B5559; padding-left:17px;">{{ r.badge }}</div>
+                        </td>
+                        <td>
+                            <strong style="color: {% if r.safety_score >= 7.8 %}#047857{% elif r.safety_score >= 5.8 %}#B45309{% else %}#8F1226{% endif %};">{{ r.safety_score }}/10</strong>
+                        </td>
+                        <td>{{ r.duration_minutes }} min</td>
+                        <td>{{ r.distance_km }} km</td>
+                        <td>{{ r.hotspots_count }}</td>
+                        <td>{{ r.lighting_pct }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
     <div class="sr-results-layout">
         
         <!-- Sidebar: Route Comparison Cards -->
@@ -536,10 +865,17 @@
                     <span><i class="fa-solid fa-circle-nodes"></i> {{ r.risk_level }}</span>
                 </div>
 
-                <button type="button" class="btn-select-route">
-                    <i class="fa-solid fa-location-arrow"></i>
-                    <span>Select Route #{{ r.id }}</span>
-                </button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button type="button" class="btn-select-route" style="flex:1;">
+                        <i class="fa-solid fa-location-arrow"></i>
+                        <span>Select Route #{{ r.id }}</span>
+                    </button>
+                    {% if r.google_maps_url %}
+                    <a href="{{ r.google_maps_url }}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="sr-leg-btn" style="text-decoration:none; border-radius:10px; padding:9px 12px;" title="Open turn-by-turn navigation in Google Maps (Free)">
+                        <i class="fa-solid fa-diamond-turn-right" style="color:#059669;"></i> Google Maps
+                    </a>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -549,15 +885,119 @@
             <div id="routeMap"></div>
 
             <div class="sr-map-legend">
-                <span style="color:#1F1315; font-weight:800;">Legend:</span>
-                <div class="leg-pill"><span class="leg-line safest"></span> Safest Route</div>
-                <div class="leg-pill"><span class="leg-line fastest"></span> Fastest Route</div>
-                <div class="leg-pill"><span class="leg-line balanced"></span> Alternative</div>
-                <div class="leg-pill"><i class="fa-solid fa-triangle-exclamation" style="color: #D6203A;"></i> Accident Hotspot</div>
+                <span style="color:#1F1315; font-weight:800;">Routes on Map:</span>
+                {% for r in route_result.ranked_routes %}
+                <div class="leg-pill" style="cursor:pointer;" onclick="selectRoute({{ r.id }})">
+                    <span class="leg-line" style="background: {{ r.color_hex or '#10B981' }}; {% if not r.is_best %}border-bottom: 2px dashed #FFFFFF;{% endif %}"></span>
+                    <span>Route #{{ r.id }} ({{ r.safety_score }}/10 · {{ r.duration_minutes }}m){% if r.is_best %} <strong>[Best]</strong>{% endif %}</span>
+                </div>
+                {% endfor %}
+                <button type="button" class="sr-leg-btn" onclick="resetCompareView()">
+                    <i class="fa-solid fa-eye"></i> Compare Both
+                </button>
+                <button type="button" class="sr-leg-btn" id="btnToggleHelpMarkers">
+                    <i class="fa-solid fa-hospital" style="color:#059669;"></i> <span>Hide Police &amp; Hospitals</span>
+                </button>
+                <button type="button" class="sr-leg-btn" id="btnToggleAllHotspots">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#D6203A;"></i> <span>Show All {{ route_result.hotspots|length }} Hotspots</span>
+                </button>
             </div>
         </div>
 
     </div>
+
+    <!-- Turn-by-Turn Street Directions & Free Google Maps Launch -->
+    <section class="sr-help-panel" id="turnDirectionsPanel" style="margin-bottom: 24px;">
+        <div class="sr-help-header" style="margin-bottom: 12px;">
+            <div>
+                <h2 style="font-size: 17.5px; font-weight: 800; color: #1F1315;" id="turnPanelTitle">
+                    <i class="fa-solid fa-signs-post" style="color:#D6203A; margin-right:6px;"></i>
+                    Turn-by-Turn Directions &mdash; Route #{{ route_result.ranked_routes[0].id }}
+                </h2>
+                <p style="font-size: 12.5px; color: #6B5559; margin-top: 2px;" id="turnPanelProvider">
+                    Routing Engine: {{ route_result.ranked_routes[0].provider or 'Smart Route Engine' }}
+                </p>
+            </div>
+            {% if route_result.ranked_routes[0].google_maps_url %}
+            <a id="btnOpenGoogleMaps" href="{{ route_result.ranked_routes[0].google_maps_url }}" target="_blank" rel="noopener" class="sr-call-btn" style="background:#1F1315;">
+                <i class="fa-solid fa-diamond-turn-right"></i> Open in Google Maps (Free GPS)
+            </a>
+            {% endif %}
+        </div>
+
+        <div id="turnStepsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px;"></div>
+    </section>
+
+    {% if route_result.nearest_help and (route_result.nearest_help.hospitals or route_result.nearest_help.police) %}
+    <section class="sr-help-panel">
+        <div class="sr-help-header">
+            <div>
+                <h2 style="font-size: 18px; font-weight: 800; color: #1F1315;">
+                    <i class="fa-solid fa-phone-volume" style="color:#D6203A; margin-right:6px;"></i>
+                    Nearest Police Stations &amp; Hospitals Along Route (Click to Locate &amp; Call)
+                </h2>
+                <p style="font-size: 13px; color: #6B5559; margin-top: 2px;">
+                    Click any facility or its map pin to locate it on the route and place an immediate call.
+                </p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <a href="tel:100" class="sr-call-btn police"><i class="fa-solid fa-shield-halved"></i> Quick Dial 100 Police</a>
+                <a href="tel:108" class="sr-call-btn"><i class="fa-solid fa-truck-medical"></i> Quick Dial 108 Ambulance</a>
+                <a href="tel:112" class="sr-call-btn" style="background:#8F1226;"><i class="fa-solid fa-phone"></i> 112 SOS</a>
+            </div>
+        </div>
+
+        <div class="sr-help-grid">
+            <!-- Nearest Police Stations -->
+            <div class="sr-help-col">
+                <div class="sr-help-col-title">
+                    <span><i class="fa-solid fa-shield-halved" style="color:#1D4ED8; margin-right:6px;"></i>Nearest Police Stations</span>
+                    <span style="font-size:12px; color:#6B5559;">{{ route_result.nearest_help.police|length }} along route</span>
+                </div>
+                {% for p in route_result.nearest_help.police %}
+                <div class="sr-help-item">
+                    <div class="sr-help-info" onclick="focusHelpMarker('police', {{ p.id }})">
+                        <div class="sr-help-name">{{ p.name }}</div>
+                        <div class="sr-help-meta">{{ p.distance_km }} km from route{% if p.address %} &middot; {{ p.address }}{% endif %}</div>
+                    </div>
+                    <div class="sr-help-actions">
+                        <button type="button" class="sr-locate-btn" onclick="focusHelpMarker('police', {{ p.id }})">
+                            <i class="fa-solid fa-location-crosshairs"></i> Locate
+                        </button>
+                        <a href="tel:{{ p.call_number }}" class="sr-call-btn police">
+                            <i class="fa-solid fa-phone"></i> {{ p.call_label }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Nearest Hospitals -->
+            <div class="sr-help-col">
+                <div class="sr-help-col-title">
+                    <span><i class="fa-solid fa-hospital" style="color:#059669; margin-right:6px;"></i>Nearest Hospitals</span>
+                    <span style="font-size:12px; color:#6B5559;">{{ route_result.nearest_help.hospitals|length }} along route</span>
+                </div>
+                {% for h in route_result.nearest_help.hospitals %}
+                <div class="sr-help-item">
+                    <div class="sr-help-info" onclick="focusHelpMarker('hospital', {{ h.id }})">
+                        <div class="sr-help-name">{{ h.name }}</div>
+                        <div class="sr-help-meta">{{ h.distance_km }} km from route{% if h.address %} &middot; {{ h.address }}{% endif %}</div>
+                    </div>
+                    <div class="sr-help-actions">
+                        <button type="button" class="sr-locate-btn" onclick="focusHelpMarker('hospital', {{ h.id }})">
+                            <i class="fa-solid fa-location-crosshairs"></i> Locate
+                        </button>
+                        <a href="tel:{{ h.call_number }}" class="sr-call-btn">
+                            <i class="fa-solid fa-phone"></i> {{ h.call_label }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
     {% elif error %}
     <div class="sr-placeholder" style="border-color: #F3D9DE; background: #FDECEF;">
         <i class="fa-solid fa-triangle-exclamation" style="color: #D6203A;"></i>
@@ -625,16 +1065,29 @@
     const routesData = {{ route_result.ranked_routes|tojson|safe }};
     const startLoc = {{ route_result.start|tojson|safe }};
     const destLoc = {{ route_result.destination|tojson|safe }};
-    const hotspots = {{ (route_result.hotspots or [])|tojson|safe }};
+    const allHotspots = {{ (route_result.hotspots or [])|tojson|safe }};
+    const routeHotspots = {{ ((route_result.comparison.route_hotspots if route_result.comparison else []) or [])|tojson|safe }};
+    const nearestHelp = {{ (route_result.nearest_help or {'hospitals': [], 'police': [], 'all': []})|tojson|safe }};
 
     const map = L.map("routeMap", {
         zoomControl: true
     });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
+
+    const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 19
+    });
+
+    L.control.layers(
+        { "Street Map (Free OSM)": osmLayer, "Satellite View": satelliteLayer },
+        null,
+        { position: "topright" }
+    ).addTo(map);
 
     // Start & Destination Markers
     const startMarker = L.marker([startLoc.lat, startLoc.lon], {
@@ -655,41 +1108,237 @@
         })
     }).addTo(map).bindPopup(`<strong>Destination:</strong> ${escapeHtml(destLoc.display_name || 'Destination')}`);
 
-    // Accident Hotspots on route map
-    hotspots.forEach(hs => {
-        L.marker([hs.latitude, hs.longitude], {
+    // Route-relevant hotspots shown by default; toggleable to all 35 Mumbai hotspots
+    const routeHotspotLayer = L.layerGroup().addTo(map);
+    const extraHotspotLayer = L.layerGroup();
+    const routeHotspotNames = new Set(routeHotspots.map(h => h.name));
+
+    allHotspots.forEach(hs => {
+        const isOnRoute = routeHotspotNames.has(hs.name);
+        const marker = L.marker([hs.latitude, hs.longitude], {
             icon: L.divIcon({
                 className: "sg-hs-marker",
-                html: '<div style="background:#ef4444; width:22px; height:22px; border-radius:50%; border:2px solid white; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; box-shadow:0 2px 6px rgba(0,0,0,0.35);"><i class="fa-solid fa-triangle-exclamation"></i></div>',
-                iconSize: [22, 22],
-                iconAnchor: [11, 11]
+                html: `<div style="background:${isOnRoute ? '#D6203A' : '#94A3B8'}; width:${isOnRoute ? 22 : 18}px; height:${isOnRoute ? 22 : 18}px; border-radius:50%; border:2px solid white; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; box-shadow:0 2px 6px rgba(0,0,0,0.35);"><i class="fa-solid fa-triangle-exclamation"></i></div>`,
+                iconSize: isOnRoute ? [22, 22] : [18, 18],
+                iconAnchor: isOnRoute ? [11, 11] : [9, 9]
             })
-        }).addTo(map).bindPopup(`<strong>⚠️ ${escapeHtml(hs.name)}</strong><br><span style="color:#c2410c; font-size:11.5px;">${escapeHtml(hs.type)} (~${hs.accidents_est} inc/yr)</span><br><small>${escapeHtml(hs.advisory)}</small>`);
+        }).bindPopup(`<strong>⚠️ ${escapeHtml(hs.name)}</strong><br><span style="color:#c2410c; font-size:11.5px;">${escapeHtml(hs.type)} (~${hs.accidents_est} inc/yr)</span><br><small>${escapeHtml(hs.advisory)}</small>`);
+
+        if (isOnRoute) {
+            marker.addTo(routeHotspotLayer);
+        } else {
+            marker.addTo(extraHotspotLayer);
+        }
     });
 
-    // Multi-route Polylines
+    const toggleHsBtn = document.getElementById("btnToggleAllHotspots");
+    let showingAllHotspots = false;
+    if (toggleHsBtn) {
+        toggleHsBtn.addEventListener("click", () => {
+            showingAllHotspots = !showingAllHotspots;
+            if (showingAllHotspots) {
+                extraHotspotLayer.addTo(map);
+                toggleHsBtn.querySelector("span").textContent = "Show Route Hotspots Only";
+            } else {
+                map.removeLayer(extraHotspotLayer);
+                toggleHsBtn.querySelector("span").textContent = `Show All ${allHotspots.length} Hotspots`;
+            }
+        });
+    }
+
+    // Simultaneous Multi-Route Polylines (alternatives drawn with distinct dashed contrast + on-map pills)
     const polylines = {};
+    const casings = {};
     const bounds = L.latLngBounds([[startLoc.lat, startLoc.lon], [destLoc.lat, destLoc.lon]]);
 
-    routesData.forEach((r, idx) => {
+    // Draw alternatives first, then Best/Safest route on top so both remain clearly visible
+    const drawOrder = [...routesData].reverse();
+    drawOrder.forEach((r) => {
         const coords = (r.geometry.coordinates || []).map(pt => [pt[1], pt[0]]);
         if (coords.length === 0) return;
 
         coords.forEach(pt => bounds.extend(pt));
 
-        const isSelected = (idx === 0);
+        const routeColor = r.color_hex || (r.is_best ? "#10B981" : "#2563EB");
+        const isBest = Boolean(r.is_best);
+
+        const casing = L.polyline(coords, {
+            color: "#FFFFFF",
+            weight: isBest ? 10 : 8,
+            opacity: 0.9
+        }).addTo(map);
+        casings[r.id] = casing;
+
         const polyline = L.polyline(coords, {
-            color: r.color_hex || (idx === 0 ? "#10b981" : "#0284c7"),
-            weight: isSelected ? 6 : 4,
-            opacity: isSelected ? 0.9 : 0.5,
-            dashArray: idx === 2 ? "8, 8" : null
+            color: routeColor,
+            weight: isBest ? 6 : 5,
+            opacity: 0.92,
+            dashArray: isBest ? null : (r.id === 2 ? "11, 7" : "5, 7")
         }).addTo(map);
 
+        polyline.bindPopup(
+            `<strong>Route #${r.id}: ${escapeHtml(r.badge || '')}</strong><br>` +
+            `Safety: <strong>${r.safety_score}/10</strong> · ${r.duration_minutes} min · ${r.distance_km} km<br>` +
+            `Hotspots: ${r.hotspots_count} · Lighting: ${r.lighting_pct}%`
+        );
         polyline.on("click", () => selectRoute(r.id));
         polylines[r.id] = polyline;
+
+        // Place staggered route badge pill along each route so both are labeled at the same time
+        const frac = r.id === 1 ? 0.35 : (r.id === 2 ? 0.65 : 0.50);
+        const labelIdx = Math.min(coords.length - 1, Math.max(0, Math.floor(coords.length * frac)));
+        const labelPt = coords[labelIdx];
+        L.marker(labelPt, {
+            icon: L.divIcon({
+                className: "sg-route-label-pill",
+                html: `<div style="transform:translate(-50%,-50%); width:max-content; background:${routeColor}; color:#FFFFFF; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; white-space:nowrap; border:2px solid #FFFFFF; box-shadow:0 3px 10px rgba(0,0,0,0.28); cursor:pointer;">#${r.id}${isBest ? ' ★ Best' : ''} · ${r.safety_score}/10 · ${r.duration_minutes}m</div>`,
+                iconSize: [0, 0],
+                iconAnchor: [0, 0]
+            })
+        }).addTo(map).on("click", () => selectRoute(r.id));
     });
 
+    // Nearest Hospitals & Police Stations along the route (clickable to locate & call)
+    const helpMarkerLayer = L.layerGroup().addTo(map);
+    const helpMarkersByKey = {};
+
+    function renderHelpMarker(item, kind) {
+        if (typeof item.latitude !== "number" || typeof item.longitude !== "number") return;
+        const isPolice = (kind === "police");
+        const bg = isPolice ? "#1D4ED8" : "#059669";
+        const iconCls = isPolice ? "fa-shield-halved" : "fa-hospital";
+        const key = `${kind}-${item.id}`;
+        const telNumber = item.call_number || (isPolice ? "100" : "108");
+        const callText = item.has_direct_phone ? `Call ${item.phone}` : (isPolice ? "Call 100 Police" : "Call 108 Ambulance");
+        const addrLine = item.address ? `<div style="font-size:11.5px; color:#6B5559; margin-top:2px;">${escapeHtml(item.address)}</div>` : "";
+
+        const popupHtml = `
+            <div style="min-width:220px;">
+                <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:${bg}; margin-bottom:2px;">
+                    ${isPolice ? "Nearest Police Station" : "Nearest Hospital"}
+                </div>
+                <strong style="font-size:13.5px; color:#1F1315;">${escapeHtml(item.name)}</strong>
+                <div style="font-size:12px; color:#6B5559; margin-top:2px;">${item.distance_km} km from route</div>
+                ${addrLine}
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:9px;">
+                    <a href="tel:${escapeHtml(telNumber)}" style="background:${bg}; color:#FFFFFF !important; padding:6px 11px; border-radius:999px; font-size:11.5px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fa-solid fa-phone"></i> ${escapeHtml(callText)}
+                    </a>
+                    <a href="tel:112" style="background:#8F1226; color:#FFFFFF !important; padding:6px 10px; border-radius:999px; font-size:11.5px; font-weight:800; text-decoration:none;">
+                        112 SOS
+                    </a>
+                    <button type="button" onclick="copyHelpPhone('${escapeHtml(telNumber)}', this)" style="background:#FAF7F8; color:#1F1315; border:1px solid #F3D9DE; padding:5px 9px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer;">
+                        Copy #
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const m = L.marker([item.latitude, item.longitude], {
+            icon: L.divIcon({
+                className: "sg-help-marker",
+                html: `<div style="background:${bg}; width:26px; height:26px; border-radius:50%; border:2px solid #FFFFFF; display:flex; align-items:center; justify-content:center; color:#FFFFFF; font-size:11px; box-shadow:0 3px 8px rgba(0,0,0,0.32); cursor:pointer;"><i class="fa-solid ${iconCls}"></i></div>`,
+                iconSize: [26, 26],
+                iconAnchor: [13, 13]
+            })
+        }).addTo(helpMarkerLayer).bindPopup(popupHtml);
+
+        helpMarkersByKey[key] = m;
+    }
+
+    (nearestHelp.police || []).forEach(p => renderHelpMarker(p, "police"));
+    (nearestHelp.hospitals || []).forEach(h => renderHelpMarker(h, "hospital"));
+
+    const toggleHelpBtn = document.getElementById("btnToggleHelpMarkers");
+    let showingHelpMarkers = true;
+    if (toggleHelpBtn) {
+        toggleHelpBtn.addEventListener("click", () => {
+            showingHelpMarkers = !showingHelpMarkers;
+            if (showingHelpMarkers) {
+                helpMarkerLayer.addTo(map);
+                toggleHelpBtn.querySelector("span").textContent = "Hide Police & Hospitals";
+            } else {
+                map.removeLayer(helpMarkerLayer);
+                toggleHelpBtn.querySelector("span").textContent = "Show Police & Hospitals";
+            }
+        });
+    }
+
+    window.focusHelpMarker = function(kind, id) {
+        const key = `${kind}-${id}`;
+        const marker = helpMarkersByKey[key];
+        if (!marker) return;
+        if (!showingHelpMarkers) {
+            helpMarkerLayer.addTo(map);
+            showingHelpMarkers = true;
+            if (toggleHelpBtn) toggleHelpBtn.querySelector("span").textContent = "Hide Police & Hospitals";
+        }
+        map.setView(marker.getLatLng(), Math.max(map.getZoom(), 14), { animate: true });
+        marker.openPopup();
+        document.getElementById("routeMap").scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
+    window.copyHelpPhone = function(num, btnEl) {
+        if (navigator.clipboard && num) {
+            navigator.clipboard.writeText(num).then(() => {
+                if (btnEl) {
+                    const prev = btnEl.textContent;
+                    btnEl.textContent = "Copied " + num;
+                    setTimeout(() => { btnEl.textContent = prev; }, 1600);
+                }
+            });
+        }
+    };
+
     map.fitBounds(bounds, { padding: [50, 50] });
+
+    window.resetCompareView = function() {
+        routesData.forEach(r => {
+            const line = polylines[r.id];
+            if (!line) return;
+            line.setStyle({ weight: r.is_best ? 6 : 5, opacity: 0.92 });
+        });
+        map.fitBounds(bounds, { padding: [50, 50] });
+    };
+
+    window.renderTurnSteps = function(routeId) {
+        const container = document.getElementById("turnStepsList");
+        const titleEl = document.getElementById("turnPanelTitle");
+        const provEl = document.getElementById("turnPanelProvider");
+        const gmapBtn = document.getElementById("btnOpenGoogleMaps");
+        if (!container) return;
+
+        const r = routesData.find(x => x.id == routeId) || routesData[0];
+        if (!r) return;
+
+        if (titleEl) {
+            titleEl.innerHTML = `<i class="fa-solid fa-signs-post" style="color:#D6203A; margin-right:6px;"></i>Turn-by-Turn Directions &mdash; Route #${r.id} (${escapeHtml(r.badge || '')})`;
+        }
+        if (provEl) {
+            provEl.textContent = `Routing Engine: ${r.provider || 'Smart Route Engine'} · ${r.distance_km} km · ${r.duration_minutes} min`;
+        }
+        if (gmapBtn && r.google_maps_url) {
+            gmapBtn.href = r.google_maps_url;
+        }
+
+        const turns = r.turn_instructions || [];
+        if (turns.length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1; background:#FAF7F8; border:1px solid #F3D9DE; border-radius:12px; padding:12px 14px; font-size:13px; color:#6B5559;">Corridor preview active. Click <strong>Open in Google Maps (Free GPS)</strong> for live voice turn-by-turn navigation along this path.</div>`;
+            return;
+        }
+
+        container.innerHTML = turns.slice(0, 18).map((st, idx) => `
+            <div style="background:#FAF7F8; border:1px solid #F3D9DE; border-radius:11px; padding:9px 12px; display:flex; align-items:flex-start; gap:9px; font-size:12.5px;">
+                <span style="min-width:22px; height:22px; border-radius:50%; background:#D6203A; color:#FFFFFF; font-size:11px; font-weight:800; display:inline-flex; align-items:center; justify-content:center;">${idx + 1}</span>
+                <div style="flex:1;">
+                    <div style="font-weight:700; color:#1F1315;">${escapeHtml(st.instruction)}</div>
+                    <div style="font-size:11.5px; color:#6B5559;">${escapeHtml(st.distance_text || '')}</div>
+                </div>
+            </div>
+        `).join("");
+    };
+
+    renderTurnSteps(routesData[0].id);
 
     // Select Route Callback
     window.selectRoute = function(routeId) {
@@ -701,17 +1350,29 @@
             }
         });
 
-        // Update map line weights and opacities
-        routesData.forEach(r => {
-            const line = polylines[r.id];
-            if (!line) return;
-            if (r.id == routeId) {
-                line.setStyle({ weight: 7, opacity: 0.95 });
-                line.bringToFront();
+        document.querySelectorAll(".sr-compare-row").forEach(row => {
+            if (row.dataset.compareRouteId == routeId) {
+                row.classList.add("active-row");
             } else {
-                line.setStyle({ weight: 4, opacity: 0.45 });
+                row.classList.remove("active-row");
             }
         });
+
+        // Highlight selected route while keeping alternatives clearly visible
+        routesData.forEach(r => {
+            const line = polylines[r.id];
+            const casing = casings[r.id];
+            if (!line) return;
+            if (r.id == routeId) {
+                if (casing) casing.bringToFront();
+                line.setStyle({ weight: 7, opacity: 0.98 });
+                line.bringToFront();
+            } else {
+                line.setStyle({ weight: 4, opacity: 0.72 });
+            }
+        });
+
+        renderTurnSteps(routeId);
     };
     {% endif %}
 

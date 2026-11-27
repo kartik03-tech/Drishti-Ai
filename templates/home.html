@@ -615,6 +615,12 @@
                 <a href="{{ url_for('hangouts') }}" class="home-cta-primary">
                     <i class="fa-solid fa-map-pin"></i> Explore Hangout Places
                 </a>
+                <a href="{{ url_for('hangouts', night='1') }}" class="home-cta-secondary">
+                    <i class="fa-solid fa-moon"></i> Safe After 9 PM
+                </a>
+                <a href="{{ url_for('hangouts', solo='1') }}" class="home-cta-secondary">
+                    <i class="fa-solid fa-person-dress"></i> Solo &amp; Women-Safe
+                </a>
                 <a href="{{ url_for('safe_route') }}" class="home-cta-secondary">
                     <i class="fa-solid fa-route"></i> Plan Safe Route
                 </a>

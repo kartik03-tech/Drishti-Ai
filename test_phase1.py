@@ -30,13 +30,39 @@ for cat in ["cafe", "restaurant", "garden", "mall", "attraction"]:
     assert r_api.status_code == 200
     payload = r_api.get_json()
     assert payload["count"] >= 5, f"Expected >=5 places for {cat}, got {payload['count']}"
-print("   Hangout Place Suggestions & categories verified!")
+    assert payload["hangouts"][0].get("nearest_station") is not None, "Expected nearest station on hangout"
+
+# 1d. After 9 PM Night Mode & Solo / Women-Safe Mode
+r_night = client.get("/hangouts?night=1")
+assert r_night.status_code == 200
+assert b"After 9 PM Mode Active" in r_night.data
+assert b"After 9 PM Warning" in r_night.data
+
+r_night_filtered = client.get("/api/hangouts?night=1&hide_closed=1")
+assert r_night_filtered.status_code == 200
+night_places = r_night_filtered.get_json()["hangouts"]
+assert len(night_places) > 0
+assert all(p["night_status"] != "avoid" for p in night_places)
+
+r_solo = client.get("/hangouts?solo=1")
+assert r_solo.status_code == 200
+assert b"Solo &amp; Women-Traveller Safe Mode Active" in r_solo.data
+assert b"Walk With Me" in r_solo.data
+
+r_solo_api = client.get("/api/hangouts?solo=1")
+assert r_solo_api.status_code == 200
+solo_places = r_solo_api.get_json()["hangouts"]
+assert len(solo_places) > 0
+assert all(p["solo_safe"] for p in solo_places)
+print("   Hangout Place Suggestions, Stations, Night & Solo Modes verified!")
 
 # 2. Location Search & Area Risk Assessment
-r2 = client.get("/dashboard?location=Bandra+West")
-print(f"2. GET /dashboard?location=Bandra+West -> {r2.status_code}")
+r2 = client.get("/dashboard?location=Bandra+West&night=1&solo=1")
+print(f"2. GET /dashboard?location=Bandra+West&night=1&solo=1 -> {r2.status_code}")
 assert r2.status_code == 200
 assert b"Bandra West" in r2.data, "Bandra West should be in response"
+assert b"Nearest Station" in r2.data, "Nearest station should appear on dashboard search"
+assert b"After 9 PM Check" in r2.data, "After 9 PM check should appear on dashboard search"
 print("   Location Search & Risk Assessment card verified!")
 
 # 3. Emergency Directory

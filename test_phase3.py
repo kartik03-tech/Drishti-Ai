@@ -19,6 +19,14 @@ assert r2.status_code == 200
 assert b"Route Alternatives" in r2.data
 assert b"routeMap" in r2.data
 assert (b"Safest Route" in r2.data or b"Safest" in r2.data)
+assert b"Recommended Best Route" in r2.data
+assert b"Side-by-Side Route Comparison" in r2.data
+assert b"Show Both Routes Equally" in r2.data
+assert b"Nearest Police Stations" in r2.data
+assert b"Nearest Hospitals" in r2.data
+assert b"tel:" in r2.data
+assert b"Turn-by-Turn Directions" in r2.data
+assert b"https://www.google.com/maps/dir/" in r2.data
 print("   Multi-Route Comparison & Map Rendering verified!")
 
 # 3. Route API
@@ -33,8 +41,19 @@ assert r3.status_code == 200
 data_route = r3.get_json()
 assert data_route.get("success") is True
 routes = data_route.get("routes", [])
+comparison = data_route.get("comparison", {})
+nearest_help = data_route.get("nearest_help", {})
 print(f"   API Route returned {len(routes)} alternatives")
 assert len(routes) >= 2, "Expected at least 2 route alternatives"
+assert routes[0].get("is_best") is True
+assert routes[0].get("google_maps_url", "").startswith("https://www.google.com/maps/dir/")
+assert routes[0]["safety_score"] >= routes[1]["safety_score"]
+assert comparison.get("best_route_id") == 1
+assert len(comparison.get("reasons", [])) >= 1
+assert len(nearest_help.get("hospitals", [])) >= 1
+assert len(nearest_help.get("police", [])) >= 1
+assert all(h.get("call_number") for h in nearest_help["hospitals"])
+assert all(p.get("call_number") for p in nearest_help["police"])
 
 for idx, r in enumerate(routes):
     print(f"   Route #{r['id']} ({r.get('badge')}): {r['distance_km']} km, {r['duration_minutes']} mins, Safety Score: {r['safety_score']}/10, Blackspots: {r['hotspots_count']}")

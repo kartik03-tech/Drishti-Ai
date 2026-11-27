@@ -24,6 +24,10 @@
         box-shadow: 0 14px 34px rgba(214, 32, 58, 0.2);
     }
 
+    .hangouts-banner.night-active {
+        background: linear-gradient(135deg, #1E1B4B 0%, #312E81 55%, #8F1226 100%);
+    }
+
     .hangouts-banner h1 {
         color: #FFFFFF !important;
         font-size: clamp(26px, 3.2vw, 36px);
@@ -35,7 +39,7 @@
     .hangouts-banner p {
         color: rgba(255, 255, 255, 0.92);
         font-size: 14.5px;
-        max-width: 660px;
+        max-width: 680px;
     }
 
     .hangouts-stats-pills {
@@ -50,7 +54,7 @@
         border-radius: 14px;
         padding: 10px 16px;
         text-align: center;
-        min-width: 110px;
+        min-width: 105px;
     }
 
     .hangouts-stat-pill strong {
@@ -72,8 +76,128 @@
         border: 1px solid #F3D9DE;
         border-radius: 20px;
         padding: 20px;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
         box-shadow: 0 4px 14px rgba(31, 19, 21, 0.04);
+    }
+
+    .mode-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #F3D9DE;
+    }
+
+    .mode-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .mode-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        border-radius: 999px;
+        border: 1.5px solid #F3D9DE;
+        background: #FAF7F8;
+        color: #1F1315;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+
+    .mode-pill:hover {
+        border-color: #D6203A;
+        background: #FDECEF;
+    }
+
+    .mode-pill.night-on {
+        background: #1E1B4B;
+        color: #FFFFFF;
+        border-color: #1E1B4B;
+        box-shadow: 0 4px 12px rgba(30, 27, 75, 0.25);
+    }
+
+    .mode-pill.solo-on {
+        background: #8F1226;
+        color: #FFFFFF;
+        border-color: #8F1226;
+        box-shadow: 0 4px 12px rgba(143, 18, 38, 0.25);
+    }
+
+    .mode-count-chip {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.08);
+    }
+
+    .mode-pill.night-on .mode-count-chip,
+    .mode-pill.solo-on .mode-count-chip {
+        background: rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
+    }
+
+    .walk-sos-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 15px;
+        border-radius: 999px;
+        background: #FDECEF;
+        border: 1px solid #F3D9DE;
+        color: #8F1226;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .walk-sos-cta:hover {
+        background: #F8D5DC;
+    }
+
+    /* Active Mode Banners */
+    .active-mode-banner {
+        border-radius: 16px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 13.5px;
+    }
+
+    .active-mode-banner.night {
+        background: #EEF2FF;
+        border: 1px solid #C7D2FE;
+        color: #1E1B4B;
+    }
+
+    .active-mode-banner.solo {
+        background: #FDECEF;
+        border: 1px solid #F3D9DE;
+        color: #8F1226;
+    }
+
+    .banner-mini-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
     }
 
     .cat-tabs {
@@ -256,6 +380,16 @@
         transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
 
+    .hangout-card.night-highlighted {
+        border-color: #6366F1;
+        box-shadow: 0 8px 24px rgba(49, 46, 129, 0.12);
+    }
+
+    .hangout-card.night-warned {
+        border-color: #F59E0B;
+        background: #FFFDF7;
+    }
+
     .hangout-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 12px 26px rgba(214, 32, 58, 0.08);
@@ -299,6 +433,75 @@
     }
 
     .hc-score.caution {
+        background: #FDECEF;
+        color: #8F1226;
+        border: 1px solid #F3D9DE;
+    }
+
+    .hc-mode-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .hc-mode-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 999px;
+    }
+
+    .hc-mode-chip.night-safe {
+        background: #EEF2FF;
+        color: #312E81;
+        border: 1px solid #C7D2FE;
+    }
+
+    .hc-mode-chip.night-caution {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+
+    .hc-mode-chip.night-avoid {
+        background: #FDECEF;
+        color: #8F1226;
+        border: 1px solid #F3D9DE;
+    }
+
+    .hc-mode-chip.solo-safe {
+        background: #ECFDF5;
+        color: #065F46;
+        border: 1px solid #A7F3D0;
+    }
+
+    .hc-night-alert {
+        border-radius: 10px;
+        padding: 8px 11px;
+        font-size: 12px;
+        line-height: 1.4;
+        font-weight: 600;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .hc-night-alert.safe {
+        background: #EEF2FF;
+        color: #1E1B4B;
+        border: 1px solid #C7D2FE;
+    }
+
+    .hc-night-alert.caution {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+
+    .hc-night-alert.avoid {
         background: #FDECEF;
         color: #8F1226;
         border: 1px solid #F3D9DE;
@@ -375,8 +578,20 @@
         padding-top: 6px;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
         font-size: 11.8px;
+    }
+
+    .hc-station-line {
+        display: inline-block;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 10.5px;
+        font-weight: 700;
+        background: #EFF6FF;
+        color: #1D4ED8;
+        border: 1px solid #BFDBFE;
+        margin-left: 4px;
     }
 
     .hc-actions {
@@ -440,12 +655,18 @@
 <div class="hangouts-container">
 
     <!-- Header Banner -->
-    <section class="hangouts-banner">
+    <section class="hangouts-banner {% if night_mode %}night-active{% endif %}">
         <div>
-            <h1><i class="fa-solid fa-compass" style="margin-right: 10px;"></i>Mumbai Tourist Hangout Suggestions</h1>
+            <h1>
+                {% if night_mode %}
+                <i class="fa-solid fa-moon" style="margin-right: 10px;"></i>Mumbai After 9 PM — Safe Hangout Guide
+                {% else %}
+                <i class="fa-solid fa-compass" style="margin-right: 10px;"></i>Mumbai Tourist Hangout Suggestions
+                {% endif %}
+            </h1>
             <p>
                 Discover curated cafes, restaurants, gardens &amp; parks, shopping malls, and tourist attractions —
-                each paired with Mumbai area safety ratings, street lighting, best visiting hours, and nearest emergency help.
+                each paired with area safety scores, After-9-PM advisories, Solo &amp; Women-Safe filtering, and nearest Local/Metro station, police, and hospital distances.
             </p>
         </div>
 
@@ -455,18 +676,82 @@
                 <span>Curated Spots</span>
             </div>
             <div class="hangouts-stat-pill">
-                <strong>5</strong>
-                <span>Categories</span>
+                <strong>{{ night_safe_count }}</strong>
+                <span>After 9 PM Safe</span>
+            </div>
+            <div class="hangouts-stat-pill">
+                <strong>{{ solo_safe_count }}</strong>
+                <span>Solo &amp; Women Safe</span>
             </div>
         </div>
     </section>
 
-    <!-- Category Tabs & Search/Filter Controls -->
+    <!-- Mode Toggles, Category Tabs & Search/Filter Controls -->
     <section class="filter-panel">
+        <div class="mode-bar">
+            <div class="mode-pills">
+                <a
+                    href="{{ url_for('hangouts', category=selected_category, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by, night=('0' if night_mode else '1'), solo=('1' if solo_mode else None)) }}"
+                    class="mode-pill {% if night_mode %}night-on{% endif %}"
+                >
+                    <i class="fa-solid fa-moon"></i>
+                    <span>After 9 PM Night Safety</span>
+                    <span class="mode-count-chip">{{ 'ON' if night_mode else night_safe_count ~ ' safe' }}</span>
+                </a>
+
+                <a
+                    href="{{ url_for('hangouts', category=selected_category, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by, night=('1' if night_mode else None), solo=('0' if solo_mode else '1'), hide_closed=('1' if hide_closed else None)) }}"
+                    class="mode-pill {% if solo_mode %}solo-on{% endif %}"
+                >
+                    <i class="fa-solid fa-person-dress"></i>
+                    <span>Solo &amp; Women-Safe Mode</span>
+                    <span class="mode-count-chip">{{ 'ON' if solo_mode else solo_safe_count ~ ' verified' }}</span>
+                </a>
+            </div>
+
+            <a href="{{ url_for('sos') }}" class="walk-sos-cta">
+                <i class="fa-solid fa-location-crosshairs"></i> Walk With Me (Live GPS) &rarr;
+            </a>
+        </div>
+
+        {% if night_mode %}
+        <div class="active-mode-banner night">
+            <div>
+                <strong><i class="fa-solid fa-moon"></i> After 9 PM Mode Active:</strong>
+                Late-night patrolled venues (e.g., Marine Drive, Jio World Drive) are prioritized first; parks, beaches, and daytime attractions display dusk-closure warnings.
+            </div>
+            <a
+                href="{{ url_for('hangouts', category=selected_category, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by, night='1', solo=('1' if solo_mode else None), hide_closed=('0' if hide_closed else '1')) }}"
+                class="banner-mini-btn"
+                style="background:#1E1B4B; color:#FFFFFF;"
+            >
+                <i class="fa-solid {{ 'fa-eye' if hide_closed else 'fa-eye-slash' }}"></i>
+                {{ 'Show Closed / Dusk Spots' if hide_closed else 'Hide Dusk-Closing Spots' }}
+            </a>
+        </div>
+        {% endif %}
+
+        {% if solo_mode %}
+        <div class="active-mode-banner solo">
+            <div>
+                <strong><i class="fa-solid fa-shield-halved"></i> Solo &amp; Women-Traveller Safe Mode Active:</strong>
+                Showing only brightly lit, high-footfall venues with nearby police stations and verified cab/transit pickup access.
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <a href="{{ url_for('sos') }}" class="banner-mini-btn" style="background:#8F1226; color:#FFFFFF;">
+                    <i class="fa-solid fa-person-walking"></i> Start Walk With Me
+                </a>
+                <a href="tel:1091" class="banner-mini-btn" style="background:#FFFFFF; color:#8F1226; border:1px solid #F3D9DE;">
+                    <i class="fa-solid fa-phone"></i> 1091 Women Helpline
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="cat-tabs">
             {% for cat in categories %}
             <a
-                href="{{ url_for('hangouts', category=cat.key, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by) }}"
+                href="{{ url_for('hangouts', category=cat.key, zone=selected_zone, q=search_query, min_score=min_score, sort=sort_by, night=('1' if night_mode else None), hide_closed=('1' if hide_closed else None), solo=('1' if solo_mode else None)) }}"
                 class="cat-tab {% if selected_category == cat.key %}active{% endif %}"
             >
                 <i class="{{ cat.icon }}"></i>
@@ -478,13 +763,16 @@
 
         <form method="get" action="{{ url_for('hangouts') }}" class="filter-controls">
             <input type="hidden" name="category" value="{{ selected_category }}">
+            {% if night_mode %}<input type="hidden" name="night" value="1">{% endif %}
+            {% if hide_closed %}<input type="hidden" name="hide_closed" value="1">{% endif %}
+            {% if solo_mode %}<input type="hidden" name="solo" value="1">{% endif %}
 
             <input
                 type="text"
                 name="q"
                 value="{{ search_query }}"
                 class="filter-input"
-                placeholder="Search cafe, garden, mall, Colaba, Bandra..."
+                placeholder="Search cafe, garden, mall, station (e.g. Churchgate, Bandra)..."
             >
 
             <select name="zone" class="filter-select">
@@ -525,12 +813,14 @@
             Showing <strong>{{ hangouts|length }}</strong> recommended place{{ '' if hangouts|length == 1 else 's' }}
             {% if selected_category != 'all' %} in <strong>{{ selected_category|title }}</strong>{% endif %}
             {% if selected_zone != 'all' %} · <strong>{{ selected_zone }}</strong>{% endif %}
+            {% if night_mode %} · <strong>After 9 PM View</strong>{% endif %}
+            {% if solo_mode %} · <strong>Solo &amp; Women-Safe</strong>{% endif %}
             {% if search_query %} matching "<strong>{{ search_query }}</strong>"{% endif %}
         </div>
 
-        {% if selected_category != 'all' or selected_zone != 'all' or search_query or min_score %}
+        {% if selected_category != 'all' or selected_zone != 'all' or search_query or min_score or night_mode or solo_mode %}
         <a href="{{ url_for('hangouts') }}" style="color:#D6203A; font-weight:700; text-decoration:none;">
-            <i class="fa-solid fa-rotate-left"></i> Reset Filters
+            <i class="fa-solid fa-rotate-left"></i> Reset Filters &amp; Modes
         </a>
         {% endif %}
     </div>
@@ -539,7 +829,7 @@
     {% if hangouts %}
     <section class="hangouts-grid">
         {% for place in hangouts %}
-        <article class="hangout-card">
+        <article class="hangout-card {% if night_mode and place.night_safe %}night-highlighted{% elif night_mode and place.night_status == 'avoid' %}night-warned{% endif %}">
             <div class="hc-top">
                 <span class="hc-cat" style="background: {{ place.badge_bg }}; color: {{ place.badge_color }};">
                     <i class="{{ place.category_icon }}"></i> {{ place.category_label }}
@@ -548,6 +838,25 @@
                     {{ place.safety_score }}/10 · {{ place.safety_label }}
                 </span>
             </div>
+
+            <div class="hc-mode-badges">
+                <span class="hc-mode-chip night-{{ place.night_status }}">
+                    <i class="fa-solid {{ 'fa-moon' if place.night_safe else ('fa-triangle-exclamation' if place.night_status == 'avoid' else 'fa-clock') }}"></i>
+                    {{ place.night_label }}
+                </span>
+                {% if place.solo_safe %}
+                <span class="hc-mode-chip solo-safe">
+                    <i class="fa-solid fa-person-dress"></i> Solo &amp; Women-Safe
+                </span>
+                {% endif %}
+            </div>
+
+            {% if night_mode %}
+            <div class="hc-night-alert {{ place.night_status }}">
+                <i class="fa-solid {{ 'fa-circle-check' if place.night_safe else 'fa-triangle-exclamation' }}" style="margin-top:2px;"></i>
+                <span>{{ place.night_advisory }}</span>
+            </div>
+            {% endif %}
 
             <div>
                 <h2 class="hc-title">{{ place.name }}</h2>
@@ -570,11 +879,23 @@
                 </div>
 
                 <div class="hc-tip">
-                    <strong>Tourist Safety Tip:</strong> {{ place.tourist_tip }}
+                    <strong>Tourist Tip:</strong> {{ place.tourist_tip }}
                 </div>
 
-                {% if place.nearest_police or place.nearest_hospital %}
+                {% if solo_mode or place.solo_safe %}
+                <div class="hc-tip">
+                    <strong><i class="fa-solid fa-taxi" style="color:#8F1226;"></i> Verified Pickup:</strong> {{ place.pickup_note }}
+                </div>
+                {% endif %}
+
                 <div class="hc-nearest">
+                    {% if place.nearest_station %}
+                    <span>
+                        <i class="fa-solid fa-train-subway" style="color:#1D4ED8;"></i>
+                        Nearest Station: <strong>{{ place.nearest_station.station }}</strong> ({{ place.nearest_station.distance_km }} km)
+                        <span class="hc-station-line">{{ place.nearest_station.line }}</span>
+                    </span>
+                    {% endif %}
                     {% if place.nearest_police %}
                     <span><i class="fa-solid fa-shield-halved" style="color:#D6203A;"></i> Police: <strong>{{ place.nearest_police.name }}</strong> ({{ place.nearest_police.distance_km }} km)</span>
                     {% endif %}
@@ -582,19 +903,24 @@
                     <span><i class="fa-solid fa-hospital" style="color:#065F46;"></i> Hospital: <strong>{{ place.nearest_hospital.name }}</strong> ({{ place.nearest_hospital.distance_km }} km)</span>
                     {% endif %}
                 </div>
-                {% endif %}
             </div>
 
             <div class="hc-actions">
-                <a href="{{ url_for('dashboard', location=place.safety_lookup) }}" class="hc-btn secondary">
+                <a href="{{ url_for('dashboard', location=place.safety_lookup, night=('1' if night_mode else None), solo=('1' if solo_mode else None)) }}" class="hc-btn secondary">
                     <i class="fa-solid fa-shield"></i> Area Safety
                 </a>
                 <a href="{{ url_for('safe_route', destination=place.name) }}" class="hc-btn primary">
                     <i class="fa-solid fa-route"></i> Safe Route
                 </a>
+                {% if solo_mode or night_mode %}
+                <a href="{{ url_for('sos') }}" class="hc-btn full">
+                    <i class="fa-solid fa-location-crosshairs" style="color:#8F1226;"></i> Share Trip via Walk With Me (SOS)
+                </a>
+                {% else %}
                 <a href="{{ url_for('emergency', q=place.area) }}" class="hc-btn full">
                     <i class="fa-solid fa-truck-medical"></i> Nearby Emergency Directory
                 </a>
+                {% endif %}
             </div>
         </article>
         {% endfor %}
@@ -603,7 +929,7 @@
     <div class="empty-state">
         <i class="fa-solid fa-compass" style="font-size: 36px; color: #D6203A; margin-bottom: 10px;"></i>
         <h3 style="font-size: 19px; margin-bottom: 6px;">No matching hangout places found</h3>
-        <p style="font-size: 14px; margin-bottom: 16px;">Try clearing your search or choosing a different Mumbai zone or category.</p>
+        <p style="font-size: 14px; margin-bottom: 16px;">Try clearing your search or toggling off After 9 PM / Solo filters.</p>
         <a href="{{ url_for('hangouts') }}" class="filter-btn" style="text-decoration:none; display:inline-block;">Show All Hangouts</a>
     </div>
     {% endif %}
@@ -647,12 +973,17 @@
                         fillOpacity: 0.9
                     }).addTo(mapInstance);
 
+                    const stationTxt = p.nearest_station
+                        ? `<br><span style="font-size:11.5px;">Station: ${p.nearest_station.station} (${p.nearest_station.distance_km} km)</span>`
+                        : "";
+
                     marker.bindPopup(
-                        `<div style="min-width:190px;">` +
+                        `<div style="min-width:200px;">` +
                         `<strong>${p.name}</strong><br>` +
                         `<span style="font-size:12px;">${p.category_label} · ${p.area}</span><br>` +
-                        `<span style="font-size:12px; font-weight:700;">Safety: ${p.safety_score}/10 (${p.safety_label})</span><br>` +
-                        `<a href="/safe-route?destination=${encodeURIComponent(p.name)}" style="display:inline-block; margin-top:6px; color:#D6203A; font-weight:700; text-decoration:none;">Plan Safe Route &rarr;</a>` +
+                        `<span style="font-size:12px; font-weight:700;">Safety: ${p.safety_score}/10 (${p.night_label})</span>` +
+                        stationTxt +
+                        `<br><a href="/safe-route?destination=${encodeURIComponent(p.name)}" style="display:inline-block; margin-top:6px; color:#D6203A; font-weight:700; text-decoration:none;">Plan Safe Route &rarr;</a>` +
                         `</div>`
                     );
                 });

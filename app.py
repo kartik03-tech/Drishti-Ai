@@ -43,6 +43,11 @@ SAFETY_FILE = os.path.join(
     "data",
     "mumbai places safety full.xlsx",
 )
+STATIONS_FILE = os.path.join(
+    BASE_DIR,
+    "data",
+    "mumbai_stations.csv",
+)
 
 # Load .env before reading any settings.
 # override=True makes sure the values in the project's .env file win over
@@ -649,17 +654,36 @@ def safety_record(place_name):
             ]
 
             if query_contains_place.empty:
-                return None
-
-            match_index = max(
-                query_contains_place.index,
-                key=lambda index: len(
-                    normalize_text(
-                        query_contains_place.loc[index, "Place"]
-                    )
-                ),
-            )
-            row = query_contains_place.loc[match_index]
+                stripped = re.sub(
+                    r"\b(west|east|north|south|station|area|road|rd)\b",
+                    " ",
+                    query_normalized,
+                )
+                stripped = re.sub(r"\s+", " ", stripped).strip()
+                if stripped and stripped != query_normalized:
+                    stripped_hits = df[
+                        place_normalized.str.contains(
+                            stripped,
+                            na=False,
+                            regex=False,
+                        )
+                    ]
+                    if not stripped_hits.empty:
+                        row = stripped_hits.iloc[0]
+                    else:
+                        return None
+                else:
+                    return None
+            else:
+                match_index = max(
+                    query_contains_place.index,
+                    key=lambda index: len(
+                        normalize_text(
+                            query_contains_place.loc[index, "Place"]
+                        )
+                    ),
+                )
+                row = query_contains_place.loc[match_index]
 
     score = to_float(
         row.get("Safety Score (1-10, est.)")
@@ -833,6 +857,90 @@ def _find_nearest_mumbai_locality(lat, lon):
     return None
 
 
+_MUMBAI_STATIONS_CACHE = None
+
+
+def load_mumbai_stations():
+    """Load Mumbai Local / Metro station coordinates from CSV once."""
+    global _MUMBAI_STATIONS_CACHE
+    if _MUMBAI_STATIONS_CACHE is not None:
+        return _MUMBAI_STATIONS_CACHE
+
+    if not os.path.exists(STATIONS_FILE):
+        _MUMBAI_STATIONS_CACHE = []
+        return _MUMBAI_STATIONS_CACHE
+
+    stations = []
+    try:
+        df = pd.read_csv(STATIONS_FILE)
+        for _, row in df.iterrows():
+            name = clean(row.get("Station"))
+            line = clean(row.get("Line"))
+            lat = to_float(row.get("Latitude"))
+            lon = to_float(row.get("Longitude"))
+            if name and valid_coordinates(lat, lon):
+                stations.append(
+                    {
+                        "station": name,
+                        "line": line or "Mumbai Rail",
+                        "latitude": lat,
+                        "longitude": lon,
+                    }
+                )
+    except Exception as exc:
+        app.logger.warning("Unable to load Mumbai stations CSV: %s", exc)
+
+    _MUMBAI_STATIONS_CACHE = stations
+    return _MUMBAI_STATIONS_CACHE
+
+
+def nearest_station(lat, lon):
+    """Return the closest Mumbai railway/metro station for given coordinates."""
+    lat = to_float(lat)
+    lon = to_float(lon)
+    if not valid_coordinates(lat, lon):
+        return None
+
+    stations = load_mumbai_stations()
+    if not stations:
+        return None
+
+    best = None
+    best_dist = float("inf")
+    for st in stations:
+        dist = haversine_km(lat, lon, st["latitude"], st["longitude"])
+        if dist < best_dist:
+            best_dist = dist
+            best = st
+
+    if not best:
+        return None
+
+    return {
+        "station": best["station"],
+        "line": best["line"],
+        "distance_km": round(best_dist, 2),
+        "latitude": best["latitude"],
+        "longitude": best["longitude"],
+    }
+
+
+def _station_location(query):
+    normalized = clean(query).casefold()
+    if not normalized:
+        return None
+    clean_q = re.sub(r"\bstation\b", "", normalized).strip()
+    for st in load_mumbai_stations():
+        st_name = st["station"].casefold()
+        if clean_q == st_name or st_name in clean_q:
+            return {
+                "lat": st["latitude"],
+                "lon": st["longitude"],
+                "display_name": f"{st['station']} Station ({st['line']} Line), Mumbai",
+            }
+    return None
+
+
 def _hangout_location(query):
     normalized = clean(query).casefold()
     if not normalized:
@@ -846,6 +954,30 @@ def _hangout_location(query):
                 "display_name": f"{place['name']}, {place['area']}, Mumbai, Maharashtra, India",
             }
     return None
+
+
+def _local_coordinates(query):
+    """Fast local coordinate resolution without external network calls."""
+    direct = is_coordinate_string(query)
+    if direct:
+        return {
+            "lat": direct[0],
+            "lon": direct[1],
+            "display_name": "Current Location",
+        }
+    normalized = clean(query).casefold()
+    if normalized in MUMBAI_LOCATION_FALLBACKS:
+        lat, lon = MUMBAI_LOCATION_FALLBACKS[normalized]
+        return {
+            "lat": lat,
+            "lon": lon,
+            "display_name": f"{query}, Mumbai, Maharashtra, India",
+        }
+    return (
+        _hangout_location(query)
+        or _station_location(query)
+        or _fallback_location(query)
+    )
 
 
 def _fallback_location(query):
@@ -865,6 +997,10 @@ def _fallback_location(query):
             "lon": lon,
             "display_name": f"{query}, Mumbai, Maharashtra, India",
         }
+
+    station_match = _station_location(query)
+    if station_match:
+        return station_match
 
     for name, coordinates in MUMBAI_LOCATION_FALLBACKS.items():
         if name in normalized or normalized in name:
@@ -1182,6 +1318,60 @@ def haversine_km(lat1, lon1, lat2, lon2):
 # OSRM ROUTING
 # ============================================================
 
+def _format_step_distance(meters):
+    m = to_float(meters) or 0.0
+    if m >= 1000:
+        return f"{round(m / 1000.0, 2)} km"
+    return f"{int(round(m))} m"
+
+
+def _normalize_osrm_steps(legs):
+    instructions = []
+    for leg in legs or []:
+        for step in leg.get("steps") or []:
+            maneuver = step.get("maneuver") or {}
+            m_type = clean(maneuver.get("type")).replace("-", " ")
+            m_mod = clean(maneuver.get("modifier")).replace("-", " ")
+            road = clean(step.get("name")) or clean(step.get("ref"))
+            dist_m = to_float(step.get("distance")) or 0.0
+            if m_type == "depart":
+                action = "Start"
+            elif m_type == "arrive":
+                action = "Arrive at destination"
+            else:
+                parts = [p for p in [m_type.title(), m_mod] if p]
+                action = " ".join(parts) if parts else "Continue"
+            text = f"{action} onto {road}" if road and m_type != "arrive" else action
+            instructions.append(
+                {
+                    "instruction": text,
+                    "road": road,
+                    "distance_text": _format_step_distance(dist_m),
+                }
+            )
+    return instructions
+
+
+def _normalize_valhalla_steps(legs):
+    instructions = []
+    for leg in legs or []:
+        for man in leg.get("maneuvers") or []:
+            text = clean(man.get("instruction"))
+            if not text:
+                continue
+            length_km = to_float(man.get("length")) or 0.0
+            streets = man.get("street_names") or []
+            road = clean(streets[0]) if streets else ""
+            instructions.append(
+                {
+                    "instruction": text,
+                    "road": road,
+                    "distance_text": _format_step_distance(length_km * 1000.0),
+                }
+            )
+    return instructions
+
+
 def _format_route_result(raw_routes, provider='OSRM'):
     """Convert routing-provider routes to Dynamic Risk Intelligence's common structure."""
     routes = []
@@ -1189,6 +1379,7 @@ def _format_route_result(raw_routes, provider='OSRM'):
     for index, raw_route in enumerate(raw_routes):
         distance = to_float(raw_route.get("distance")) or 0
         duration = to_float(raw_route.get("duration")) or 0
+        legs = raw_route.get("legs", [])
 
         routes.append(
             {
@@ -1196,7 +1387,8 @@ def _format_route_result(raw_routes, provider='OSRM'):
                 "distance_km": round(distance / 1000, 2),
                 "duration_minutes": round(duration / 60),
                 "geometry": raw_route.get("geometry"),
-                "steps": raw_route.get("legs", []),
+                "steps": legs,
+                "turn_instructions": _normalize_osrm_steps(legs),
                 "provider": provider,
             }
         )
@@ -1329,7 +1521,7 @@ def _route_from_valhalla(start_lat, start_lon, end_lat, end_lon):
             },
         ],
         "costing": "auto",
-        "alternates": 1,
+        "alternates": 2,
         "units": "kilometers",
         "directions_options": {
             "units": "kilometers",
@@ -1359,20 +1551,189 @@ def _route_from_valhalla(start_lat, start_lon, end_lat, end_lon):
         raise RuntimeError("Valhalla returned no usable route summary")
 
     # Valhalla time is in seconds; its length is in the requested units.
+    legs = trip.get("legs", []) or []
     primary = {
         "distance_km": round(distance_km, 2),
         "duration_minutes": round(duration_minutes / 60),
         "geometry": _route_geometry_from_valhalla(trip),
-        "steps": trip.get("legs", []) or [],
+        "steps": legs,
+        "turn_instructions": _normalize_valhalla_steps(legs),
         "provider": "Valhalla",
         "id": 1,
     }
 
+    all_routes = [primary]
+    for alt_idx, alt_entry in enumerate(data.get("alternates") or [], start=2):
+        alt_trip = alt_entry.get("trip") or {}
+        alt_sum = alt_trip.get("summary") or {}
+        alt_dist = to_float(alt_sum.get("length"))
+        alt_dur = to_float(alt_sum.get("time"))
+        alt_geom = _route_geometry_from_valhalla(alt_trip)
+        if alt_dist is not None and alt_dur is not None and alt_geom:
+            alt_legs = alt_trip.get("legs", []) or []
+            all_routes.append(
+                {
+                    "id": alt_idx,
+                    "distance_km": round(alt_dist, 2),
+                    "duration_minutes": round(alt_dur / 60),
+                    "geometry": alt_geom,
+                    "steps": alt_legs,
+                    "turn_instructions": _normalize_valhalla_steps(alt_legs),
+                    "provider": "Valhalla",
+                }
+            )
+
     return {
         "shortest": primary,
-        "alternative": None,
-        "all_routes": [primary],
+        "alternative": all_routes[1] if len(all_routes) > 1 else None,
+        "all_routes": all_routes,
         "provider": "Valhalla",
+    }
+
+
+def _route_from_tomtom(start_lat, start_lon, end_lat, end_lon):
+    """Use TomTom free-tier Routing API (live traffic + alternatives) when TOMTOM_API_KEY is configured."""
+    api_key = _env_value("TOMTOM_API_KEY", "")
+    if not api_key:
+        return None
+
+    url = (
+        "https://api.tomtom.com/routing/1/calculateRoute/"
+        f"{start_lat},{start_lon}:{end_lat},{end_lon}/json"
+    )
+    response = requests.get(
+        url,
+        params={
+            "key": api_key,
+            "traffic": "true",
+            "maxAlternatives": 2,
+            "instructionsType": "text",
+            "routeRepresentation": "polyline",
+        },
+        timeout=15,
+    )
+    response.raise_for_status()
+    data = response.json()
+    raw_routes = data.get("routes") or []
+    if not raw_routes:
+        return None
+
+    formatted = []
+    for idx, rt in enumerate(raw_routes, start=1):
+        summary = rt.get("summary") or {}
+        dist_m = to_float(summary.get("lengthInMeters")) or 0.0
+        dur_s = to_float(summary.get("travelTimeInSeconds")) or 0.0
+        coords = []
+        for leg in rt.get("legs") or []:
+            for pt in leg.get("points") or []:
+                lat_v = to_float(pt.get("latitude"))
+                lon_v = to_float(pt.get("longitude"))
+                if valid_coordinates(lat_v, lon_v):
+                    coords.append([lon_v, lat_v])
+        if len(coords) < 2:
+            continue
+
+        turns = []
+        for ins in (rt.get("guidance") or {}).get("instructions") or []:
+            msg = clean(ins.get("message"))
+            if msg:
+                turns.append(
+                    {
+                        "instruction": msg,
+                        "road": clean(ins.get("street")),
+                        "distance_text": _format_step_distance(ins.get("routeOffsetInMeters") or 0),
+                    }
+                )
+
+        formatted.append(
+            {
+                "id": idx,
+                "distance_km": round(dist_m / 1000.0, 2),
+                "duration_minutes": max(1, round(dur_s / 60.0)),
+                "geometry": {"type": "LineString", "coordinates": coords},
+                "steps": [],
+                "turn_instructions": turns,
+                "provider": "TomTom Traffic Routing",
+            }
+        )
+
+    if not formatted:
+        return None
+
+    return {
+        "shortest": formatted[0],
+        "alternative": formatted[1] if len(formatted) > 1 else None,
+        "all_routes": formatted,
+        "provider": "TomTom Traffic Routing",
+    }
+
+
+def _route_from_ors(start_lat, start_lon, end_lat, end_lon):
+    """Use OpenRouteService free-tier Routing API when ORS_API_KEY is configured."""
+    api_key = _env_value("ORS_API_KEY", "")
+    if not api_key:
+        return None
+
+    response = requests.post(
+        "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
+        json={
+            "coordinates": [[float(start_lon), float(start_lat)], [float(end_lon), float(end_lat)]],
+            "alternative_routes": {"target_count": 2, "weight_factor": 1.4, "share_factor": 0.6},
+            "instructions": True,
+        },
+        headers={
+            "Authorization": api_key,
+            "Content-Type": "application/json",
+        },
+        timeout=18,
+    )
+    response.raise_for_status()
+    data = response.json()
+    features = data.get("features") or []
+    if not features:
+        return None
+
+    formatted = []
+    for idx, feat in enumerate(features, start=1):
+        props = feat.get("properties") or {}
+        summary = props.get("summary") or {}
+        dist_m = to_float(summary.get("distance")) or 0.0
+        dur_s = to_float(summary.get("duration")) or 0.0
+        geom = feat.get("geometry") or {}
+
+        turns = []
+        for seg in props.get("segments") or []:
+            for step in seg.get("steps") or []:
+                instr = clean(step.get("instruction"))
+                if instr:
+                    turns.append(
+                        {
+                            "instruction": instr,
+                            "road": clean(step.get("name")),
+                            "distance_text": _format_step_distance(step.get("distance") or 0),
+                        }
+                    )
+
+        formatted.append(
+            {
+                "id": idx,
+                "distance_km": round(dist_m / 1000.0, 2),
+                "duration_minutes": max(1, round(dur_s / 60.0)),
+                "geometry": geom,
+                "steps": [],
+                "turn_instructions": turns,
+                "provider": "OpenRouteService",
+            }
+        )
+
+    if not formatted:
+        return None
+
+    return {
+        "shortest": formatted[0],
+        "alternative": formatted[1] if len(formatted) > 1 else None,
+        "all_routes": formatted,
+        "provider": "OpenRouteService",
     }
 
 
@@ -1458,7 +1819,21 @@ def route_options(start_lat, start_lon, end_lat, end_lon):
 
     errors = []
 
-    # Try OSRM-compatible services first.
+    # 1. Try free-tier TomTom (with traffic) and OpenRouteService if API keys are set.
+    for opt_name, opt_fn in [
+        ("TomTom Traffic Routing", _route_from_tomtom),
+        ("OpenRouteService", _route_from_ors),
+    ]:
+        try:
+            opt_res = opt_fn(start_lat, start_lon, end_lat, end_lon)
+            if opt_res and opt_res.get("shortest"):
+                app.logger.info("Route calculated using %s", opt_name)
+                return opt_res
+        except (requests.RequestException, ValueError, TypeError, RuntimeError) as exc:
+            errors.append(f"{opt_name}: {exc}")
+            app.logger.warning("%s failed: %s", opt_name, exc)
+
+    # 2. Try keyless public OSRM-compatible services.
     for name, url in endpoints:
         try:
             result = _route_from_osrm(url, timeout=18, alternatives=True)
@@ -1772,6 +2147,65 @@ def route_service_preview(
     return nearby[:limit]
 
 
+def _sanitize_tel_number(raw_phone):
+    cleaned = re.sub(r"[^0-9+]", "", clean(raw_phone))
+    return cleaned if len(cleaned) >= 3 else ""
+
+
+def route_nearest_help(ranked_routes, per_type=5, radius_km=2.0):
+    """Locate nearest hospitals and police stations along the recommended route with callable numbers."""
+    if not ranked_routes:
+        return {"hospitals": [], "police": [], "all": []}
+
+    route = ranked_routes[0]
+    coordinates = (route.get("geometry") or {}).get("coordinates", [])
+    if not coordinates:
+        return {"hospitals": [], "police": [], "all": []}
+
+    step = max(1, len(coordinates) // 80)
+    sampled = []
+    for pt in coordinates[::step]:
+        if len(pt) >= 2:
+            lon = to_float(pt[0])
+            lat = to_float(pt[1])
+            if valid_coordinates(lat, lon):
+                sampled.append((lat, lon))
+
+    if not sampled:
+        return {"hospitals": [], "police": [], "all": []}
+
+    def _collect(service_type, fallback_num, fallback_label):
+        candidates = []
+        for service in service_rows(service_type):
+            closest = min(
+                haversine_km(rlat, rlon, service["latitude"], service["longitude"])
+                for rlat, rlon in sampled
+            )
+            item = service.copy()
+            item["distance_km"] = round(closest, 2)
+            direct_tel = _sanitize_tel_number(item.get("phone", ""))
+            item["direct_tel"] = direct_tel
+            item["has_direct_phone"] = bool(direct_tel)
+            item["call_number"] = direct_tel or fallback_num
+            item["call_label"] = f"Call {item['phone']}" if direct_tel else fallback_label
+            item["emergency_number"] = fallback_num
+            candidates.append(item)
+
+        within_radius = [c for c in candidates if c["distance_km"] <= radius_km]
+        pool = within_radius if len(within_radius) >= per_type else candidates
+        pool.sort(key=lambda c: (c["distance_km"], not c["has_direct_phone"], c["name"].lower()))
+        return pool[:per_type]
+
+    hospitals = _collect("hospital", "108", "Call 108 Ambulance")
+    police = _collect("police", "100", "Call 100 Police")
+
+    return {
+        "hospitals": hospitals,
+        "police": police,
+        "all": hospitals + police,
+    }
+
+
 # ============================================================
 # DASHBOARD DATA
 # ============================================================
@@ -1988,8 +2422,32 @@ def get_hangout_catalog():
         _HANGOUT_CATALOG_CACHE = hangout_places.build_hangout_catalog(
             safety_record,
             nearest_services,
+            nearest_station,
         )
     return _HANGOUT_CATALOG_CACHE
+
+
+def _parse_hangout_filters(args):
+    category = clean(args.get("category")) or "all"
+    zone = clean(args.get("zone")) or "all"
+    search_query = clean(args.get("q"))
+    min_score_raw = clean(args.get("min_score"))
+    min_score = to_float(min_score_raw) if min_score_raw else None
+    sort_by = clean(args.get("sort")) or "recommended"
+    night_mode = clean(args.get("night")).lower() in {"1", "true", "yes", "on"}
+    hide_closed = clean(args.get("hide_closed")).lower() in {"1", "true", "yes", "on"}
+    solo_mode = clean(args.get("solo")).lower() in {"1", "true", "yes", "on"}
+    return {
+        "category": category,
+        "zone": zone,
+        "query": search_query,
+        "min_score": min_score,
+        "min_score_raw": min_score_raw,
+        "sort_by": sort_by,
+        "night_mode": night_mode,
+        "hide_closed": hide_closed,
+        "solo_mode": solo_mode,
+    }
 
 
 @app.route("/")
@@ -2012,20 +2470,18 @@ def index():
 @app.route("/hangouts")
 def hangouts():
     catalog = get_hangout_catalog()
-    category = clean(request.args.get("category")) or "all"
-    zone = clean(request.args.get("zone")) or "all"
-    search_query = clean(request.args.get("q"))
-    min_score_raw = clean(request.args.get("min_score"))
-    min_score = to_float(min_score_raw) if min_score_raw else None
-    sort_by = clean(request.args.get("sort")) or "recommended"
+    f = _parse_hangout_filters(request.args)
 
     filtered = hangout_places.filter_hangout_places(
         catalog,
-        category=category,
-        zone=zone,
-        query=search_query,
-        min_score=min_score,
-        sort_by=sort_by,
+        category=f["category"],
+        zone=f["zone"],
+        query=f["query"],
+        min_score=f["min_score"],
+        sort_by=f["sort_by"],
+        night_mode=f["night_mode"],
+        hide_closed=f["hide_closed"],
+        solo_mode=f["solo_mode"],
     )
 
     category_counts = {"all": len(catalog)}
@@ -2034,6 +2490,8 @@ def hangouts():
             category_counts[cat["key"]] = sum(1 for p in catalog if p["category"] == cat["key"])
 
     zones = sorted({p["zone_group"] for p in catalog})
+    night_safe_count = sum(1 for p in catalog if p.get("night_safe"))
+    solo_safe_count = sum(1 for p in catalog if p.get("solo_safe"))
 
     return render_template(
         "hangouts.html",
@@ -2041,11 +2499,16 @@ def hangouts():
         categories=hangout_places.HANGOUT_CATEGORIES,
         category_counts=category_counts,
         zones=zones,
-        selected_category=category,
-        selected_zone=zone,
-        search_query=search_query,
-        min_score=min_score_raw,
-        sort_by=sort_by,
+        selected_category=f["category"],
+        selected_zone=f["zone"],
+        search_query=f["query"],
+        min_score=f["min_score_raw"],
+        sort_by=f["sort_by"],
+        night_mode=f["night_mode"],
+        hide_closed=f["hide_closed"],
+        solo_mode=f["solo_mode"],
+        night_safe_count=night_safe_count,
+        solo_safe_count=solo_safe_count,
         total_count=len(catalog),
     )
 
@@ -2053,22 +2516,27 @@ def hangouts():
 @app.route("/api/hangouts")
 def api_hangouts():
     catalog = get_hangout_catalog()
-    category = clean(request.args.get("category")) or "all"
-    zone = clean(request.args.get("zone")) or "all"
-    search_query = clean(request.args.get("q"))
-    min_score_raw = clean(request.args.get("min_score"))
-    min_score = to_float(min_score_raw) if min_score_raw else None
-    sort_by = clean(request.args.get("sort")) or "recommended"
+    f = _parse_hangout_filters(request.args)
 
     filtered = hangout_places.filter_hangout_places(
         catalog,
-        category=category,
-        zone=zone,
-        query=search_query,
-        min_score=min_score,
-        sort_by=sort_by,
+        category=f["category"],
+        zone=f["zone"],
+        query=f["query"],
+        min_score=f["min_score"],
+        sort_by=f["sort_by"],
+        night_mode=f["night_mode"],
+        hide_closed=f["hide_closed"],
+        solo_mode=f["solo_mode"],
     )
-    return jsonify({"hangouts": filtered, "count": len(filtered)})
+    return jsonify(
+        {
+            "hangouts": filtered,
+            "count": len(filtered),
+            "night_mode": f["night_mode"],
+            "solo_mode": f["solo_mode"],
+        }
+    )
 
 
 # ============================================================
@@ -2517,9 +2985,15 @@ def dashboard():
     location = clean(
         request.args.get("location")
     )
+    night_mode = clean(request.args.get("night")).lower() in {"1", "true", "yes", "on"}
+    solo_mode = clean(request.args.get("solo")).lower() in {"1", "true", "yes", "on"}
 
     safety_result = None
     ai_explanation = None
+    safety_modes = None
+    nearest_station_info = None
+    nearest_police_info = None
+    nearest_hospital_info = None
 
     if location:
         save_search_history(location)
@@ -2531,12 +3005,33 @@ def dashboard():
                 coordinates[0],
                 coordinates[1],
             )
+            loc_coords = {"lat": coordinates[0], "lon": coordinates[1]}
         else:
             safety_result = safety_record(
                 location
             )
+            loc_coords = _local_coordinates(location)
+            if not loc_coords and safety_result:
+                loc_coords = _local_coordinates(safety_result.get("place"))
+
+        if loc_coords and valid_coordinates(loc_coords.get("lat"), loc_coords.get("lon")):
+            lat_val = loc_coords["lat"]
+            lon_val = loc_coords["lon"]
+            nearest_station_info = nearest_station(lat_val, lon_val)
+            police_hits = nearest_services(lat_val, lon_val, "police", limit=1) or []
+            hospital_hits = nearest_services(lat_val, lon_val, "hospital", limit=1) or []
+            nearest_police_info = police_hits[0] if police_hits else None
+            nearest_hospital_info = hospital_hits[0] if hospital_hits else None
 
         if safety_result:
+            safety_modes = hangout_places.assess_time_and_solo_safety(
+                score=safety_result.get("score"),
+                lighting=safety_result.get("lighting"),
+                best_time=safety_result.get("best_time"),
+                notes=safety_result.get("notes"),
+                category=safety_result.get("category"),
+                police_distance_km=(nearest_police_info.get("distance_km") if nearest_police_info else None),
+            )
             try:
                 ai_explanation = ai_model.explain_prediction(
                     lighting_score=safety_result.get("lighting", "Good"),
@@ -2548,11 +3043,22 @@ def dashboard():
                 app.logger.warning("AI explanation error: %s", e)
 
     all_places = all_safety_places()
+    catalog = get_hangout_catalog()
+    night_safe_spots = [p for p in catalog if p.get("night_safe")][:4]
+    solo_safe_spots = [p for p in catalog if p.get("solo_safe")][:4]
 
     return render_template(
         "dashboard.html",
         safety_result=safety_result,
         ai_explanation=ai_explanation,
+        safety_modes=safety_modes,
+        nearest_station_info=nearest_station_info,
+        nearest_police_info=nearest_police_info,
+        nearest_hospital_info=nearest_hospital_info,
+        night_mode=night_mode,
+        solo_mode=solo_mode,
+        night_safe_spots=night_safe_spots,
+        solo_safe_spots=solo_safe_spots,
         hotspots=ai_model.get_accident_hotspots()[:4],
         stats=dashboard_stats(),
         recent_places=all_places[:8],
@@ -2695,6 +3201,7 @@ def safe_route():
                 end_lon=destination_location["lon"],
             )
 
+            route_help = route_nearest_help(ranked_routes)
             route_result = {
                 "start": start_location,
                 "destination": destination_location,
@@ -2702,9 +3209,11 @@ def safe_route():
                 "destination_name": destination,
                 "routes": routes,
                 "ranked_routes": ranked_routes,
+                "comparison": ai_model.build_route_comparison(ranked_routes),
                 "safest_route": next((r for r in ranked_routes if "Safest" in r.get("badge", "")), ranked_routes[0]),
                 "fastest_route": next((r for r in ranked_routes if "Fastest" in r.get("badge", "")), ranked_routes[-1] if len(ranked_routes) > 1 else ranked_routes[0]),
                 "hotspots": ai_model.get_accident_hotspots(),
+                "nearest_help": route_help,
             }
 
     conn = get_db()
@@ -2727,7 +3236,7 @@ def safe_route():
         destination_safety=destination_safety,
         safety=destination_safety,
         community_reports=community_reports,
-        emergency_services=[],
+        emergency_services=(route_result.get("nearest_help", {}).get("all", []) if route_result else []),
         error=error,
     )
 
@@ -3913,6 +4422,8 @@ def api_route():
             "success": True,
             "route": route,
             "routes": ranked_routes,
+            "comparison": ai_model.build_route_comparison(ranked_routes),
+            "nearest_help": route_nearest_help(ranked_routes),
             "safest_route": next((r for r in ranked_routes if "Safest" in r.get("badge", "")), ranked_routes[0]),
             "fastest_route": next((r for r in ranked_routes if "Fastest" in r.get("badge", "")), ranked_routes[-1] if len(ranked_routes) > 1 else ranked_routes[0]),
         }
