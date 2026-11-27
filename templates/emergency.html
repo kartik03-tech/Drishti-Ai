@@ -552,8 +552,8 @@
                 </div>
             </div>
             <div class="srv-actions">
-                <a href="{{ url_for('safety_map') }}?lat={{ item.latitude }}&lon={{ item.longitude }}&name={{ item.name|urlencode }}" class="srv-btn srv-btn-map">
-                    <i class="fa-solid fa-map-pin"></i> View on Map
+                <a href="{{ url_for('safe_route') }}?destination={{ item.name|urlencode }}&destination_lat={{ item.latitude }}&destination_lon={{ item.longitude }}" class="srv-btn srv-btn-map">
+                    <i class="fa-solid fa-route"></i> Safe Route
                 </a>
                 {% if item.phone %}
                 <a href="tel:{{ item.phone }}" class="srv-btn srv-btn-call">

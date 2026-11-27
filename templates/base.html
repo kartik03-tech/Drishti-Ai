@@ -517,10 +517,10 @@
             <!-- Desktop Nav Links (Clean text pills matching design) -->
             <nav class="sg-nav">
                 <a href="{{ url_for('dashboard') }}" class="sg-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Home &amp; Search</a>
-                <a href="{{ url_for('safety_map') }}" class="sg-nav-link {% if request.endpoint == 'safety_map' %}active{% endif %}">Interactive Map</a>
+                <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">Safe Route</a>
                 <a href="{{ url_for('emergency') }}" class="sg-nav-link {% if request.endpoint == 'emergency' %}active{% endif %}">Emergency Directory</a>
                 <a href="{{ url_for('ai_insights') }}" class="sg-nav-link {% if request.endpoint == 'ai_insights' %}active{% endif %}">AI Intelligence</a>
-                <a href="{{ url_for('safe_route') }}" class="sg-nav-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">Safe Route</a>
+                <a href="{{ url_for('report') }}" class="sg-nav-link {% if request.endpoint == 'report' %}active{% endif %}">Community Reports</a>
             </nav>
 
             <!-- Actions (SOS & User Profile) -->
@@ -573,9 +573,9 @@
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
         </a>
-        <a href="{{ url_for('safety_map') }}" class="sg-bottom-link {% if request.endpoint == 'safety_map' %}active{% endif %}">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <span>Map</span>
+        <a href="{{ url_for('safe_route') }}" class="sg-bottom-link {% if request.endpoint == 'safe_route' or request.endpoint == 'navigation' %}active{% endif %}">
+            <i class="fa-solid fa-route"></i>
+            <span>Routes</span>
         </a>
         <a href="{{ url_for('sos') }}" class="sg-bottom-sos" title="Emergency SOS">
             <i class="fa-solid fa-triangle-exclamation"></i>
@@ -584,9 +584,9 @@
             <i class="fa-solid fa-truck-medical"></i>
             <span>Emergency</span>
         </a>
-        <a href="{{ url_for('safe_route') }}" class="sg-bottom-link {% if request.endpoint == 'safe_route' %}active{% endif %}">
-            <i class="fa-solid fa-route"></i>
-            <span>Routes</span>
+        <a href="{{ url_for('report') }}" class="sg-bottom-link {% if request.endpoint == 'report' %}active{% endif %}">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>Report</span>
         </a>
     </nav>
 

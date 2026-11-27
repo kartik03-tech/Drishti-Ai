@@ -852,9 +852,6 @@
             <a href="{{ url_for('emergency') }}?q={{ safety_result.place|urlencode }}" class="risk-action-btn secondary">
                 <i class="fa-solid fa-truck-medical"></i> Nearby Emergency Services
             </a>
-            <a href="{{ url_for('safety_map') }}?location={{ safety_result.place|urlencode }}" class="risk-action-btn secondary">
-                <i class="fa-solid fa-map-location-dot"></i> View on Interactive Map
-            </a>
         </div>
     </section>
     {% elif location %}
@@ -862,8 +859,8 @@
         <i class="fa-solid fa-map-pin" style="font-size: 36px; color: #D6203A; margin-bottom: 12px;"></i>
         <h3 style="font-size: 20px; font-weight: 700; color: #1F1315; margin-bottom: 6px;">No specific safety record for "{{ location }}"</h3>
         <p style="color: #6B5559; font-size: 14px; max-width: 500px; margin: 0 auto 20px;">We couldn't find a direct match in our database. Try checking a major nearby junction, station, or landmark.</p>
-        <a href="{{ url_for('safety_map') }}?location={{ location|urlencode }}" class="risk-action-btn primary" style="display: inline-flex;">
-            <i class="fa-solid fa-magnifying-glass"></i> Search on Live Map
+        <a href="{{ url_for('safe_route') }}?destination={{ location|urlencode }}" class="risk-action-btn primary" style="display: inline-flex;">
+            <i class="fa-solid fa-route"></i> Plan Safe Route
         </a>
     </section>
     {% endif %}
@@ -945,8 +942,8 @@
                 </div>
                 <div style="font-size: 14.5px; font-weight: 700; color: #1F1315;">{{ hs.name }}</div>
                 <div style="font-size: 12px; color: #6B5559; line-height: 1.4;">{{ hs.advisory }}</div>
-                <a href="{{ url_for('safety_map') }}?lat={{ hs.latitude }}&lon={{ hs.longitude }}&name={{ hs.name|urlencode }}" style="font-size: 12px; font-weight: 700; color: #D6203A; text-decoration: none; margin-top: 4px;">
-                    <i class="fa-solid fa-map-pin"></i> View on Map &rarr;
+                <a href="{{ url_for('safe_route') }}?destination={{ hs.name|urlencode }}" style="font-size: 12px; font-weight: 700; color: #D6203A; text-decoration: none; margin-top: 4px;">
+                    <i class="fa-solid fa-route"></i> Plan Route Around Hotspot &rarr;
                 </a>
             </div>
             {% endfor %}

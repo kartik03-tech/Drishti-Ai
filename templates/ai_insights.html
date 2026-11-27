@@ -414,8 +414,8 @@
                 </div>
 
                 <div class="hs-actions">
-                    <a href="{{ url_for('safety_map') }}?lat={{ hs.latitude }}&lon={{ hs.longitude }}&name={{ hs.name|urlencode }}" class="btn-view-hotspot">
-                        <i class="fa-solid fa-map-pin"></i> View Hotspot on Map
+                    <a href="{{ url_for('safe_route') }}?destination={{ hs.name|urlencode }}" class="btn-view-hotspot">
+                        <i class="fa-solid fa-route"></i> Plan Route Around Hotspot
                     </a>
                 </div>
             </div>

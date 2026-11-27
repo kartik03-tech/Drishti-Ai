@@ -2767,71 +2767,15 @@ def navigation():
 
 
 # ============================================================
-# SAFETY MAP
+# SAFETY MAP (Redirected to Safe Route)
 # ============================================================
 
 @app.route("/safety-map")
 def safety_map():
-    location = clean(
-        request.args.get("location")
-    )
-
-    selected_service = normalize_service_type(
-        request.args.get("service")
-    )
-
-    if selected_service not in SERVICE_TABLES:
-        selected_service = ""
-
-    safety_result = None
-    map_location = None
-    nearby_services = []
-
-    if location:
-        safety_result = safety_record(location)
-        map_location = resolve_location(location)
-
-        if map_location:
-            nearby_services = nearest_services(
-                map_location["lat"],
-                map_location["lon"],
-                selected_service or None,
-                limit=12,
-            )
-
-    latitude = to_float(
-        request.args.get("lat")
-    )
-    longitude = to_float(
-        request.args.get("lon")
-    )
-
-    if (
-        latitude is not None
-        and longitude is not None
-    ):
-        map_location = {
-            "lat": latitude,
-            "lon": longitude,
-            "display_name": "Current Location",
-        }
-
-        nearby_services = nearest_services(
-            latitude,
-            longitude,
-            selected_service or None,
-            limit=12,
-        )
-
-    return render_template(
-        "safety_map.html",
-        location=location,
-        safety_result=safety_result,
-        map_location=map_location,
-        nearby_services=nearby_services,
-        selected_service=selected_service,
-        safety_places=all_safety_places(),
-    )
+    destination = clean(request.args.get("location")) or clean(request.args.get("name"))
+    if destination:
+        return redirect(url_for("safe_route", destination=destination))
+    return redirect(url_for("safe_route"))
 
 
 # ============================================================

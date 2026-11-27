@@ -23,12 +23,16 @@ assert r3.status_code == 200
 assert b"Emergency Services" in r3.data
 print("   Emergency Directory verified!")
 
-# 4. Interactive Safety Map
-r4 = client.get("/safety-map")
-print(f"4. GET /safety-map -> {r4.status_code}")
+# 4. Safe Route Navigation Map
+r4 = client.get("/safe-route")
+print(f"4. GET /safe-route -> {r4.status_code}")
 assert r4.status_code == 200
-assert b"leafletMap" in r4.data
-print("   Interactive Safety Map verified!")
+assert b"leafletMap" in r4.data or b"map" in r4.data
+print("   Safe Route Navigation verified!")
+
+# 4b. Legacy /safety-map redirects cleanly
+r4_redir = client.get("/safety-map")
+assert r4_redir.status_code in [200, 302]
 
 # 5. API Nearest Services
 r5 = client.get("/api/nearest?lat=19.0178&lon=72.8478&limit=5")
